@@ -515,9 +515,9 @@ A diferencia de un receptor AIS convencional, este equipo no se emplea para rele
 
 \subsection{Anemómetro ultrasónico WindSonic.}
 
-El anemómetro ultrasónico WindSonic emplea dos ejes para medir velocidad y dirección del viento. Al no poseer partes móviles, resulta adecuado para operación prolongada en ambiente marítimo, donde los anemómetros mecánicos pueden degradarse por desgaste, salinidad o incrustaciones. La medición de viento es importante porque las condiciones de superficie influyen directamente sobre el ruido ambiente submarino.
+El equipo WindSonic de Gill Instruments es un anemómetro ultrasónico de dos ejes utilizado para medir velocidad y dirección del viento. En la boya EAMMRA, este instrumento aporta información meteorológica de superficie que resulta relevante para la caracterización ambiental del sitio de medición y para el análisis posterior de las condiciones asociadas al ruido ambiente submarino. 
 
-En la figura~\ref{fig:windsonic} se observa el anemómetro con sus dos pares de transductores ultrasónicos que se utilizan para medir velocidad de viento y componer la dirección como una suma vectorial de cada eje.
+En la figura~\ref{fig:windsonic} se observa el anemómetro con sus dos pares de transductores perpendiculares que se utilizan para medir velocidad de viento a partir del tiempo de vuelo de pulsos ultrasónicos y luego se compone la dirección como una suma vectorial de cada eje.
 
 \begin{figure}[htbp] 
 	\centering 
@@ -527,6 +527,7 @@ En la figura~\ref{fig:windsonic} se observa el anemómetro con sus dos pares de t
 		\item \textbf{Principio de medición:} ultrasonido, sin partes móviles. 
 		\item \textbf{Rango de dirección:} 0 a 360 grados. 
 		\item \textbf{Protocolos:} RS232 a 9600~bit/s, 8N1. 
+		\item \textbf{Modo de adquisición:} \textit{polled}, a requerimiento.
 		\item \textbf{Uso en EAMMRA:} caracterización meteorológica y correlación con ruido ambiente submarino. 
 		\end{itemize} 
 	\end{minipage} 
@@ -538,7 +539,18 @@ En la figura~\ref{fig:windsonic} se observa el anemómetro con sus dos pares de t
 	\end{minipage} 
 \end{figure}
 
-El sistema implementa la consulta al instrumento, la verificación de respuesta, el análisis de datos recibidos y la acumulación de muestras. La identificación del dispositivo se realiza mediante comandos de consulta sobre la interfaz serie, de acuerdo con el protocolo configurado para el equipo.
+La integración del WindSonic en EAMMRA y el desarrollo de las rutinas de configuración, adquisición y registro fueron documentados previamente en el Informe Técnico AS~1/24 \citep{RemottiBos2024_Anemometro}.
+
+El sistema embebido se comunica con el instrumento mediante una conexión serie configurada a 9600~bit/s, 8N1. El modo de operación empleado es de tipo solicitado, o \textit{polled}, por lo que el software de control debe requerir explícitamente cada medición. El mensaje de respuesta incluye la dirección del viento, la velocidad, las unidades de medida, un código de estado del instrumento y un campo de verificación de integridad. Esta modalidad permite integrar la adquisición meteorológica dentro del ciclo general de operación de la boya, sin depender de una transmisión continua no sincronizada con el resto de las tareas del sistema.
+
+La conexión eléctrica se realiza mediante el conector circular de 9 vías provisto con el fabricante. Para la opción~1, el cableado combina dos conductores de alimentación y tres conductores de comunicación: transmisión, recepción y referencia de señal. Como se muestra en la Figura~\ref{fig:windsonic-rs232}, la línea TXD del WindSonic se conecta con la entrada RXD del puerto serie o del conversor RS-232 a USB, mientras que la línea RXD del instrumento se conecta con la salida TXD de la interfaz de la computadora. La referencia común de señal es necesaria para interpretar correctamente los niveles eléctricos de la comunicación serie. El blindaje del cable se conecta del lado de la computadora o del chasis, y no del lado del anemómetro, con el objetivo de reducir la susceptibilidad frente a interferencias eléctricas sin introducir lazos de masa.
+
+\begin{figure}[htbp]
+ \centering
+ \includegraphics[width=0.7\linewidth]{graficos/windsonic_RS232.png}
+ \captionof{figure}{Esquema de conexión RS-232 del anemómetro WindSonic, opción~1.}
+ \label{fig:windsonic-rs232}
+\end{figure}
 
 
 \subsection{Controlador solar MPPT XTRA2210.}
