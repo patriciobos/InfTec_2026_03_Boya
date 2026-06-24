@@ -367,6 +367,7 @@ La descripción de cada componente no se limita a sus características nominales, 
 
 El núcleo de procesamiento está constituido por una PC industrial Kaise KBOX-S-J6412, que se muestra en la Figura~\ref{fig:kaise}. Este equipo actúa como computadora principal de la boya y ejecuta el software de control desarrollado en Python~3 sobre un sistema operativo GNU/Linux. Su función es coordinar los periféricos, ejecutar los módulos de control, administrar el enrutador de eventos, ejecutar el planificador de tareas, adquirir datos, procesar archivos de audio, almacenar información y preparar mensajes de telemetría.
 
+\vspace{10px}
 \begin{figure}[htbp]
     \centering
     \begin{minipage}[b]{0.48\textwidth}
@@ -618,22 +619,51 @@ Para una boya instrumental autónoma, esta diferencia es relevante. La energía di
 La diferencia funcional entre controladores PWM y MPPT se sintetiza en la Tabla~\ref{tab:pwm-mppt}. En el contexto de EAMMRA, la alternativa MPPT resulta más adecuada porque mejora el aprovechamiento energético disponible y permite obtener variables de supervisión útiles para la operación autónoma.
 
 \begin{table}[htbp]
-    \centering
-    \caption{Comparación conceptual entre controladores solares PWM y MPPT.}
-    \label{tab:pwm-mppt}
-    \begin{tabular}{lll}
-        \hline
-        \textbf{Característica} & \textbf{PWM} & \textbf{MPPT} \\
-        \hline
-        Punto de operación del panel & Cercano a tensión de batería & Cercano a máxima potencia \\
-        Conversión DC/DC & No optimizada & Con adaptación de tensión y corriente \\
-        Aprovechamiento energético & Menor en condiciones no ideales & Mayor aprovechamiento del panel \\
-        Complejidad electrónica & Baja & Mayor \\
-        Costo relativo & Menor & Mayor \\
-        Adecuación a EAMMRA & Limitada & Más adecuada para autonomía \\
-        \hline
-    \end{tabular}
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.18}
+
+\caption{Comparación conceptual entre controladores solares PWM y MPPT.}
+\label{tab:pwm-mppt}
+
+\begin{tabular}{p{0.24\textwidth}p{0.35\textwidth}p{0.35\textwidth}}
+    \hline
+    \textbf{Característica} &
+    \textbf{PWM} &
+    \textbf{MPPT} \\
+    \hline
+
+    Punto de operación del panel &
+    Vinculado en forma directa a la tensión instantánea de la batería. &
+    Ajustado para operar cerca del punto de máxima potencia del panel. \\
+
+    Conversión de energía &
+    No realiza adaptación DC/DC optimizada entre panel y batería. &
+    Utiliza conversión DC/DC para adaptar tensión y corriente de carga. \\
+
+    Aprovechamiento energético &
+    Menor cuando la tensión óptima del panel difiere de la tensión de batería. &
+    Mayor aprovechamiento del arreglo fotovoltaico en condiciones variables. \\
+
+    Complejidad electrónica &
+    Baja, con arquitectura más simple. &
+    Mayor, debido al seguimiento del punto de máxima potencia y a la etapa de conversión. \\
+
+    Costo relativo &
+    Generalmente menor. &
+    Generalmente mayor. \\
+
+    Adecuación a EAMMRA &
+    Limitada para una plataforma autónoma con presupuesto energético restringido. &
+    Más adecuada para maximizar autonomía y supervisar variables eléctricas del sistema. \\
+
+    \hline
+\end{tabular}
+
 \end{table}
+
+
 
 Además de su función de carga, el XTRA2210N aporta información útil para el software de control mediante comunicación serie RS485 con protocolo Modbus. Entre las variables de interés se incluyen tensión y corriente del panel, tensión y corriente de batería, potencia de carga, temperatura de batería, temperatura interna del dispositivo, estado de carga estimado y estados de protección o falla. Estas mediciones permiten registrar la evolución energética de la boya, detectar condiciones anómalas y correlacionar el estado de energía con la ejecución de tareas de adquisición, procesamiento y transmisión satelital.
 
