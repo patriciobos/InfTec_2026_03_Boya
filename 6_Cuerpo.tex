@@ -469,11 +469,13 @@ El MPU6050 no constituye, por sí solo, un sistema de navegación ni una referenci
 
 \subsection{Integración física de sensores I2C mediante adaptador USB.}
 
-Los sensores AHT10 y MPU6050 se integran a la computadora principal Kaise mediante un adaptador USB--I2C basado en CH431A. En la Figura~\ref{fig:ch431a} se muestra el adaptador utilizado como interfaz física entre el puerto USB de la computadora embarcada y el bus I2C compartido por ambos sensores. A partir de las hojas de datos del AHT10 y del MPU6050 se verifican las condiciones eléctricas de alimentación, niveles lógicos e interfaz digital requeridas para integrar ambos dispositivos en un mismo subconjunto de adquisición \citep{AHT10Datasheet,MPU6050Datasheet}.
+Los sensores AHT10 y MPU6050 se integran a la computadora principal Kaise mediante un adaptador USB--I2C basado en CH431A. En la Figura~\ref{fig:ch431a} se muestra el adaptador utilizado como interfaz física entre el puerto USB de la computadora embarcada y el bus I2C compartido por ambos sensores. 
+
+A partir de las hojas de datos del AHT10 y del MPU6050 se verifican las condiciones eléctricas de alimentación, niveles lógicos e interfaz digital requeridas para integrar ambos dispositivos en un mismo subconjunto de adquisición \citep{AHT10Datasheet,MPU6050Datasheet}.
 
 La solución adoptada reemplaza las conexiones desmontables de tipo Dupont por un montaje soldado, con el objetivo de reducir puntos de falla, mejorar la continuidad eléctrica y aumentar la robustez frente a vibraciones, manipulación durante la integración y operación embarcada. En este montaje, las líneas SDA y SCL del bus I2C se distribuyen en común hacia ambos sensores, mientras que cada módulo conserva su propia dirección de dispositivo. La referencia de masa se comparte entre el adaptador y los sensores, y la alimentación se toma del propio subconjunto USB--I2C, siempre dentro de los márgenes eléctricos admitidos por los módulos empleados.
 
-El conjunto de sensores se alojó en un encapsulado \textit{ad-hoc} fabricado mediante impresión 3D. Este encapsulado cumple funciones de soporte, protección y provee un anclaje mecánico al disipador de la computadora Kaise. Posteriormente, se incorporó resina epoxi para rigidizar el montaje y disminuir la exposición de contactos eléctricos al ambiente interno de la boya. En el caso del AHT10, debe preservarse el intercambio de aire con el volumen que se desea supervisar, por lo que la protección mecánica no debe obturar completamente la zona sensible a humedad. En la  Figura~\ref{fig:conjunto-i2c-case-3d} se puede observar el conjunto y la ventana lateral donde se ubica el sensor AHT10.
+El conjunto de sensores se alojó en un encapsulado \textit{ad-hoc} fabricado mediante impresión 3D. Este encapsulado cumple funciones de soporte, protección y provee un anclaje mecánico al disipador de la computadora Kaise. Posteriormente, se incorporó resina epoxi para rigidizar el montaje y disminuir la exposición de contactos eléctricos al ambiente interno de la boya. En el caso del AHT10, debe preservarse el intercambio de aire con el volumen que se desea supervisar, por lo que la protección mecánica no debe obturar completamente la zona sensible a humedad. En la  Figura~\ref{fig:conjunto-i2c-case-3d} se puede observar el conjunto y la ventana lateral donde se ubica el sensor AHT10.`
 
 \begin{figure}[htbp]
 \centering
@@ -492,44 +494,48 @@ El conjunto de sensores se alojó en un encapsulado \textit{ad-hoc} fabricado med
 \end{minipage}
 \end{figure}
 
-
-
 Desde el punto de vista constructivo, esta integración transforma módulos electrónicos de desarrollo en un subconjunto más adecuado para operación embarcada. La soldadura directa reduce la probabilidad de desconexión accidental, el encapsulado impreso mejora la fijación mecánica y la resina aporta estabilidad frente a vibraciones y manipulación. Esta solución también simplifica el reemplazo del conjunto completo durante tareas de mantenimiento, ya que concentra en un único dispositivo físico la medición ambiental provista por el AHT10 y la medición inercial provista por el MPU6050.
 
+\subsection{Equipo AIS/GPS AMEC MANDO 301.}
+
+El AMEC MANDO 301 se integra a la boya EAMMRA como equipo AIS AtoN, del inglés \emph{Automatic Identification System Aid to Navigation}, asociado al balizamiento electrónico de la plataforma. Su función principal es transmitir la identificación y la posición de la boya mediante mensajes AIS, de modo que pueda ser detectada por embarcaciones cercanas y estaciones costeras compatibles. En la configuración empleada, el equipo también aporta información GPS al sistema, lo que permite disponer de una referencia de posición y tiempo asociada a la operación de la boya.
+
+El MANDO 301 corresponde a un AIS AtoN tipo~1. Esta clase de equipo se caracteriza por operar como transmisor AIS, sin recepción de mensajes AIS de otras estaciones, y por utilizar acceso FATDMA, con ranuras temporales preasignadas para la emisión. En el caso de EAMMRA, el equipo no se utiliza para relevar tráfico marítimo circundante, sino para señalizar electrónicamente la presencia de la boya y proporcionar una referencia espacio-temporal para los registros adquiridos \citep{AMECMando301Brochure}.
+
+En la Figura~\ref{fig:amec-mando-301} se muestra el equipo AMEC MANDO 301 junto con sus características principales de integración. El dispositivo combina una interfaz de radiofrecuencia VHF para la transmisión AIS, una antena GPS externa para posicionamiento, alimentación en corriente continua y puertos serie RS-232 para configuración y comunicación. Esta combinación permite integrar el equipo tanto al subsistema de balizamiento como al sistema embebido de adquisición y supervisión.
+
+\vspace{10px}
+\begin{figure}[htbp]
+\centering
+\begin{minipage}[b]{0.34\textwidth}
+\centering
+\includegraphics[width=0.90\linewidth]{graficos/amec_mando_301}
+\captionof{figure}{Equipo AIS/GPS AMEC MANDO 301. Transmite identificación y posición de la boya y aporta datos GPS al sistema embebido.}
+\label{fig:amec-mando-301}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{0.62\textwidth}
+\begin{itemize}
+\item \textbf{Equipo:} AMEC MANDO 301, AIS AtoN tipo~1.
+\item \textbf{Modo AIS:} transmisión FATDMA, sin recepción AIS.
+\item \textbf{Función AIS principal:} balizamiento electrónico de ayudas a la navegación.
+\item \textbf{Posicionamiento:} receptor GPS con soporte SBAS y antena GPS externa.
+\item \textbf{Interfaz de datos:} RS-232 a 115200~bit/s, 8N1.
+\item \textbf{Interfaz RF:} antena VHF externa para transmisión AIS.
+\item \textbf{Potencia de transmisión:} 2, 5 o 12,5~W, programable.
+\item \textbf{Rol en EAMMRA:} identificación, posicionamiento y balizamiento electrónico.
+\end{itemize}
+\end{minipage}
+\end{figure}
 \vspace{10px}
 
+Desde el punto de vista de la integración física, el equipo requiere una antena VHF externa adecuada para la banda AIS y una antena GPS externa ubicada con visibilidad suficiente hacia el cielo. La antena VHF condiciona el alcance efectivo de la señal AIS, por lo que su montaje debe considerar altura, despeje, continuidad de masa, calidad del cable coaxial y protección frente al ambiente marítimo. La antena GPS, por su parte, permite al receptor interno obtener la posición de la boya y una referencia temporal derivada del sistema GNSS. Ambas antenas forman parte del sistema de señalización y posicionamiento, y deben montarse de manera compatible con la geometría de la boya y con el resto de los subsistemas instalados en el mástil o en la superestructura.
 
-\subsection{Equipo AIS/GPS AMEC MANDO 301.}
-El AMEC MANDO 301 se integra a la boya EAMMRA como equipo AIS/GPS asociado a balizamiento electrónico y como referencia espacio-temporal. En la configuración utilizada, el equipo combina la emisión AIS propia de la plataforma con la provisión de datos GPS al sistema embebido. Esta integración permite vincular la operación de la boya con información de identificación, posición y tiempo, aspectos necesarios tanto para el seguimiento operativo de la plataforma como para la georreferenciación de los registros adquiridos. En la Figura~\ref{fig:amec-mando-301} se muestra el equipo junto a sus principales características.
+La alimentación del MANDO 301 se realiza desde el sistema de energía de la boya, con tensión nominal de 12~VDC. Esta característica facilita su integración con el banco de baterías y el subsistema fotovoltaico. Además de la conexión de potencia, el equipo dispone de conectores dedicados para configuración, comunicación, antena VHF y antena GPS. 
 
-\begin{figure}[htbp]
-    \centering
-    \begin{minipage}[b]{0.34\textwidth}
-        \centering
-        \includegraphics[width=0.90\linewidth]{graficos/amec_mando_301}
-        \captionof{figure}{Equipo AIS/GPS AMEC MANDO 301. Transmite identificación y posición de la boya y aporta datos GPS.}
-        \label{fig:amec-mando-301}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.62\textwidth}
-        \begin{itemize}
-		    \item \textbf{Equipo:} AMEC MANDO 301, AIS AtoN tipo 1.
-		    \item \textbf{Modo AIS:} transmisión FATDMA, sin recepción AIS.
-		    \item \textbf{Posicionamiento:} GPS interno con soporte SBAS.
-		    \item \textbf{Interfaz de datos:} RS-232 a 115200~bit/s, 8N1.
-		    \item \textbf{Interfaz RF:} antena VHF externa para transmisión AIS.
-		    \item \textbf{Banda AIS:} 156.025--162.025~MHz, 9600~bit/s.
-		    \item \textbf{Alimentación:} 12~VDC nominal.
-		    \item \textbf{Rol en EAMMRA:} balizamiento electrónico.
-        \end{itemize}
-    \end{minipage}
-\end{figure}
+En términos operativos, el aporte del MANDO 301 al sistema EAMMRA es doble. Por un lado, incrementa la seguridad de la plataforma al hacer visible la boya dentro del ecosistema AIS utilizado por embarcaciones y estaciones costeras. Por otro lado, proporciona datos de posición y tiempo que permiten asociar las mediciones ambientales, meteorológicas, energéticas y acústicas con una referencia espacial y temporal. 
 
-La función principal de este equipo es transmitir periódicamente la identificación y la posición de la boya mediante mensajes AIS, de modo que la plataforma pueda ser visualizada por embarcaciones cercanas y estaciones costeras compatibles. Adicionalmente, el equipo entrega información de posicionamiento y tiempo proveniente de su receptor GPS interno, utilizada por el sistema para georreferenciar mediciones y asociar los registros adquiridos a una referencia temporal.
-
-En el AMEC MANDO 301, el soporte SBAS permite mejorar la calidad de la solución GPS utilizada para informar la posición de la boya. Por su parte, el modo FATDMA permite que la transmisión AIS se realice en ranuras temporales preasignadas, una modalidad adecuada para equipos AIS AtoN destinados a ayudas a la navegación. De esta manera, el equipo puede transmitir periódicamente la identificación y posición de EAMMRA con una organización temporal compatible con la operación del sistema AIS.
-
-A diferencia de un receptor AIS convencional, este equipo no se emplea para relevar tráfico marítimo circundante ni para incorporar mensajes AIS externos al registro de datos de la boya. Su aporte al sistema es doble: por un lado, permite señalizar electrónicamente la presencia de EAMMRA en el área de despliegue; por otro, proporciona datos GPS que permiten asociar las mediciones ambientales, meteorológicas y acústicas con una posición y una referencia temporal.
+\vspace{10px}
 
 
 
