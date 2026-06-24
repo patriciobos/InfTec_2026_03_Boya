@@ -399,85 +399,105 @@ La disponibilidad de múltiples interfaces serie resulta especialmente relevante 
 \vspace{10px}
 \subsection{Sensor ambiental AHT10.}
 
-El AHT10 es un sensor digital de temperatura y humedad relativa. Se emplea como módulo comercial montado sobre PCB, lo que facilita su conexionado eléctrico, su fijación mecánica y su integración al bus I2C de la computadora principal, como se observa en la Figura~\ref{fig:aht10}. En el sistema EAMMRA se utiliza para adquirir variables ambientales internas o de entorno inmediato, con bajo consumo y bajo ancho de banda. Estas mediciones permiten caracterizar condiciones de operación y aportar información de diagnóstico sobre el ambiente donde se encuentra alojada la electrónica.
+El AHT10 es un sensor digital de temperatura y humedad relativa utilizado para supervisar las condiciones ambientales internas o de entorno inmediato de la electrónica de la boya. En EAMMRA se emplea como módulo comercial montado sobre una placa de circuito impreso auxiliar, lo que facilita su conexión eléctrica, su fijación mecánica y su integración al bus I2C de la computadora principal, como se observa en la Figura~\ref{fig:aht10}. La medición de temperatura y humedad no se incorpora como una variable oceanográfica principal, sino como una magnitud de diagnóstico para evaluar las condiciones de operación del volumen donde se alojan los componentes electrónicos.
 
 \begin{figure}[htbp]
+\centering
+\begin{minipage}[b]{0.58\textwidth}
+    \begin{itemize}
+        \item \textbf{Variables medidas:} temperatura y humedad relativa.
+        \item \textbf{Principio de medición:} elemento capacitivo MEMS para humedad y sensor de temperatura integrado.
+        \item \textbf{Interfaz eléctrica:} bus I2C.
+        \item \textbf{Dirección I2C de referencia:} \texttt{0x38}.
+        \item \textbf{Rango típico de humedad relativa:} 0 a 100~\%RH.
+        \item \textbf{Rango típico de temperatura:} \(-40~^{\circ}\mathrm{C}\) a \(85~^{\circ}\mathrm{C}\).
+        \item \textbf{Uso en la boya:} diagnóstico térmico y detección de condiciones de humedad interna.
+    \end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{0.40\textwidth}
     \centering
-    \begin{minipage}[b]{0.58\textwidth}
-        \begin{itemize}
-            \item \textbf{Variables medidas:} temperatura y humedad relativa.
-            \item \textbf{Interfaz eléctrica:} bus I2C.
-            \item \textbf{Dirección I2C de referencia:} \texttt{0x38}.
-            \item \textbf{Rango típico de humedad relativa:} 0 a 100~\%RH.
-            \item \textbf{Rango típico de temperatura:} \(-40~^{\circ}\mathrm{C}\) a \(85~^{\circ}\mathrm{C}\).
-            \item \textbf{Biblioteca de acceso:} \texttt{smbus2}.
-            \item \textbf{Uso en la boya:} diagnóstico de condiciones internas.
-        \end{itemize}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.40\textwidth}
-        \centering
-        \includegraphics[width=0.5\linewidth]{graficos/aht10.png}
-        \captionof{figure}{Sensor ambiental AHT10 utilizado para medición de temperatura y humedad relativa.}
-        \label{fig:aht10}
-    \end{minipage}
-
+    \includegraphics[width=0.5\linewidth]{graficos/aht10.png}
+    \captionof{figure}{Sensor ambiental AHT10 utilizado para medición de temperatura y humedad relativa.}
+    \label{fig:aht10}
+\end{minipage}
 \end{figure}
 
+El sensor integra un elemento capacitivo MEMS sensible a la humedad relativa, un sensor de temperatura en chip y un circuito integrado de acondicionamiento y conversión \citep{AHT10Datasheet}. Esta arquitectura permite entregar una salida digital calibrada mediante una interfaz I2C estándar, sin requerir etapas analógicas externas de acondicionamiento. La disponibilidad de una medición digital resulta conveniente en un sistema embebido compacto, ya que reduce la cantidad de conexiones, evita la transmisión de señales analógicas de bajo nivel y simplifica la integración con otros periféricos de supervisión.
 
-El protocolo de comunicación se basa en comandos I2C de inicialización, disparo de medición y lectura de respuesta.
-%En la implementación del sistema, el módulo de bajo nivel realiza la apertura del bus, verifica la presencia del dispositivo, ejecuta mediciones y valida que los valores obtenidos se encuentren dentro de rangos físicamente plausibles.
+Desde el punto de vista eléctrico, el AHT10 requiere las líneas de alimentación, referencia de masa y las dos señales del bus I2C, SDA y SCL. Estas líneas deben compartir una referencia común con la interfaz de adquisición y utilizar resistencias de \textit{pull-up} acordes al nivel lógico del conjunto. En el montaje empleado, el sensor forma parte de un subconjunto USB--I2C junto con la unidad inercial, por lo que la longitud de las conexiones se mantiene reducida y el cableado queda contenido dentro del encapsulado local. Esta disposición disminuye la exposición de las señales digitales a interferencias y reduce la probabilidad de fallas por falsos contactos.
 
-\vspace{10px}
+La ubicación física del sensor debe permitir el intercambio de aire con el volumen que se desea supervisar. Por este motivo, su protección mecánica debe equilibrar dos requisitos contrapuestos: por un lado, limitar la exposición directa a humedad condensada, salinidad, partículas o contacto accidental; por otro, no aislar completamente el elemento sensible respecto del aire interno. En una plataforma marítima autónoma, esta medición permite detectar condiciones que podrían asociarse con ingreso de humedad, condensación, degradación del sellado o variaciones térmicas relevantes para la confiabilidad de la electrónica.
+
+Debe considerarse que los sensores de humedad relativa de este tipo pueden presentar deriva cuando operan durante períodos prolongados en condiciones de humedad elevada o en presencia de vapores químicos. Por esta razón, en el sistema EAMMRA el AHT10 se utiliza principalmente como indicador de estado ambiental interno y no como instrumento meteorológico externo de referencia. Su valor reside en aportar una variable simple, de bajo consumo y bajo volumen físico, adecuada para el seguimiento de las condiciones de operación del conjunto electrónico embarcado.
+
 \subsection{Unidad inercial MPU6050.}
 
-El MPU6050 es una unidad inercial de seis grados de libertad que integra acelerómetro triaxial y giróscopo triaxial. El sensor MPU6050 se emplea como módulo comercial montado sobre una placa de circuito impreso auxiliar, que integra el sensor inercial y los componentes necesarios para su alimentación, conexionado y comunicación mediante bus I2C, como se muestra en la Figura~\ref{fig:mpu6050}. En EAMMRA se utiliza para registrar variables asociadas al movimiento de la boya, las cuales pueden aportar información para diagnóstico mecánico, identificación de eventos dinámicos y posterior correlación con registros acústicos.
+El MPU6050 es una unidad inercial MEMS de seis grados de libertad que integra, en un mismo encapsulado, un acelerómetro triaxial y un giróscopo triaxial. En EAMMRA se emplea como módulo comercial montado sobre una placa de circuito impreso auxiliar, que incorpora el sensor, los componentes pasivos necesarios para su operación y los pines de conexión para alimentación y comunicación mediante bus I2C, como se observa en la Figura~\ref{fig:mpu6050}. 
 
+Su función dentro de la plataforma de hardware es registrar variables asociadas al movimiento local de la boya, con utilidad para diagnóstico mecánico, identificación de condiciones dinámicas y contextualización de otros registros adquiridos por el sistema.
+
+El acelerómetro mide aceleraciones lineales sobre tres ejes ortogonales, mientras que el giróscopo mide velocidad angular alrededor de esos mismos ejes. Esta combinación permite obtener una descripción local del movimiento de la estructura, sin requerir partes móviles ni elementos mecánicos externos. El dispositivo dispone de conversión digital interna y entrega las mediciones mediante una interfaz digital, lo que facilita su integración con otros sensores de supervisión. Los rangos de escala completa del acelerómetro y del giróscopo son seleccionables, lo que permite adecuar la sensibilidad del dispositivo a distintos niveles esperados de movimiento \citep{MPU6050Datasheet}.
+
+\vspace{10px}
 \begin{figure}[htbp]
+\centering
+\begin{minipage}[b]{0.29\textwidth}
     \centering
-    \begin{minipage}[b]{0.3\textwidth}
-    	\centering
-        \includegraphics[width=0.7\linewidth]{graficos/mpu6050.png}
-		\captionof{figure}{Unidad inercial MPU6050 para la medición de aceleración y velocidad angular triaxial.}
-		\label{fig:mpu6050}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.68\textwidth}
-        \begin{itemize}
-		    \item \textbf{Variables medidas:} aceleración y velocidad angular triaxial.
-		    \item \textbf{Interfaz eléctrica:} bus I2C.
-		    \item \textbf{Direcciones I2C posibles:} \texttt{0x68} y \texttt{0x69}.
-		    \item \textbf{Rangos acelerómetro:} \(\pm 2g\), \(\pm 4g\), \(\pm 8g\), \(\pm 16g\).
-		    \item \textbf{Rangos giróscopo:} \(\pm 250\), \(\pm 500\), \(\pm 1000\), \(\pm 2000~^{\circ}/\mathrm{s}\).
-		    \item \textbf{Velocidad de bus:} compatible con I2C de hasta 400~kHz.
-		    \item \textbf{Uso en la boya:} registro de movimiento y correlación con eventos mecánicos.
-        \end{itemize}
-    \end{minipage}
+    \includegraphics[width=0.90\linewidth]{graficos/mpu6050.png}
+    \captionof{figure}{Unidad inercial MPU6050 para la medición de aceleración y velocidad angular triaxial.}
+    \label{fig:mpu6050}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{0.7\textwidth}
+    \begin{itemize}
+        \item \textbf{Variables medidas:} aceleración y velocidad angular triaxial.
+        \item \textbf{Tecnología:} sensor inercial MEMS de seis grados de libertad.
+        \item \textbf{Interfaz eléctrica:} bus I2C.
+        \item \textbf{Direcciones I2C posibles:} \texttt{0x68} y \texttt{0x69}.
+        \item \textbf{Rangos acelerómetro:} \(\pm 2g\), \(\pm 4g\), \(\pm 8g\), \(\pm 16g\).
+        \item \textbf{Rangos giróscopo:} \(\pm 250\), \(\pm 500\), \(\pm 1000\), \(\pm 2000~^{\circ}/\mathrm{s}\).
+        \item \textbf{Temperatura de operación:} \(-40~^{\circ}\mathrm{C}\) a \(85~^{\circ}\mathrm{C}\).
+        \item \textbf{Uso en la boya:} registro de movimiento y diagnóstico estructural.
+    \end{itemize}
+\end{minipage}
 \end{figure}
 
-El sistema configura los registros internos del sensor, verifica el identificador del dispositivo y convierte las lecturas crudas a unidades físicas. La existencia de rangos programables permite adaptar la sensibilidad del sensor a escenarios de operación con diferente nivel de movimiento.
+Desde el punto de vista físico, la utilidad de la medición inercial depende de la fijación mecánica del módulo y de la orientación de sus ejes respecto de la estructura de la boya. Para que las aceleraciones y velocidades angulares resulten interpretables, el sensor debe quedar firmemente vinculado al conjunto que se desea caracterizar, con mínima holgura mecánica y con una orientación documentada durante la integración. En particular, la presencia de cables sueltos, soportes flexibles o fijaciones deficientes puede introducir vibraciones locales que no representen adecuadamente el movimiento global de la plataforma.
 
-\subsection{Integración física de sensores I2C mediante adaptador USB.} 
+El MPU6050 no constituye, por sí solo, un sistema de navegación ni una referencia absoluta de actitud. Sus mediciones describen aceleraciones y velocidades angulares locales, afectadas por la orientación del sensor, la respuesta dinámica del montaje, la temperatura y las vibraciones propias de la estructura. Por este motivo, en la boya se lo utiliza como sensor de diagnóstico y contexto dinámico, más que como instrumento de posicionamiento o navegación. Esta función es consistente con su integración junto al sensor ambiental AHT10 en un subconjunto compacto de supervisión interna, conectado a la computadora principal mediante una interfaz USB--I2C.
 
-Los sensores AHT10 y MPU6050 se integran a la computadora principal Kaise mediante un adaptador USB--I2C basado en CH431A. En lugar de emplear cables Dupont o conexiones desmontables, ambos módulos fueron soldados directamente al adaptador, con el objetivo de reducir puntos de falla, mejorar la continuidad eléctrica y aumentar la robustez del conjunto frente a vibraciones y manipulación durante integración. A partir de este conjunto se fabricó un encapsulado ad-hoc mediante impresión 3D. Posteriormente, se realizó una colada con resina epoxi para rigidizar el montaje, aportar anclaje mecánico al conector USB y mitigar el riesgo de corrosión asociado al entorno marítimo, como se observa en las Figuras~\ref{fig:ch431a} y~\ref{fig:conjunto-i2c-case-3d}.
+\subsection{Integración física de sensores I2C mediante adaptador USB.}
 
-\begin{figure}[htbp] 
-	\centering 
-	\begin{minipage}[b]{0.47\textwidth} 
-		\centering 
-		\includegraphics[width=0.7\linewidth]{graficos/ch431a.jpg} 
-		\captionof{figure}{Adaptador USB--I2C basado en CH431A utilizado para conectar los sensores AHT10 y MPU6050 a la computadora principal.} 
-		\label{fig:ch431a} 
-	\end{minipage} 
-	\hfill 
-	\begin{minipage}[b]{0.47\textwidth} \centering 
-		\includegraphics[width=0.65\linewidth]{graficos/conjunto_i2c_case_3d.jpeg} 
-		\captionof{figure}{Conjunto de sensores I2C integrado en un case ad-hoc fabricado por impresión 3D y rigidizado mediante colada de resina epoxi.} 
-		\label{fig:conjunto-i2c-case-3d} 
-	\end{minipage} 
-\end{figure} 
+Los sensores AHT10 y MPU6050 se integran a la computadora principal Kaise mediante un adaptador USB--I2C basado en CH431A. En la Figura~\ref{fig:ch431a} se muestra el adaptador utilizado como interfaz física entre el puerto USB de la computadora embarcada y el bus I2C compartido por ambos sensores. A partir de las hojas de datos del AHT10 y del MPU6050 se verifican las condiciones eléctricas de alimentación, niveles lógicos e interfaz digital requeridas para integrar ambos dispositivos en un mismo subconjunto de adquisición \citep{AHT10Datasheet,MPU6050Datasheet}.
 
-La solución adoptada combina adaptación de interfaz, integración eléctrica y protección mecánica en un único subconjunto. Esta decisión simplifica la conexión a la computadora embarcada, mejora la fijación del dispositivo y reduce la exposición de los sensores y sus contactos al ambiente interno de la boya. Esta solución permite transformar un conjunto de módulos electrónicos de desarrollo en un subconjunto más apto para operación embarcada, con mejor protección mecánica y menor exposición de contactos eléctricos. 
+La solución adoptada reemplaza las conexiones desmontables de tipo Dupont por un montaje soldado, con el objetivo de reducir puntos de falla, mejorar la continuidad eléctrica y aumentar la robustez frente a vibraciones, manipulación durante la integración y operación embarcada. En este montaje, las líneas SDA y SCL del bus I2C se distribuyen en común hacia ambos sensores, mientras que cada módulo conserva su propia dirección de dispositivo. La referencia de masa se comparte entre el adaptador y los sensores, y la alimentación se toma del propio subconjunto USB--I2C, siempre dentro de los márgenes eléctricos admitidos por los módulos empleados.
+
+El conjunto de sensores se alojó en un encapsulado \textit{ad-hoc} fabricado mediante impresión 3D. Este encapsulado cumple funciones de soporte, protección y provee un anclaje mecánico al disipador de la computadora Kaise. Posteriormente, se incorporó resina epoxi para rigidizar el montaje y disminuir la exposición de contactos eléctricos al ambiente interno de la boya. En el caso del AHT10, debe preservarse el intercambio de aire con el volumen que se desea supervisar, por lo que la protección mecánica no debe obturar completamente la zona sensible a humedad. En la  Figura~\ref{fig:conjunto-i2c-case-3d} se puede observar el conjunto y la ventana lateral donde se ubica el sensor AHT10.
+
+\begin{figure}[htbp]
+\centering
+\begin{minipage}[b]{0.47\textwidth}
+    \centering
+    \includegraphics[width=0.70\linewidth]{graficos/ch431a.jpg}
+    \captionof{figure}{Adaptador USB--I2C basado en CH431A utilizado para conectar los sensores AHT10 y MPU6050 a la omputadora principal.}
+    \label{fig:ch431a}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{0.47\textwidth}
+    \centering
+    \includegraphics[width=0.65\linewidth]{graficos/conjunto_i2c_case_3d.jpeg}
+    \captionof{figure}{Conjunto de sensores I2C integrado en un case \textit{ad-hoc} fabricado por impresión 3D y rigidizado mediante colada de resina epoxi.}
+    \label{fig:conjunto-i2c-case-3d}
+\end{minipage}
+\end{figure}
+
+
+
+Desde el punto de vista constructivo, esta integración transforma módulos electrónicos de desarrollo en un subconjunto más adecuado para operación embarcada. La soldadura directa reduce la probabilidad de desconexión accidental, el encapsulado impreso mejora la fijación mecánica y la resina aporta estabilidad frente a vibraciones y manipulación. Esta solución también simplifica el reemplazo del conjunto completo durante tareas de mantenimiento, ya que concentra en un único dispositivo físico la medición ambiental provista por el AHT10 y la medición inercial provista por el MPU6050.
+
+\vspace{10px}
+
 
 \subsection{Equipo AIS/GPS AMEC MANDO 301.}
 El AMEC MANDO 301 se integra a la boya EAMMRA como equipo AIS/GPS asociado a balizamiento electrónico y como referencia espacio-temporal. En la configuración utilizada, el equipo combina la emisión AIS propia de la plataforma con la provisión de datos GPS al sistema embebido. Esta integración permite vincular la operación de la boya con información de identificación, posición y tiempo, aspectos necesarios tanto para el seguimiento operativo de la plataforma como para la georreferenciación de los registros adquiridos. En la Figura~\ref{fig:amec-mando-301} se muestra el equipo junto a sus principales características.
