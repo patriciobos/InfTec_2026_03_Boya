@@ -328,21 +328,51 @@ En conjunto, estos requerimientos justifican la arquitectura adoptada. La combin
 
 \section{Plataforma de Hardware y Periféricos Integrados}\label{sec:plataforma_de_hardware_y_perifericos_integrados}
 
-La boya EAMMRA integra una computadora principal embarcada y un conjunto de periféricos de sensado, adquisición, supervisión energética, almacenamiento y telemetría. La función del sistema embebido es coordinar estos dispositivos bajo un ciclo de operación autónomo, con registro persistente de datos, diagnóstico local y transmisión remota de información crítica.
+La boya EAMMRA integra una computadora principal embarcada y un conjunto de periféricos de sensado, adquisición, supervisión energética, almacenamiento y telemetría. La función del sistema embebido es coordinar estos dispositivos bajo un ciclo de operación autónomo, con registro persistente de datos, diagnóstico local y transmisión remota de información crítica. En esta sección se presenta la plataforma de hardware utilizada, con énfasis en los dispositivos que se vinculan directamente con el software de control, sus interfaces de comunicación, sus variables de operación y su función dentro de la arquitectura general del sistema.
 
-Los manuales técnicos de los principales dispositivos se encuentran incorporados en la carpeta \texttt{docs/} del repositorio del proyecto. Esta documentación se utiliza como referencia para la configuración de interfaces, protocolos, comandos, parámetros eléctricos, restricciones operativas y procedimientos de ensayo de los periféricos integrados \cite{BoyaRepoDocs}.
+Los manuales técnicos de los principales dispositivos se encuentran incorporados en la carpeta \texttt{docs/} del repositorio del proyecto. Esta documentación se utiliza como referencia para la configuración de interfaces, protocolos, comandos, parámetros eléctricos, restricciones operativas y procedimientos de ensayo de los periféricos integrados \citep{BoyaRepoDocs}. En particular, se describen los siguientes componentes y subsistemas:
+
+\begin{itemize}
+
+
+\item \textbf{Computadora principal embarcada Kaise KBOX-S-J6412:} núcleo de procesamiento, control y coordinación general del sistema.
+
+\item \textbf{Sensor ambiental AHT10:} sensor digital de temperatura y humedad relativa, integrado mediante bus I2C.
+
+\item \textbf{Unidad inercial MPU6050:} módulo de acelerómetro y giróscopo triaxial, utilizado para registrar variables asociadas al movimiento de la boya.
+
+\item \textbf{Adaptador USB--I2C basado en CH431A:} interfaz física utilizada para integrar los sensores AHT10 y MPU6050 a la computadora principal.
+
+\item \textbf{Equipo AIS/GPS AMEC MANDO 301:} dispositivo de balizamiento electrónico, posicionamiento y referencia temporal.
+
+\item \textbf{Anemómetro ultrasónico WindSonic:} instrumento meteorológico para medición de velocidad y dirección del viento.
+
+\item \textbf{Controlador solar MPPT XTRA2210N:} controlador de carga y periférico de supervisión energética del sistema fotovoltaico.
+
+\item \textbf{Subsistema acústico:} cadena de adquisición compuesta por hidrófonos Br{\"u}el \& Kj{\ae}r 8105, preamplificadores DAS-1/DAS-2 y placa de audio USB Behringer UMC202HD.
+
+\item \textbf{Módem satelital Iridium SBD:} periférico de comunicación remota para transmisión de mensajes compactos de estado, diagnóstico y resultados seleccionados.
+
+\item \textbf{Almacenamiento local:} soporte primario para archivos de audio, mediciones estructuradas, resultados de procesamiento, registros de eventos y estados del sistema.
+
+\end{itemize}
+
+La descripción de cada componente no se limita a sus características nominales, sino que busca establecer su rol funcional dentro de la boya. Por este motivo, en cada caso se indican las variables adquiridas o transmitidas, el tipo de interfaz empleada, los criterios generales de integración y la relación del dispositivo con los módulos de software desarrollados. Esta organización permite vincular la plataforma física con la arquitectura de control, adquisición, persistencia y telemetría que se analiza en las secciones siguientes.
+
+\vspace{10px}
+
 
 \vspace{10px}
 \subsection{Computadora principal embarcada.}
 
-El núcleo de procesamiento está constituido por una PC industrial Kaise KBOX-S-J6412. Este equipo actúa como computadora principal de la boya y ejecuta el software de control desarrollado en Python~3 sobre un sistema operativo GNU/Linux. Su función es coordinar los periféricos, ejecutar los módulos de control, administrar el enrutador de eventos, ejecutar el planificador de tareas, adquirir datos, procesar archivos de audio, almacenar información y preparar mensajes de telemetría.
+El núcleo de procesamiento está constituido por una PC industrial Kaise KBOX-S-J6412, que se muestra en la Figura~\ref{fig:kaise}. Este equipo actúa como computadora principal de la boya y ejecuta el software de control desarrollado en Python~3 sobre un sistema operativo GNU/Linux. Su función es coordinar los periféricos, ejecutar los módulos de control, administrar el enrutador de eventos, ejecutar el planificador de tareas, adquirir datos, procesar archivos de audio, almacenar información y preparar mensajes de telemetría.
 
 \begin{figure}[htbp]
     \centering
     \begin{minipage}[b]{0.48\textwidth}
         \vspace{0pt}
         \centering
-        \includegraphics[width=.75\textwidth]{graficos/kaise}
+        \includegraphics[width=.9\textwidth]{graficos/kaise}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.48\textwidth}
@@ -360,7 +390,11 @@ El núcleo de procesamiento está constituido por una PC industrial Kaise KBOX-S-J
     \label{fig:kaise}
 \end{figure}
 
-La disponibilidad de múltiples interfaces serie resulta especialmente relevante para la integración simultánea de periféricos industriales, meteorológicos, energéticos y satelitales. Asimismo, el diseño sin ventilador reduce partes móviles y mejora la aptitud del equipo para operación embarcada.
+La elección de una computadora industrial como unidad principal responde a la necesidad de integrar, en un único nodo de procesamiento, interfaces heterogéneas y tareas con distintos requerimientos temporales. A diferencia de una arquitectura basada exclusivamente en microcontroladores, esta solución permite ejecutar un sistema operativo completo, utilizar bibliotecas de alto nivel para comunicación con periféricos, mantener servicios de supervisión y registrar información en un sistema de archivos convencional. Esta capacidad resulta adecuada para una boya instrumental que debe combinar adquisición de sensores, control de periféricos, almacenamiento local, procesamiento preliminar de datos y preparación de paquetes de telemetría bajo un régimen de operación autónomo.
+
+Desde el punto de vista funcional, la PC Kaise constituye el punto de convergencia entre el hardware de campo y la arquitectura de software del sistema. Las interfaces serie, USB, Ethernet y GPIO permiten vincular dispositivos con protocolos y velocidades de operación diferentes, mientras que el entorno GNU/Linux facilita la separación entre módulos de bajo nivel, servicios de control, rutinas de diagnóstico y procesos de almacenamiento. Esta organización favorece la mantenibilidad del sistema, simplifica la incorporación de nuevos periféricos y permite ejecutar ensayos incrementales durante las etapas de integración, validación y operación de la boya \citep{BoyaRepo}.
+
+La disponibilidad de múltiples interfaces serie resulta especialmente relevante para la integración simultánea de periféricos. Asimismo, el diseño sin ventilador reduce partes móviles y mejora la aptitud del equipo para operación embarcada.
 
 \vspace{10px}
 \subsection{Sensor ambiental AHT10.}
@@ -481,7 +515,7 @@ A diferencia de un receptor AIS convencional, este equipo no se emplea para rele
 
 \subsection{Anemómetro ultrasónico WindSonic.}
 
-El WindSonic es un anemómetro ultrasónico de dos ejes utilizado para medir velocidad y dirección del viento. Al no poseer partes móviles, resulta adecuado para operación prolongada en ambiente marítimo, donde los anemómetros mecánicos pueden degradarse por desgaste, salinidad o incrustaciones. La medición de viento es importante porque las condiciones de superficie influyen directamente sobre el ruido ambiente submarino.
+El anemómetro ultrasónico WindSonic emplea dos ejes para medir velocidad y dirección del viento. Al no poseer partes móviles, resulta adecuado para operación prolongada en ambiente marítimo, donde los anemómetros mecánicos pueden degradarse por desgaste, salinidad o incrustaciones. La medición de viento es importante porque las condiciones de superficie influyen directamente sobre el ruido ambiente submarino.
 
 En la figura~\ref{fig:windsonic} se observa el anemómetro con sus dos pares de transductores ultrasónicos que se utilizan para medir velocidad de viento y componer la dirección como una suma vectorial de cada eje.
 
@@ -576,11 +610,10 @@ Los sensores utilizados para captar las señales acústicas son dos hidrófonos ana
 \begin{itemize}
     \item \textbf{Modelo:} Br{\"u}el \& Kj{\ae}r 8105.
     \item \textbf{Tipo:} hidrófono analógico piezoeléctrico calibrado.
-    \item \textbf{Preamplificación interna:} no posee.
     \item \textbf{Rango de frecuencia:} 0.1~Hz a 160~kHz.
     \item \textbf{Sensibilidad nominal:} \(-205\)~dB re 1~V/\(\mu\)Pa.
     \item \textbf{Directividad:} omnidireccional en su rango operativo.
-    \item \textbf{Presión hidrostática admisible:} 9.8~MPa, equivalente aproximadamente a 1000~m de profundidad.
+    \item \textbf{Presión hidrostática admisible:} 9.8~MPa, aproximadamente 1000~m de profundidad.
     \item \textbf{Protección externa:} recubrimiento polimérico apto para operación en medio marino.
 \end{itemize}
 
@@ -673,7 +706,7 @@ La caracterización del conjunto placa-preamplificador se documenta en la Nota Té
 
 Desde el punto de vista del software, el subsistema acústico se divide en dos funciones principales: adquisición y procesamiento. La adquisición controla la placa de audio, configura los parámetros de muestreo, registra los datos en formato WAV y verifica condiciones mínimas de almacenamiento antes de iniciar una grabación. El procesamiento posterior opera sobre los archivos generados, calcula productos compactos y prepara resultados que pueden almacenarse localmente o ser seleccionados para telemetría satelital. Esta separación permite preservar los datos crudos de campaña y, al mismo tiempo, disponer de productos resumidos aptos para diagnóstico y transmisión remota.
 
-\textbf{Módem satelital Iridium SBD.}
+\subsection{Módem satelital Iridium SBD.}
 
 El subsistema Iridium permite la transmisión remota de mensajes mediante el servicio SBD. En la boya se utiliza para enviar información compacta de estado, diagnóstico y resultados seleccionados del procesamiento acústico. La telemetría satelital no reemplaza al almacenamiento local, sino que provee un canal de supervisión remota y recuperación parcial de información crítica.
 
