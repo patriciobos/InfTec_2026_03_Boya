@@ -21,7 +21,7 @@ El sistema EAMMRA se inscribe dentro del desarrollo de plataformas autónomas de 
 
 Desde el punto de vista funcional, la boya debe coordinar múltiples subsistemas heterogéneos. Entre ellos se incluyen sensores ambientales, sensores meteorológicos, receptores de posicionamiento, adquisición de audio, almacenamiento local, supervisión de energía y comunicaciones remotas. Cada uno de estos subsistemas posee tiempos de respuesta, protocolos, consumos, modos de falla y requerimientos de inicialización particulares. La función del sistema embebido es abstraer esa complejidad y organizarla en un ciclo de operación coherente, verificable y tolerante a fallas.
 
-El desarrollo actual adopta una arquitectura de software moderna basada en Python~3, Máquinas de Estados Finitos, un router de eventos y un scheduler central. Esta organización permite representar explícitamente los estados operativos de cada módulo, las transiciones válidas, las condiciones de error, los eventos generados por sensores y tareas, y la ejecución planificada de acciones periódicas o condicionadas. La utilización de este enfoque favorece la separación de responsabilidades, reduce el acoplamiento entre módulos y facilita la simulación de escenarios mediante componentes sustitutos o \emph{mocks}.
+El desarrollo actual adopta una arquitectura de software moderna basada en Python~3, Máquinas de Estados Finitos, un enrutador de eventos y un planificador de tareascentral. Esta organización permite representar explícitamente los estados operativos de cada módulo, las transiciones válidas, las condiciones de error, los eventos generados por sensores y tareas, y la ejecución planificada de acciones periódicas o condicionadas. La utilización de este enfoque favorece la separación de responsabilidades, reduce el acoplamiento entre módulos y facilita la simulación de escenarios mediante componentes sustitutos o \emph{mocks}.
 
 La incorporación de telemetría satelital mediante Iridium SBD constituye una mejora relevante respecto de configuraciones basadas exclusivamente en almacenamiento local. Si bien el almacenamiento en la boya continúa siendo indispensable para preservar registros completos o de mayor volumen, la telemetría permite transmitir información resumida, estados de salud, eventos críticos y datos seleccionados sin necesidad de recuperar físicamente la plataforma. Esta capacidad incrementa el valor operativo de la boya, permite realizar seguimiento remoto del despliegue y habilita estrategias de diagnóstico temprano ante comportamientos anómalos.
 
@@ -35,7 +35,7 @@ En sistemas de este tipo, el dato acústico aislado resulta insuficiente si no se
 
 La motivación tecnológica se vincula con la necesidad de incrementar el nivel de maduración del sistema respecto de versiones anteriores. En una etapa inicial, el objetivo principal era demostrar la factibilidad de una arquitectura de control modular y ensayable. En la etapa actual, el objetivo es controlar una plataforma real, con mayor cantidad de hardware, mayores exigencias de integración, comunicación remota y tolerancia a fallos. Esto requiere pasar de una lógica de prototipo a una lógica de sistema operativo en campo, donde las decisiones de diseño deben contemplar degradación controlada, reinicio seguro, persistencia de datos, diagnóstico y mantenibilidad.
 
-El uso de Máquinas de Estados Finitos responde a la necesidad de hacer explícito el comportamiento del sistema ante condiciones normales y anómalas. Cada módulo puede describirse en términos de estados, eventos, transiciones y acciones, lo que simplifica el análisis de comportamiento, la implementación de pruebas y la documentación técnica. A su vez, el router de eventos permite desacoplar productores y consumidores de información, mientras que el scheduler central organiza la ejecución temporal de tareas periódicas, diferidas o condicionadas por estado.
+El uso de Máquinas de Estados Finitos responde a la necesidad de hacer explícito el comportamiento del sistema ante condiciones normales y anómalas. Cada módulo puede describirse en términos de estados, eventos, transiciones y acciones, lo que simplifica el análisis de comportamiento, la implementación de pruebas y la documentación técnica. A su vez, el enrutador de eventos permite desacoplar productores y consumidores de información, mientras que el planificador de tareas central organiza la ejecución temporal de tareas periódicas, diferidas o condicionadas por estado.
 
 Otra motivación central es la necesidad de verificabilidad. Una boya operativa no puede depender de supuestos implícitos ni de secuencias manuales difíciles de reproducir. El sistema debe poder probarse en laboratorio, simularse parcialmente, integrarse por etapas y ensayarse en condiciones progresivamente más representativas. Para ello se emplean componentes simulados, pruebas unitarias, pruebas de integración, registros de ejecución y políticas de validación orientadas a comprobar tanto el funcionamiento nominal como la respuesta frente a fallas previsibles.
 
@@ -50,7 +50,7 @@ Como objetivos específicos se establecen los siguientes:
 \begin{itemize}
     \item Describir la evolución del sistema respecto de desarrollos previos de control embebido para EAMMRA, identificando los cambios de arquitectura, plataforma de procesamiento, hardware integrado y alcance funcional.
 
-    \item Presentar una arquitectura de software modular basada en Máquinas de Estados Finitos, router de eventos y scheduler central, orientada a operación autónoma y tolerancia a fallos.
+    \item Presentar una arquitectura de software modular basada en Máquinas de Estados Finitos, enrutador de eventos y planificador de tareas central, orientada a operación autónoma y tolerancia a fallos.
 
     \item Documentar la integración de sensores ambientales, meteorológicos, de posicionamiento y audio, junto con sus interfaces, ciclos de adquisición y criterios de validación.
 
@@ -96,7 +96,7 @@ Los requerimientos funcionales principales son:
 
     \item Transmitir resultados seleccionados de procesamiento acústico mediante Iridium SBD.
 
-    \item Ejecutar tareas periódicas mediante un scheduler central configurable.
+    \item Ejecutar tareas periódicas mediante un planificador de tareascentral configurable.
 
     \item Representar el comportamiento de cada módulo mediante Máquinas de Estados Finitos.
 
@@ -118,7 +118,7 @@ Los requerimientos no funcionales responden a las restricciones propias de una p
 
     \item \textbf{Bajo consumo relativo:} el software debe permitir ciclos de adquisición y transmisión compatibles con el presupuesto energético disponible.
 
-    \item \textbf{Mantenibilidad:} la separación entre bajo nivel, FSM, Router y scheduler debe facilitar la modificación de módulos individuales sin afectar la arquitectura completa.
+    \item \textbf{Mantenibilidad:} la separación entre bajo nivel, FSM, enrutador y planificador debe facilitar la modificación de módulos individuales sin afectar la arquitectura completa.
 
     \item \textbf{Extensibilidad:} la arquitectura debe permitir la incorporación futura de nuevos sensores, nuevos productos de procesamiento o nuevos formatos de telemetría.
 
@@ -131,7 +131,7 @@ Los requerimientos no funcionales responden a las restricciones propias de una p
     \item \textbf{Diagnóstico remoto:} los mensajes satelitales deben permitir inferir el estado general de la boya, incluyendo salud de módulos, almacenamiento, energía y continuidad operativa.
 \end{itemize}
 
-En conjunto, estos requerimientos justifican la arquitectura adoptada. La combinación de módulos de bajo nivel, FSM, Router, scheduler central, almacenamiento estructurado, telemetría binaria, pruebas automatizadas y soporte de simulación permite abordar la complejidad de una boya operativa sin concentrar toda la lógica en un bloque monolítico. La Introducción Específica presentada en esta sección establece, por lo tanto, el marco técnico necesario para comprender las decisiones de diseño e implementación desarrolladas en las secciones siguientes.
+En conjunto, estos requerimientos justifican la arquitectura adoptada. La combinación de módulos de bajo nivel, FSM, Router, planificador de tareascentral, almacenamiento estructurado, telemetría binaria, pruebas automatizadas y soporte de simulación permite abordar la complejidad de una boya operativa sin concentrar toda la lógica en un bloque monolítico. La Introducción Específica presentada en esta sección establece, por lo tanto, el marco técnico necesario para comprender las decisiones de diseño e implementación desarrolladas en las secciones siguientes.
 
 \section{Introducción Específica}
 \label{sec:introduccion_especifica}
@@ -359,8 +359,6 @@ Los manuales técnicos de los principales dispositivos se encuentran incorporados
 
 La descripción de cada componente no se limita a sus características nominales, sino que busca establecer su rol funcional dentro de la boya. Por este motivo, en cada caso se indican las variables adquiridas o transmitidas, el tipo de interfaz empleada, los criterios generales de integración y la relación del dispositivo con los módulos de software desarrollados. Esta organización permite vincular la plataforma física con la arquitectura de control, adquisición, persistencia y telemetría que se analiza en las secciones siguientes.
 
-\vspace{10px}
-
 
 \vspace{10px}
 \subsection{Computadora principal embarcada.}
@@ -401,6 +399,8 @@ La disponibilidad de múltiples interfaces serie resulta especialmente relevante 
 
 El AHT10 es un sensor digital de temperatura y humedad relativa utilizado para supervisar las condiciones ambientales internas o de entorno inmediato de la electrónica de la boya. En EAMMRA se emplea como módulo comercial montado sobre una placa de circuito impreso auxiliar, lo que facilita su conexión eléctrica, su fijación mecánica y su integración al bus I2C de la computadora principal, como se observa en la Figura~\ref{fig:aht10}. La medición de temperatura y humedad no se incorpora como una variable oceanográfica principal, sino como una magnitud de diagnóstico para evaluar las condiciones de operación del volumen donde se alojan los componentes electrónicos.
 
+El sensor integra un elemento capacitivo MEMS sensible a la humedad relativa, un sensor de temperatura en chip y un circuito integrado de acondicionamiento y conversión \citep{AHT10Datasheet}. Esta arquitectura permite entregar una salida digital calibrada mediante una interfaz I2C estándar, sin requerir etapas analógicas externas de acondicionamiento. La disponibilidad de una medición digital resulta conveniente en un sistema embebido compacto, ya que reduce la cantidad de conexiones, evita la transmisión de señales analógicas de bajo nivel y simplifica la integración con otros periféricos de supervisión.
+
 \begin{figure}[htbp]
 \centering
 \begin{minipage}[b]{0.58\textwidth}
@@ -422,8 +422,6 @@ El AHT10 es un sensor digital de temperatura y humedad relativa utilizado para s
     \label{fig:aht10}
 \end{minipage}
 \end{figure}
-
-El sensor integra un elemento capacitivo MEMS sensible a la humedad relativa, un sensor de temperatura en chip y un circuito integrado de acondicionamiento y conversión \citep{AHT10Datasheet}. Esta arquitectura permite entregar una salida digital calibrada mediante una interfaz I2C estándar, sin requerir etapas analógicas externas de acondicionamiento. La disponibilidad de una medición digital resulta conveniente en un sistema embebido compacto, ya que reduce la cantidad de conexiones, evita la transmisión de señales analógicas de bajo nivel y simplifica la integración con otros periféricos de supervisión.
 
 Desde el punto de vista eléctrico, el AHT10 requiere las líneas de alimentación, referencia de masa y las dos señales del bus I2C, SDA y SCL. Estas líneas deben compartir una referencia común con la interfaz de adquisición y utilizar resistencias de \textit{pull-up} acordes al nivel lógico del conjunto. En el montaje empleado, el sensor forma parte de un subconjunto USB--I2C junto con la unidad inercial, por lo que la longitud de las conexiones se mantiene reducida y el cableado queda contenido dentro del encapsulado local. Esta disposición disminuye la exposición de las señales digitales a interferencias y reduce la probabilidad de fallas por falsos contactos.
 
@@ -475,14 +473,14 @@ A partir de las hojas de datos del AHT10 y del MPU6050 se verifican las condicio
 
 La solución adoptada reemplaza las conexiones desmontables de tipo Dupont por un montaje soldado, con el objetivo de reducir puntos de falla, mejorar la continuidad eléctrica y aumentar la robustez frente a vibraciones, manipulación durante la integración y operación embarcada. En este montaje, las líneas SDA y SCL del bus I2C se distribuyen en común hacia ambos sensores, mientras que cada módulo conserva su propia dirección de dispositivo. La referencia de masa se comparte entre el adaptador y los sensores, y la alimentación se toma del propio subconjunto USB--I2C, siempre dentro de los márgenes eléctricos admitidos por los módulos empleados.
 
-El conjunto de sensores se alojó en un encapsulado \textit{ad-hoc} fabricado mediante impresión 3D. Este encapsulado cumple funciones de soporte, protección y provee un anclaje mecánico al disipador de la computadora Kaise. Posteriormente, se incorporó resina epoxi para rigidizar el montaje y disminuir la exposición de contactos eléctricos al ambiente interno de la boya. En el caso del AHT10, debe preservarse el intercambio de aire con el volumen que se desea supervisar, por lo que la protección mecánica no debe obturar completamente la zona sensible a humedad. En la  Figura~\ref{fig:conjunto-i2c-case-3d} se puede observar el conjunto y la ventana lateral donde se ubica el sensor AHT10.`
+El conjunto de sensores se alojó en un encapsulado \textit{ad-hoc} fabricado mediante impresión 3D. Este encapsulado cumple funciones de soporte, protección y provee un anclaje mecánico al disipador de la computadora Kaise. Posteriormente, se incorporó resina epoxi para rigidizar el montaje y disminuir la exposición de contactos eléctricos al ambiente interno de la boya. En el caso del AHT10, debe preservarse el intercambio de aire con el volumen que se desea supervisar, por lo que la protección mecánica no debe obturar completamente la zona sensible a humedad. En la  Figura~\ref{fig:conjunto-i2c-case-3d} se puede observar el conjunto y la ventana lateral donde se ubica el sensor AHT10.
 
 \begin{figure}[htbp]
 \centering
 \begin{minipage}[b]{0.47\textwidth}
     \centering
     \includegraphics[width=0.70\linewidth]{graficos/ch431a.jpg}
-    \captionof{figure}{Adaptador USB--I2C basado en CH431A utilizado para conectar los sensores AHT10 y MPU6050 a la omputadora principal.}
+    \captionof{figure}{Adaptador USB--I2C basado en CH431A utilizado para conectar los sensores AHT10 y MPU6050 a la computadora principal.}
     \label{fig:ch431a}
 \end{minipage}
 \hfill
@@ -564,9 +562,9 @@ En la figura~\ref{fig:windsonic} se observa el anemómetro con sus dos pares de t
 
 La integración del WindSonic en EAMMRA y el desarrollo de las rutinas de configuración, adquisición y registro fueron documentados previamente en el Informe Técnico AS~1/24 \citep{RemottiBos2024_Anemometro}.
 
-El sistema embebido se comunica con el instrumento mediante una conexión serie configurada a 9600~bit/s, 8N1. El modo de operación empleado es de tipo solicitado, o \textit{polled}, por lo que el software de control debe requerir explícitamente cada medición. El mensaje de respuesta incluye la dirección del viento, la velocidad, las unidades de medida, un código de estado del instrumento y un campo de verificación de integridad. Esta modalidad permite integrar la adquisición meteorológica dentro del ciclo general de operación de la boya, sin depender de una transmisión continua no sincronizada con el resto de las tareas del sistema.
+El sistema embebido se comunica con el instrumento mediante una conexión serie configurada a 9600~bit/s, 8N1. El modo de operación empleado es de tipo solicitado, o \textit{polled}, por lo que se debe requerir explícitamente cada medición. El mensaje de respuesta incluye la dirección del viento, la velocidad, las unidades de medida, un código de estado del instrumento y un campo de verificación de integridad. Esta modalidad permite integrar la adquisición meteorológica dentro del ciclo general de operación de la boya, sin depender de una transmisión continua no sincronizada con el resto de las tareas del sistema.
 
-La conexión eléctrica se realiza mediante el conector circular de 9 vías provisto con el fabricante. Para la opción~1, el cableado combina dos conductores de alimentación y tres conductores de comunicación: transmisión, recepción y referencia de señal. Como se muestra en la Figura~\ref{fig:windsonic-rs232}, la línea TXD del WindSonic se conecta con la entrada RXD del puerto serie o del conversor RS-232 a USB, mientras que la línea RXD del instrumento se conecta con la salida TXD de la interfaz de la computadora. La referencia común de señal es necesaria para interpretar correctamente los niveles eléctricos de la comunicación serie. El blindaje del cable se conecta del lado de la computadora o del chasis, y no del lado del anemómetro, con el objetivo de reducir la susceptibilidad frente a interferencias eléctricas sin introducir lazos de masa.
+La conexión eléctrica se realiza mediante el conector circular de 9 vías provisto por el fabricante. Para la opción~1, el cableado combina dos conductores de alimentación y tres conductores de comunicación: transmisión, recepción y referencia de señal. Como se muestra en la Figura~\ref{fig:windsonic-rs232}, la línea TXD del WindSonic se conecta con la entrada RXD del puerto serie o del conversor RS-232 a USB, mientras que la línea RXD del instrumento se conecta con la salida TXD de la interfaz de la computadora. La referencia común de señal es necesaria para interpretar correctamente los niveles eléctricos de la comunicación serie. El blindaje del cable se conecta del lado de la computadora o del chasis, y no del lado del anemómetro, con el objetivo de reducir la susceptibilidad frente a interferencias eléctricas sin introducir lazos de masa.
 
 \begin{figure}[htbp]
  \centering
@@ -686,7 +684,7 @@ Como parte de los desarrollos previos de EAMMRA, se diseñó y fabricó un preampli
 
     \begin{minipage}[b]{0.36\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{graficos/preamp_definitivo.jpg}
+        \includegraphics[width=\linewidth]{graficos/preamp.jpg}
         \captionof{figure}{Preamplificador para hidrófonos DAS utilizado en la cadena acústica de EAMMRA.}
         \label{fig:preamp-das}
     \end{minipage}
@@ -739,7 +737,8 @@ La digitalización de la señal acondicionada se realiza mediante una placa de aud
 
 La caracterización del conjunto placa-preamplificador se documenta en la Nota Técnica AS~02/26 \citep{Cinquini2026_AS0226}. En dicho trabajo se relevaron la respuesta en frecuencia de la placa de audio, la respuesta de los preamplificadores DAS-1 y DAS-2, la figura de ruido propio y el crosstalk entre canales. Los resultados obtenidos permitieron verificar que la cadena de adquisición acústica es compatible con el uso previsto en EAMMRA y que el hardware de adquisición no constituye un limitante para la medición de niveles de ruido ambiente submarino dentro del rango operativo considerado.
 
-Desde el punto de vista del software, el subsistema acústico se divide en dos funciones principales: adquisición y procesamiento. La adquisición controla la placa de audio, configura los parámetros de muestreo, registra los datos en formato WAV y verifica condiciones mínimas de almacenamiento antes de iniciar una grabación. El procesamiento posterior opera sobre los archivos generados, calcula productos compactos y prepara resultados que pueden almacenarse localmente o ser seleccionados para telemetría satelital. Esta separación permite preservar los datos crudos de campaña y, al mismo tiempo, disponer de productos resumidos aptos para diagnóstico y transmisión remota.
+Desde el punto de vista funcional de la plataforma de hardware, el subsistema acústico constituye una cadena de adquisición formada por sensores hidroacústicos, etapas de acondicionamiento analógico y una interfaz de audio digital. Los hidrófonos convierten las variaciones de presión acústica submarina en señales eléctricas de bajo nivel, que son adaptadas por los preamplificadores antes de ingresar a la placa de audio USB. Esta última actúa como conversor analógico--digital multicanal y establece el vínculo entre el frente analógico de medición y la computadora principal. La separación física entre transductores, acondicionamiento e interfaz digital permite preservar la modularidad del conjunto, facilita el ensayo independiente de cada etapa y permite reemplazar componentes sin modificar la arquitectura general del sistema.
+
 
 \subsection{Módem satelital Iridium SBD.}
 
