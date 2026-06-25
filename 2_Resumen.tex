@@ -21,7 +21,19 @@
 		\end{center}
 			\begin*
 			\indent
-		\textit{In this technical report the integration of five subsystems for the prototype of the Autonomous Maritime Station for Environmental Noise Monitoring (EAMMRA) is presented, within the framework of the R\&D project PIDDEF 32/14 of the Ministry of Defense. The integrated subsystems are: power, control, processing, acquisition and sensors. Their main characteristics are documented and the physical and logical interfaces between subsystems are described. Likewise, a functional description of the work cycle of the station in charge of the control and processing subsystems is made. Finally, preliminary laboratory tests are included to evaluate the performance of the integrated system as a whole.}        
+This technical report documents the development of an embedded data acquisition and satellite telemetry system for an instrumental buoy of the Autonomous Maritime Station for Ambient Noise Monitoring, EAMMRA. The system was developed within the framework of PIDDEF 0322 and represents a continuation and maturation of previous work related to the design, integration, and operation of the buoy. Its main objective is to coordinate, on an autonomous platform, the acquisition of underwater acoustic signals, environmental, meteorological, inertial, energy, and positioning variables, together with local data storage and remote transmission of compact information through satellite telemetry.
+
+The implemented architecture is based on an embedded industrial computer running Python software on GNU/Linux. The system integrates heterogeneous sensors and peripherals through USB, I2C, RS-232, RS-485, digital audio, and Iridium SBD satellite communication interfaces. The design includes low-level modules for hardware access, finite state machines for subsystem control, an event router, a task scheduler, local persistence mechanisms, and diagnostic routines. The report also documents the hardware platform, the working environment, the development tools, the testing procedures, and the criteria for autonomous operation. As a result, the system provides an operational and maintainable platform suitable for maritime measurement campaigns, capable of supporting scientific acquisition, technical supervision, and remote telemetry in an unattended buoy.      
 	\end*
 
 \clearpage
+
+
+
+
+\section*{Abstract}
+
+This technical report documents the development of an embedded data acquisition and satellite telemetry system for an instrumental buoy of the Autonomous Maritime Station for Ambient Noise Monitoring, EAMMRA. The system was developed within the framework of PIDDEF 0322 and represents a continuation and maturation of previous work related to the design, integration, and operation of the buoy. Its main objective is to coordinate, on an autonomous platform, the acquisition of underwater acoustic signals, environmental, meteorological, inertial, energy, and positioning variables, together with local data storage and remote transmission of compact information through satellite telemetry.
+
+The implemented architecture is based on an embedded industrial computer running Python software on GNU/Linux. The system integrates heterogeneous sensors and peripherals through USB, I2C, RS-232, RS-485, digital audio, and Iridium SBD satellite communication interfaces. The design includes low-level modules for hardware access, finite state machines for subsystem control, an event router, a task scheduler, local persistence mechanisms, and diagnostic routines. The report also documents the hardware platform, the working environment, the development tools, the testing procedures, and the criteria for autonomous operation. As a result, the system provides an operational and maintainable platform suitable for maritime measurement campaigns, capable of supporting scientific acquisition, technical supervision, and remote telemetry in an unattended buoy.
+

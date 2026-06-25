@@ -133,199 +133,73 @@ Los requerimientos no funcionales responden a las restricciones propias de una p
 
 En conjunto, estos requerimientos justifican la arquitectura adoptada. La combinación de módulos de bajo nivel, FSM, Router, scheduler central, almacenamiento estructurado, telemetría binaria, pruebas automatizadas y soporte de simulación permite abordar la complejidad de una boya operativa sin concentrar toda la lógica en un bloque monolítico. La Introducción Específica presentada en esta sección establece, por lo tanto, el marco técnico necesario para comprender las decisiones de diseño e implementación desarrolladas en las secciones siguientes.
 
-\section{Introducción Específica}
-\label{sec:introduccion_especifica}
+\section{Entorno de Trabajo, Repositorio y Herramientas}
+\label{sec:entorno-trabajo-repositorio-herramientas}
 
-\subsection{Alcance Técnico del Sistema Documentado}\label{subsec:alcance_tecnico_del_sistema_documentado}
+Esta sección describe el entorno utilizado para desarrollar, ejecutar, probar y mantener el sistema embebido de la boya EAMMRA. El objetivo no es presentar todavía la arquitectura interna del software, sino documentar las condiciones de trabajo que permiten reproducir la instalación, operar el programa principal, verificar periféricos y sostener la trazabilidad técnica del desarrollo. En este sentido, se describen la plataforma de ejecución, las dependencias del sistema operativo, el entorno Python, la organización general del repositorio del sistema, las herramientas de desarrollo y los mecanismos de ejecución operativa en la computadora embarcada.
 
-El presente informe documenta el sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría de la boya instrumental EAMMRA. El sistema comprende la computadora principal embarcada, los periféricos de sensado, la cadena de adquisición acústica, el subsistema de energía, el almacenamiento local, la telemetría satelital y el software que coordina la operación autónoma de la plataforma.
+\subsection{Plataforma de ejecución y dependencias}
 
-La Sección~\ref{sec:introduccion_especifica} introduce el sistema concreto sobre el cual se desarrolla el informe. Su objetivo es describir la plataforma de hardware, las herramientas de software, el entorno de trabajo, la arquitectura funcional general y los requerimientos que justifican las decisiones de diseño. El detalle de implementación del proceso principal, la estructura interna del repositorio, los módulos de bajo nivel, las Máquinas de Estados Finitos, el enrutador de eventos, el planificador de tareas, las políticas de persistencia y los flujos internos de mensajes se desarrolla en la Sección~\ref{sec:diseno_e_implementacion}.
+El software de control de la boya se ejecuta sobre una computadora embarcada con sistema operativo GNU/Linux. Esta elección permite disponer de un entorno de propósito general, estable y extensible, adecuado para integrar periféricos heterogéneos mediante interfaces USB, I2C, RS-232, RS-485 y audio digital. A su vez, facilita el uso de herramientas estándar para administración de procesos, registro de eventos, acceso a dispositivos, instalación de dependencias y ejecución automática de servicios al inicio del sistema.
 
-Desde el punto de vista del alcance, el sistema documentado incluye:
+El lenguaje de implementación principal es Python~3. El proyecto utiliza un entorno virtual, ubicado en \texttt{.venv}, dentro del directorio de trabajo, para aislar las dependencias del sistema embebido respecto de los paquetes instalados globalmente en la computadora. Esta decisión mejora la reproducibilidad del entorno, evita conflictos entre versiones de bibliotecas y permite reinstalar el sistema a partir de archivos de requerimientos incluidos en el repositorio. Las dependencias de ejecución se agrupan en \texttt{support/requirements.txt}, mientras que las dependencias adicionales para desarrollo, pruebas y análisis se agrupan en \texttt{support/requirements-dev.txt} \citep{BoyaRepo}.
 
+En el sistema operativo se requieren paquetes asociados al soporte de audio, compilación de extensiones, acceso a buses de bajo nivel y diagnóstico de dispositivos. Entre las dependencias de sistema se incluyen \texttt{portaudio19-dev}, utilizado por las bibliotecas de adquisición de audio, \texttt{python3-dev}, necesario para compilar o instalar ciertos paquetes Python, e \texttt{i2c-tools}, utilizado para inspeccionar buses I2C y verificar la presencia de dispositivos conectados.
+
+La integración de los sensores AHT10 y MPU6050 mediante el adaptador USB--I2C requiere, además, soporte específico para el controlador CH431A/CH341. En el README del repositorio se documenta la instalación del driver \texttt{ch341-i2c-spi-gpio}, junto con dependencias de compilación como \texttt{git}, \texttt{build-essential}, las cabeceras del núcleo Linux correspondiente, \texttt{i2c-tools} y \texttt{python3-pip}. El procedimiento incluye la compilación del driver, la carga del módulo \texttt{i2c-dev}, la inserción de los módulos \texttt{ch341-core.ko} e \texttt{i2c-ch341.ko}, y la verificación del bus mediante \texttt{i2cdetect}. Esta verificación permite confirmar que el adaptador USB--I2C fue reconocido por el sistema operativo y que los sensores conectados al bus pueden ser inspeccionados antes de ejecutar el software de adquisición \citep{BoyaRepo}.
+
+También se documenta la configuración de permisos para acceder a los dispositivos \texttt{/dev/i2c-*} sin privilegios de administrador. Para ello se crea o utiliza el grupo \texttt{i2c}, se incorpora el usuario operativo a dicho grupo y se actualiza la sesión de trabajo. Este aspecto es relevante para la operación embarcada, ya que permite que el proceso principal acceda a los sensores I2C sin ejecutarse como usuario administrador, lo que reduce riesgos operativos y simplifica la administración del sistema.
+
+\subsection{Repositorio del sistema embebido}
+
+El repositorio del sistema embebido actúa como unidad de trazabilidad técnica del desarrollo. En él se integran el código fuente, los archivos de configuración, los scripts auxiliares, la documentación de periféricos, los datos de soporte, las pruebas automatizadas y los reportes generados durante ensayos. Todas las rutas relativas se resuelven desde la raíz del repositorio, lo que simplifica la ejecución reproducible del sistema tanto en laboratorio como en la computadora embarcada \citep{BoyaRepo}.
+
+La organización general del repositorio separa los elementos de operación, configuración, documentación y prueba. La carpeta \texttt{modules/} contiene los módulos del sistema embebido, organizados por subsistema. La carpeta \texttt{configs/} contiene archivos de configuración general, intervalos de adquisición y selección de módulos simulados. La carpeta \texttt{docs/} reúne manuales y documentación técnica de periféricos. La carpeta \texttt{support/} contiene tablas, calibraciones, datos de referencia y archivos de requerimientos. La carpeta \texttt{scripts/} agrupa utilidades de ejecución, detención y ensayo. La carpeta \texttt{test/} contiene pruebas automatizadas y reportes asociados \citep{BoyaRepoDocs}.
+
+El archivo \texttt{main.py} constituye el punto de entrada del sistema. A nivel de organización general, el repositorio distingue módulos de bajo nivel, orientados al acceso al hardware o al procesamiento específico, y máquinas de estados asociadas a cada subsistema. La arquitectura interna, incluyendo el enrutador de eventos, el planificador de tareas, las máquinas de estados y los flujos de comunicación entre procesos, se desarrolla en la sección de Diseño e Implementación. En esta sección sólo se destaca que dicha organización queda reflejada en la estructura del repositorio y permite separar código operativo, configuración, documentación y pruebas.
+
+Los archivos de configuración principales son:
 \begin{itemize}
-    \item La computadora principal embarcada como núcleo de procesamiento y control.
-    \item Los sensores ambientales, inerciales, meteorológicos, de posicionamiento y de navegación.
-    \item El subsistema de adquisición acústica, compuesto por hidrófonos, preamplificadores y placa de audio USB.
-    \item El subsistema de supervisión energética, asociado al controlador de carga solar y al banco de baterías.
-    \item El almacenamiento local de archivos de audio, mediciones estructuradas, resultados procesados, logs y estados del sistema.
-    \item La telemetría satelital mediante Iridium SBD para transmisión remota de mensajes de estado y productos seleccionados de procesamiento.
-    \item El software de control desarrollado en Python~3, con soporte para operación con hardware real, simulación parcial mediante \emph{mocks}, pruebas automatizadas y configuración externa.
-\end{itemize}
+\item \texttt{configs/config.json}
+\item \texttt{configs/scheduler.json}
+\item \texttt{configs/mock\_modules.json}
+\end{itemize}. 
 
-No forman parte del alcance principal de esta sección el diseño mecánico detallado de la boya, el análisis estructural, la ingeniería electrónica interna de cada periférico comercial ni la presentación de resultados experimentales. Estos aspectos se citan cuando resultan necesarios para justificar la arquitectura, pero el foco del presente informe es el sistema embebido que controla la boya operativa.
+El primero concentra parámetros generales de adquisición, directorios de datos y registros, y habilitación de funciones de comunicación. El segundo define intervalos de operación del planificador central. El tercero permite declarar módulos de bajo nivel simulados para ensayos repetibles. Esta separación facilita modificar parámetros de operación sin alterar el código fuente y permite distinguir configuraciones de laboratorio, pruebas y operación embarcada.
+
+\subsection{Herramientas de desarrollo, calidad y pruebas}
+
+El desarrollo se realiza con herramientas orientadas a mantener legibilidad, consistencia y verificabilidad del código. Como entorno de edición se emplea Visual Studio Code, junto con extensiones de asistencia para Python. Pylance proporciona análisis en el editor, autocompletado, detección temprana de errores y apoyo para navegación de código \citep{PylanceDocs}. Pylint se utiliza como analizador estático para identificar problemas de estilo, errores potenciales, código no utilizado, convenciones incumplidas y construcciones de mantenimiento riesgoso \citep{PylintDocs}. Black se emplea como formateador automático para mantener un estilo uniforme en todos los archivos Python del proyecto \citep{BlackDocs}.
+
+Las pruebas automatizadas se implementan con \texttt{pytest}, lo que permite verificar componentes del sistema en forma repetible y separar ensayos que requieren hardware real de pruebas que pueden ejecutarse en cualquier entorno de desarrollo \citep{pytestDocs}. La suite local por defecto se ejecuta sin hardware, excluyendo pruebas marcadas como dependientes de periféricos físicos. Para evaluar módulos de bajo nivel contra dispositivos reales, el repositorio incluye scripts de ensayo que ejecutan pruebas específicas y generan reportes en \texttt{test/reports/}. Esta separación permite mantener un ciclo rápido de desarrollo sin hardware y, al mismo tiempo, conservar pruebas operacionales para banco de integración.
+
+El uso de módulos simulados, o \emph{mocks}, permite reproducir flujos de ejecución sin conectar todos los periféricos físicos. El repositorio contempla la activación global de simulaciones mediante la variable de entorno \texttt{USE\_LL\_MOCKS=1}, así como la activación selectiva de módulos individuales, por ejemplo \texttt{USE\_MOCK\_AHT10=1}. También puede definirse una selección persistente de módulos simulados mediante \texttt{configs/mock\_modules.json}. Esta capacidad resulta útil para ensayos de integración, depuración de lógica de control y validación de flujos de operación en ausencia de hardware completo.
+
+Los registros generados durante ejecución y pruebas se almacenan en la carpeta \texttt{logs/}, mientras que las mediciones y salidas de adquisición se registran en \texttt{data/}. Los archivos de mediciones utilizan formato JSONL, con una línea por medición y campos con unidades explícitas cuando corresponde. Esta convención permite inspección incremental, procesamiento posterior y recuperación parcial de datos aun cuando la ejecución se interrumpa antes de finalizar una campaña.
+
+\subsection{Ejecución operativa en la PC embarcada}
+
+La ejecución operativa del sistema se concentra en \texttt{main.py}, que actúa como programa principal de la boya. En ejecución directa con hardware real, el programa se inicia desde la raíz del repositorio utilizando el intérprete Python del entorno virtual. Esta modalidad resulta apropiada para desarrollo, pruebas de banco o ejecución manual controlada. Para operación embarcada se utilizan scripts auxiliares que encapsulan las tareas de arranque, detención, limpieza de procesos previos y redirección de salidas.
+
+El script \texttt{scripts/start\_main.sh} inicia \texttt{main.py} con una limpieza previa de procesos anteriores y registra la salida en \texttt{logs/main.out}. Esta utilidad permite iniciar el sistema de manera uniforme, sin depender de comandos manuales largos ni de la memoria del operador. Además, centraliza criterios de arranque que son relevantes durante pruebas repetidas, mantenimiento o reinstalación del sistema.
+
+El script \texttt{scripts/stop\_main.sh} detiene \texttt{main.py} y sus subprocesos asociados en forma controlada. El procedimiento documentado envía primero una señal \texttt{SIGTERM}, espera la finalización de los procesos y sólo recurre a \texttt{SIGKILL} si permanecen procesos activos. También limpia archivos de identificación de proceso obsoletos, como \texttt{main.pid}, y verifica que no queden variables de entorno de simulación activas o procesos remanentes de \texttt{main.py}. Esta lógica de detención ordenada es importante para preservar registros, evitar escrituras incompletas y dejar el sistema en un estado conocido antes de tareas de mantenimiento o reinicio.
+
+En la computadora embarcada, \texttt{main.py} queda cargado como servicio del sistema operativo para ejecutarse automáticamente durante el arranque de la PC. Esta configuración es necesaria para una plataforma autónoma: si la boya se energiza, reinicia o recupera alimentación luego de un evento transitorio, el sistema de adquisición y supervisión debe iniciar sin intervención manual. La ejecución como servicio complementa los scripts de arranque y detención, ya que permite administrar el proceso principal con mecanismos estándar del sistema operativo y asegurar su activación durante la secuencia de inicio.
+
+La operación distingue tres modos principales. El primero corresponde a la ejecución con hardware real, utilizada durante campañas o ensayos de integración completos. El segundo corresponde a la ejecución con módulos simulados, empleada para validar flujos de control y comportamiento general sin todos los periféricos conectados. El tercero corresponde a la ejecución de pruebas automatizadas, que permite verificar unidades funcionales, módulos de bajo nivel y condiciones de error en forma repetible. Estos modos comparten el mismo repositorio y entorno de dependencias, lo que favorece la continuidad entre desarrollo, banco de pruebas y operación embarcada.
+
+La definición explícita del entorno de ejecución, las dependencias del sistema operativo, el uso de un entorno virtual, la estructura del repositorio, las herramientas de análisis y prueba, y la ejecución automática como servicio establecen una base operativa reproducible para el sistema embebido. Esta base permite reinstalar el software, verificar periféricos, ejecutar ensayos con y sin hardware real, y recuperar la operación luego de reinicios o cortes de energía. Sobre estas condiciones de trabajo se apoya la integración de la plataforma física descripta en la sección siguiente y, posteriormente, la arquitectura de control, adquisición, almacenamiento y telemetría desarrollada para la boya EAMMRA.
+
+\vspace{10pt}
+
+
+\vspace{10pt}
 
 
 
-\subsection{Entorno de Software, Lenguaje y Dependencias}\label{subsec:entorno_de_software_lenguaje_y_dependencias}
 
-El lenguaje principal utilizado para el desarrollo del sistema embebido de control fue Python~3. La elección de este lenguaje responde a la necesidad de integrar, en una misma plataforma de software, acceso a periféricos, comunicación serie, adquisición de audio, procesamiento de señales, almacenamiento estructurado, telemetría, pruebas automatizadas y herramientas de simulación. Python ofrece una sintaxis expresiva, amplia disponibilidad de bibliotecas y buena integración con sistemas GNU/Linux, características adecuadas para una computadora principal embarcada.
-
-En este proyecto, Python se utiliza como lenguaje de coordinación del sistema. Las funciones de lectura de periféricos, procesamiento, persistencia, transmisión y control de estado se organizan mediante módulos independientes, Máquinas de Estados Finitos, un enrutador de eventos y un planificador de tareas central. De esta manera, el lenguaje no se emplea sólo para scripts auxiliares, sino como base de la aplicación principal de control de la boya.
-
-Para aislar las dependencias del proyecto respecto del sistema operativo base se utilizó un entorno virtual de Python, ubicado convencionalmente en el directorio \texttt{.venv}. Este mecanismo permite mantener un intérprete y un conjunto de bibliotecas específicos para la aplicación, lo que reduce interferencias con otros paquetes instalados en el sistema y favorece la reproducibilidad del entorno de ejecución \cite{PythonVenvDocs,PyPAPackagingGuide}.
-
-La instalación del entorno se realiza desde la raíz del repositorio. En primer lugar, se requiere disponer de ciertas dependencias del sistema operativo asociadas al acceso a hardware, interfaces de bajo nivel y adquisición de audio. En particular, el proyecto recomienda instalar los paquetes:
-
-\begin{verbatim}
-sudo apt-get update
-sudo apt-get install -y portaudio19-dev python3-dev i2c-tools
-\end{verbatim}
-
-Luego, el entorno virtual se activa mediante:
-
-\begin{verbatim}
-source .venv/bin/activate
-\end{verbatim}
-
-y las dependencias de Python se instalan mediante \texttt{pip}. Para una instalación orientada exclusivamente a ejecución, sin herramientas de prueba, se utiliza:
-
-\begin{verbatim}
-python -m pip install -r support/requirements.txt
-\end{verbatim}
-
-Para desarrollo, verificación y ejecución de pruebas automatizadas, se instala el conjunto ampliado de dependencias:
-
-\begin{verbatim}
-python -m pip install -r support/requirements-dev.txt
-\end{verbatim}
-
-El archivo \texttt{support/requirements.txt} define las bibliotecas necesarias para la operación nominal del sistema. Las versiones se especifican mediante restricciones de compatibilidad, salvo en el caso de \texttt{PyAudio}, cuya versión se fija explícitamente.
-
-\begin{table}[htbp]
-    \centering
-    \caption{Dependencias principales de ejecución del sistema.}
-    \label{tab:runtime-dependencies}
-    \begin{tabular}{lll}
-        \hline
-        \textbf{Biblioteca} & \textbf{Versión requerida} & \textbf{Uso principal} \\
-        \hline
-        \texttt{numpy}    & \texttt{>=2.0,<3}    & Cálculo numérico y procesamiento de datos. \\
-        \texttt{pandas}   & \texttt{>=2.0,<4}    & Manejo de datos tabulares y archivos estructurados. \\
-        \texttt{scipy}    & \texttt{>=1.14,<2}   & Procesamiento científico y análisis de señales. \\
-        \texttt{PyAudio}  & \texttt{==0.2.14}    & Interfaz con PortAudio para adquisición de audio. \\
-        \texttt{pyserial} & \texttt{>=3.5,<4}    & Comunicación con periféricos mediante puertos serie. \\
-        \texttt{smbus2}   & \texttt{>=0.5,<1}    & Comunicación con dispositivos sobre bus I2C. \\
-        \hline
-    \end{tabular}
-\end{table}
-
-El archivo \texttt{support/requirements-dev.txt} extiende las dependencias de ejecución e incorpora herramientas específicas para desarrollo, pruebas y generación de gráficos.
-
-\begin{table}[htbp]
-    \centering
-    \caption{Dependencias adicionales de desarrollo y pruebas.}
-    \label{tab:dev-dependencies}
-    \begin{tabular}{lll}
-        \hline
-        \textbf{Biblioteca} & \textbf{Versión requerida} & \textbf{Uso principal} \\
-        \hline
-        \texttt{pytest}     & \texttt{>=8,<10}     & Ejecución de pruebas automatizadas. \\
-        \texttt{pytest-cov} & \texttt{>=7,<8}      & Medición de cobertura de pruebas. \\
-        \texttt{matplotlib} & \texttt{>=3.8,<4}    & Generación de gráficos y reportes técnicos. \\
-        \hline
-    \end{tabular}
-\end{table}
-
-Esta separación entre dependencias de ejecución y dependencias de desarrollo permite distinguir el entorno mínimo requerido para operar la boya del entorno ampliado utilizado durante integración, depuración y validación. En una plataforma embebida operativa resulta conveniente mantener el entorno de ejecución tan acotado como sea posible, mientras que en laboratorio se justifica incorporar herramientas adicionales para pruebas, análisis y generación de evidencia.
-
-El uso del entorno virtual también facilita la ejecución explícita de comandos desde el intérprete asociado al proyecto. Por ejemplo, la aplicación principal puede iniciarse con:
-
-\begin{verbatim}
-PYTHONPATH=. .venv/bin/python main.py
-\end{verbatim}
-
-mientras que la suite de pruebas sin hardware puede ejecutarse mediante:
-
-\begin{verbatim}
-PYTHONPATH=. .venv/bin/python -m pytest -m "not hardware" -q
-\end{verbatim}
-
-De esta manera, el entorno de trabajo queda definido por tres niveles complementarios: paquetes del sistema operativo necesarios para interfaces físicas, entorno virtual Python para aislamiento de bibliotecas y archivos \texttt{requirements} para reproducir las versiones compatibles de las dependencias del proyecto. Esta organización contribuye a la trazabilidad, repetibilidad y mantenibilidad del software embarcado.
-
-\subsection{Herramientas de Desarrollo y Calidad de Código}\label{subsec:herramientas_de_desarrollo_y_calidad_de_codigo}
-
-El desarrollo del software se gestionó mediante un repositorio Git alojado en GitHub. El repositorio integra en una única base de trabajo el código fuente del sistema embebido, los archivos de configuración, los manuales de periféricos, los scripts auxiliares, los datos de soporte y los ensayos automatizados \cite{BoyaRepo}. En esta sección se describe el repositorio como herramienta de desarrollo, control de versiones y trazabilidad. La organización concreta del código fuente se detalla en la Sección~\ref{sec:diseno_e_implementacion}.
-
-Para asistir el desarrollo se utilizó Visual Studio Code con la extensión Pylance. Esta extensión provee soporte de lenguaje para Python, con funciones de autocompletado, navegación de símbolos, análisis de tipos, detección temprana de errores y asistencia durante la edición del código. Su uso resulta especialmente útil en un proyecto modular, donde las interfaces entre módulos, clases, funciones y estructuras de datos deben mantenerse consistentes a lo largo del desarrollo \cite{PylanceDocs}.
-
-Asimismo, se prevé incorporar Pylint como herramienta de análisis estático. Pylint permite inspeccionar el código fuente sin ejecutarlo, detectar errores probables, identificar problemas de estilo, advertir sobre construcciones potencialmente confusas y sugerir refactorizaciones. En un sistema embebido autónomo, este tipo de herramienta contribuye a reducir defectos antes de la etapa de integración con hardware, mejorar la mantenibilidad del código y reforzar criterios homogéneos de calidad \cite{PylintDocs}.
-
-También se incorpora Black como formateador automático de código. Su función es aplicar un estilo de formato consistente y reproducible sobre los archivos Python. Esta decisión reduce diferencias manuales de formato entre desarrolladores, facilita las revisiones de código, simplifica la interpretación de cambios entre versiones y favorece una base de código visualmente homogénea \cite{BlackDocs}.
-
-Para la ejecución de pruebas automatizadas se utilizó \texttt{pytest}, un framework de pruebas para Python orientado a la escritura de tests unitarios, funcionales y de integración con una sintaxis simple y legible \cite{pytestDocs}. A diferencia de enfoques más verbosos, \texttt{pytest} permite expresar verificaciones mediante sentencias \texttt{assert} convencionales, descubrir automáticamente archivos y funciones de prueba siguiendo convenciones de nombre, definir contextos reutilizables mediante \emph{fixtures} y organizar subconjuntos de ensayos mediante marcas o configuraciones específicas.
-
-En el presente desarrollo, \texttt{pytest} se empleó como herramienta principal para verificar el comportamiento de módulos individuales, validar la lógica de las Máquinas de Estados Finitos, ejecutar pruebas con componentes simulados y separar ensayos que no requieren hardware de aquellos destinados a periféricos reales. Su incorporación permite mejorar la repetibilidad de los ensayos, reducir regresiones durante el desarrollo y sostener una estrategia de verificación compatible con una arquitectura modular y mantenible.
-
-En conjunto, el entorno de desarrollo se estructura en tres niveles complementarios: el intérprete Python y su entorno virtual para aislar dependencias; las bibliotecas de ejecución y desarrollo declaradas en los archivos de requerimientos; y las herramientas de asistencia, análisis estático, formateo y prueba empleadas para mejorar la calidad del código. Esta combinación permite sostener un flujo de desarrollo controlado, repetible y auditable, compatible con la documentación técnica y la validación progresiva del sistema.
-
-\subsection{Arquitectura Funcional General del Sistema}\label{subsec:arquitectura_funcional_general_del_sistema}
-
-La arquitectura general del sistema se basa en una organización modular orientada a eventos. Cada subsistema se representa mediante una Máquina de Estados Finitos que encapsula sus estados, transiciones, acciones y condiciones de error. La comunicación entre módulos se realiza mediante mensajes, y un enrutador de eventos actúa como intermediario encargado de distribuir información entre productores y consumidores.
-
-Desde un punto de vista funcional, la arquitectura puede representarse mediante las siguientes capas:
-
-\begin{itemize}
-    \item \textbf{Capa de hardware:} comprende sensores, placa de audio, módem satelital, controlador solar, interfaces serie, buses I2C, almacenamiento y dispositivos físicos asociados.
-    \item \textbf{Capa de bajo nivel:} implementa el acceso directo a cada dispositivo o servicio específico. Incluye inicialización de interfaces, lectura de sensores, adquisición de audio, comunicación AT/SBD, lectura de controladores de energía y funciones auxiliares de hardware.
-    \item \textbf{Capa de control por estados:} implementa la lógica de estado de cada módulo. Cada Máquina de Estados Finitos recibe eventos, ejecuta acciones, valida resultados, registra estados y comunica eventos de salida al resto del sistema.
-    \item \textbf{Capa de enrutamiento:} centraliza la distribución de mensajes y evita dependencias directas entre módulos.
-    \item \textbf{Capa de planificación:} ejecuta el planificador de tareas central, responsable de disparar adquisiciones periódicas, transmisiones, tareas de mantenimiento y ciclos operativos de acuerdo con la configuración vigente.
-    \item \textbf{Capa de persistencia:} administra la escritura de mediciones, logs, estados, archivos de audio, resultados procesados y mensajes preparados para transmisión.
-    \item \textbf{Capa de telemetría:} prepara y transmite mensajes binarios mediante Iridium SBD, incluidos estados de sistema y resultados seleccionados de procesamiento acústico.
-\end{itemize}
-
-El flujo general de operación comienza con la inicialización de configuraciones, módulos y recursos del sistema. Una vez iniciado el proceso principal, el planificador de tareas central dispara eventos de adquisición de acuerdo con intervalos definidos. Los sensores ambientales, meteorológicos, inerciales, de posición y energía generan registros periódicos. Para los ensayos de verificación, la adquisición acústica se ejecuta con una periodicidad menor que la de los sensores de bajo ancho de banda, debido al mayor volumen de datos generado.
-
-El módulo de adquisición acústica realiza la grabación de audio y genera archivos WAV con metadatos asociados. Al finalizar una adquisición válida, el resultado queda disponible para el módulo de procesamiento de audio, que procesa el archivo y genera resultados compactos, persistidos en formato estructurado. Estos resultados pueden ser posteriormente seleccionados por el subsistema Iridium para su transmisión satelital.
-
-La telemetría Iridium se organiza en ciclos regulares. El sistema puede transmitir mensajes de estado que resumen la condición operativa de las Máquinas de Estados Finitos, los módulos de bajo nivel, la disponibilidad de almacenamiento, el estado energético y el tiempo desde el arranque. También puede transmitir resultados derivados del procesamiento de audio, compactados en formato binario para adecuarse a las restricciones de tamaño del enlace SBD.
-
-El diseño evita que la transmisión satelital dependa directamente de la finalización de una adquisición. En su lugar, el sistema registra la disponibilidad del último resultado válido y el planificador de tareas gobierna los momentos de transmisión. Esta decisión reduce acoplamientos, simplifica el control temporal del enlace satelital y permite mantener un comportamiento predecible aun cuando alguna tarea se demore, falle o produzca datos incompletos.
-
-\subsection{Requerimientos Funcionales y No Funcionales}\label{subsec:requerimientos_funcionales_y_no_funcionales}
-
-Los requerimientos funcionales del sistema surgen de la necesidad de controlar una boya instrumental autónoma con múltiples subsistemas integrados. En términos generales, el sistema debe ser capaz de adquirir datos, validarlos, almacenarlos, procesarlos parcialmente y transmitir información seleccionada en forma remota.
-
-Los requerimientos funcionales principales son:
-
-\begin{itemize}
-    \item Adquirir mediciones ambientales de temperatura y humedad.
-    \item Adquirir mediciones inerciales de aceleración y velocidad angular.
-    \item Adquirir información de posicionamiento, tiempo y datos de navegación mediante AIS/GPS.
-    \item Adquirir mediciones meteorológicas de velocidad y dirección del viento.
-    \item Relevar variables eléctricas del sistema de alimentación, incluidos parámetros asociados a panel solar, carga y batería.
-    \item Ejecutar adquisiciones acústicas mediante placa de audio USB y almacenar archivos WAV con metadatos asociados.
-    \item Procesar archivos de audio para obtener productos compactos compatibles con almacenamiento local y telemetría satelital.
-    \item Registrar mediciones en archivos persistentes con formato estructurado y unidades explícitas.
-    \item Registrar logs de ejecución, eventos relevantes, errores, advertencias y condiciones de diagnóstico.
-    \item Transmitir mensajes de estado de sistema mediante Iridium SBD.
-    \item Transmitir resultados seleccionados de procesamiento acústico mediante Iridium SBD.
-    \item Ejecutar tareas periódicas mediante un planificador de tareas central configurable.
-    \item Representar el comportamiento de cada módulo mediante Máquinas de Estados Finitos.
-    \item Permitir ejecución con hardware real, con todos los módulos simulados o con simulación parcial de módulos seleccionados.
-    \item Permitir pruebas automatizadas sin hardware y pruebas específicas contra hardware real.
-    \item Mantener archivos de configuración editables para adaptar intervalos, rutas, parámetros de adquisición, habilitación de telemetría y uso de \emph{mocks}.
-\end{itemize}
-
-Los requerimientos no funcionales responden a las restricciones propias de una plataforma autónoma embarcada. Entre ellos se destacan:
-
-\begin{itemize}
-    \item \textbf{Autonomía operativa:} el sistema debe ejecutar ciclos de adquisición, almacenamiento y transmisión sin intervención humana continua.
-    \item \textbf{Robustez:} el sistema debe tolerar fallas parciales de módulos, errores de lectura, indisponibilidad transitoria de periféricos y condiciones de comunicación no ideales.
-    \item \textbf{Persistencia segura:} los datos adquiridos no deben perderse por fallas evitables de software, configuraciones ambiguas o políticas agresivas de liberación de espacio.
-    \item \textbf{Bajo consumo relativo:} el software debe permitir ciclos de adquisición y transmisión compatibles con el presupuesto energético disponible.
-    \item \textbf{Mantenibilidad:} la separación entre bajo nivel, Máquinas de Estados Finitos, enrutador de eventos y planificador de tareas debe facilitar la modificación de módulos individuales sin afectar la arquitectura completa.
-    \item \textbf{Extensibilidad:} la arquitectura debe permitir la incorporación futura de nuevos sensores, nuevos productos de procesamiento o nuevos formatos de telemetría.
-    \item \textbf{Verificabilidad:} el comportamiento del sistema debe poder probarse mediante tests automatizados, ejecución con \emph{mocks}, ensayos de bajo nivel y pruebas de integración.
-    \item \textbf{Trazabilidad:} las mediciones, eventos, configuraciones y resultados de prueba deben poder relacionarse con módulos, horarios de ejecución y condiciones operativas.
-    \item \textbf{Degradación controlada:} ante una falla, el sistema debe registrar la condición, conservar datos previos, evitar acciones inseguras y continuar operando en la medida de lo posible.
-    \item \textbf{Diagnóstico remoto:} los mensajes satelitales deben permitir inferir el estado general de la boya, incluida la salud de módulos, almacenamiento, energía y continuidad operativa.
-\end{itemize}
-
-En conjunto, estos requerimientos justifican la arquitectura adoptada. La combinación de módulos de bajo nivel, Máquinas de Estados Finitos, enrutador de eventos, planificador de tareas central, almacenamiento estructurado, telemetría binaria, pruebas automatizadas y soporte de simulación permite abordar la complejidad de una boya operativa sin concentrar toda la lógica en un bloque monolítico. La Introducción Específica presentada en esta sección establece, por lo tanto, el marco técnico necesario para comprender las decisiones de diseño e implementación desarrolladas en las secciones siguientes.
-
+\clearpage
 \section{Plataforma de Hardware y Periféricos Integrados}\label{sec:plataforma_de_hardware_y_perifericos_integrados}
 
 La boya EAMMRA integra una computadora principal embarcada y un conjunto de periféricos de sensado, adquisición, supervisión energética, almacenamiento y telemetría. La función del sistema embebido es coordinar estos dispositivos bajo un ciclo de operación autónomo, con registro persistente de datos, diagnóstico local y transmisión remota de información crítica. En esta sección se presenta la plataforma de hardware utilizada, con énfasis en los dispositivos que se vinculan directamente con el software de control, sus interfaces de comunicación, sus variables de operación y su función dentro de la arquitectura general del sistema.
