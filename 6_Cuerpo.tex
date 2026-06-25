@@ -636,137 +636,176 @@ En términos funcionales, el controlador cumple cuatro roles dentro de EAMMRA: ma
 
 \subsection{Subsistema acústico.}
 
-El subsistema acústico constituye la cadena principal de adquisición científica de la boya EAMMRA. Su función es convertir el campo de presión acústica submarina en señales eléctricas, acondicionarlas mediante una etapa analógica de bajo ruido, digitalizarlas mediante una placa de adquisición de audio y almacenarlas localmente para su posterior procesamiento. Desde el punto de vista funcional, el subsistema está compuesto por dos hidrófonos analógicos calibrados, dos preamplificadores para hidrófonos, una placa de audio USB de dos canales y el software de adquisición y procesamiento asociado.
+El subsistema acústico constituye la cadena principal de adquisición científica de la boya EAMMRA. Su función es convertir el campo de presión acústica submarina en señales eléctricas, acondicionarlas mediante una etapa analógica de bajo ruido y digitalizarlas mediante una placa de adquisición de audio conectada a la computadora principal. Desde el punto de vista de hardware, la cadena está compuesta por dos hidrófonos analógicos calibrados Br{"u}el \& Kj{\ae}r 8105, dos preamplificadores para hidrófonos desarrollados por la División Acústica Submarina y una placa de audio USB Behringer UMC202HD.
 
-Los sensores utilizados para captar las señales acústicas son dos hidrófonos analógicos calibrados Br{\"u}el \& Kj{\ae}r, modelo 8105. Se trata de transductores piezoeléctricos cerámicos, sin preamplificación interna, adecuados para mediciones de banda ancha en ambiente submarino. Su selección se justifica por su ancho de banda, sensibilidad, comportamiento omnidireccional y aptitud mecánica para operación sumergida \citep{byk}.
+La arquitectura de adquisición responde a una separación funcional entre transducción, acondicionamiento y digitalización. Los hidrófonos convierten las variaciones de presión acústica en tensión eléctrica; los preamplificadores adaptan la impedancia, elevan el nivel de señal y limitan componentes de baja frecuencia capaces de saturar la etapa posterior; finalmente, la placa de audio digitaliza dos canales en forma simultánea y entrega los datos a la computadora principal mediante USB. Esta organización permite utilizar sensores acústicos calibrados y preservar una cadena instrumental verificable, con etapas diferenciadas para medición, acondicionamiento y conversión analógico-digital.
 
-\begin{itemize}
-    \item \textbf{Modelo:} Br{\"u}el \& Kj{\ae}r 8105.
-    \item \textbf{Tipo:} hidrófono analógico piezoeléctrico calibrado.
-    \item \textbf{Rango de frecuencia:} 0.1~Hz a 160~kHz.
-    \item \textbf{Sensibilidad nominal:} \(-205\)~dB re 1~V/\(\mu\)Pa.
-    \item \textbf{Directividad:} omnidireccional en su rango operativo.
-    \item \textbf{Presión hidrostática admisible:} 9.8~MPa, aproximadamente 1000~m de profundidad.
-    \item \textbf{Protección externa:} recubrimiento polimérico apto para operación en medio marino.
-\end{itemize}
+\vspace{10pt}
 
-En la Figura~\ref{fig:8105} se presentan las dimensiones mecánicas principales del hidrófono B\&K 8105. En la Figura~\ref{fig:8105-patron} se muestra un patrón polar típico de directividad para el mismo modelo. Ambas figuras corresponden a documentación técnica del fabricante.
+\noindent \textbf{Hidrófonos Br{"u}el \& Kj{\ae}r 8105.}
 
+Los sensores utilizados para captar las señales acústicas son dos hidrófonos analógicos calibrados Br{"u}el \& Kj{\ae}r, modelo 8105. Se trata de transductores piezoeléctricos cerámicos, sin preamplificación interna, adecuados para mediciones de banda ancha en ambiente submarino. Su selección se justifica por su ancho de banda, sensibilidad, comportamiento omnidireccional y aptitud mecánica para operación sumergida \citep{byk}. En la Figura~\ref{fig:8105} se presentan las dimensiones mecánicas principales del hidrófono junto con las características técnicas más relevantes para su integración en EAMMRA.
+
+\vspace{20px}
 \begin{figure}[htbp]
-    \centering
-
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[height=.30\textheight]{graficos/8105.jpg}
-        \captionof{figure}{Dimensiones mecánicas del hidrófono Br{\"u}el \& Kj{\ae}r modelo 8105.}
-        \label{fig:8105}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.45\textwidth}
-        \centering
-        \includegraphics[height=.30\textheight]{graficos/8105-patron.png}
-        \captionof{figure}{Patrón de directividad típico del hidrófono Br{\"u}el \& Kj{\ae}r modelo 8105.}
-        \label{fig:8105-patron}
-    \end{minipage}
-
+\centering
+\begin{minipage}[b]{0.42\textwidth}
+\centering
+\includegraphics[height=.30\textheight]{graficos/8105.jpg}
+\captionof{figure}{Dimensiones mecánicas del hidrófono Br{"u}el \& Kj{\ae}r modelo 8105.}
+\label{fig:8105}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{0.54\textwidth}
+\begin{itemize}
+\item \textbf{Modelo:} Br{"u}el \& Kj{\ae}r 8105.
+\item \textbf{Tipo:} hidrófono analógico piezoeléctrico calibrado.
+\item \textbf{Rango de frecuencia:} 0.1~Hz a 160~kHz.
+\item \textbf{Sensibilidad nominal:} (-205)~dB re 1~V/($\mu$)Pa.
+\item \textbf{Directividad:} omnidireccional en su rango operativo.
+\item \textbf{Presión hidrostática admisible:} 9.8~MPa, aproximadamente 1000~m de profundidad.
+\item \textbf{Protección externa:} recubrimiento polimérico apto para operación en medio marino.
+\item \textbf{Conexión:} cable sumergible integrado, con terminación BNC no sumergible.
+\end{itemize}
+\end{minipage}
 \end{figure}
 
-Los patrones reales de directividad y las curvas de respuesta en frecuencia de los hidrófonos utilizados en la boya están dados por las respectivas hojas de calibración provistas por el fabricante. En dichas calibraciones se considera el efecto del cable integrado al elemento sensor, cuyo aporte capacitivo modifica la impedancia vista desde el terminal de conexión. Los hidrófonos adquiridos para el desarrollo poseen longitudes de cable de 50~m y 20~m, respectivamente.
+Las curvas de respuesta en frecuencia y las características particulares de cada hidrófono utilizado en la boya están dadas por las respectivas hojas de calibración provistas por el fabricante. En dichas calibraciones se considera el efecto del cable integrado al elemento sensor, cuyo aporte capacitivo modifica la impedancia vista desde el terminal de conexión. Los hidrófonos adquiridos para el desarrollo poseen longitudes de cable de 50~m y 20~m, respectivamente.
 
-El cable integrado al hidrófono es sumergible, de tipo \textit{waterblocked}, grado militar DSS-2, especificado en el estándar MIL-DTL-915/8 \citep{mil-std:dtl-915}. Se trata de un cable flexible, aislado y blindado, de dos conductores, apto para electrónica, comunicaciones e instrumentación en equipamiento embarcado. Los cables de ambos hidrófonos finalizan en conectores BNC no sumergibles, por lo que la integración mecánica y eléctrica debe garantizar protección adecuada en el interior de la boya y evitar exposición directa del conector al ambiente marino.
+El cable integrado al hidrófono es sumergible, de tipo \textit{waterblocked}, grado militar DSS-2, especificado en el estándar MIL-DTL-915/8 \citep{mil-std:dtl-915}. Se trata de un cable flexible, aislado y blindado, de dos conductores, apto para electrónica, comunicaciones e instrumentación en equipamiento embarcado. Los cables de ambos hidrófonos finalizan en conectores BNC no sumergibles, por lo que la integración mecánica y eléctrica debe garantizar protección adecuada dentro de la boya y evitar la exposición directa del conector al ambiente marino.
+
+\vspace{10pt}
+
+\noindent \textbf{Preamplificadores DAS-1/DAS-2.}
 
 Debido a que los hidrófonos B\&K 8105 no poseen preamplificación interna, las señales eléctricas generadas pueden presentar amplitudes muy bajas frente al ruido propio de la etapa de adquisición. Además, vistos desde sus terminales de salida, los hidrófonos se comportan como fuentes de alta impedancia con una componente capacitiva significativa. Esta condición exige una etapa de acondicionamiento analógico con muy alta impedancia de entrada, bajo ruido propio y ancho de banda compatible con el rango de medición previsto.
 
-Como parte de los desarrollos previos de EAMMRA, se diseñó y fabricó un preamplificador específico para hidrófonos B\&K 8105, orientado a trabajar con cargas capacitivas y con un ancho de banda aproximado de 100~kHz \citep{AS0518_Preamp}. El diseño se basó en amplificadores operacionales de bajo ruido LT1792, en configuración no inversora, con alimentación dual generada a partir de una fuente principal de tipo \textit{single supply}. En la configuración actual de la boya se utilizan dos unidades de preamplificación, denominadas DAS-1 y DAS-2.
+Como parte de los desarrollos previos de EAMMRA, se diseñó y fabricó un preamplificador específico para hidrófonos B\&K 8105, orientado a trabajar con cargas capacitivas y con un ancho de banda aproximado de 100~kHz \citep{AS0518_Preamp}. El diseño se basó en amplificadores operacionales de bajo ruido LT1792, en configuración no inversora, con alimentación dual generada a partir de una fuente principal de tipo \textit{single supply}. En la configuración actual de la boya se utilizan dos unidades de preamplificación, denominadas DAS-1 y DAS-2. En la Figura~\ref{fig:preamp-das} se muestra una de las unidades utilizadas junto con sus características principales de integración.
 
+\vspace{20px}
 \begin{figure}[htbp]
-    \centering
+\centering
+\begin{minipage}[b]{0.6\textwidth}
+\begin{itemize}
+\item \textbf{Identificación:} preamplificadores DAS-1 y DAS-2.
+\item \textbf{Aplicación:} acondicionamiento de B\&K 8105.
+\item \textbf{Topología:} amplificador no inversor de bajo ruido.
+\item \textbf{Amplificador operacional:} LT1792.
+\item \textbf{Ganancia nominal:} aproximadamente 40~dB.
+\item \textbf{Respuesta en frecuencia:} hasta 100~kHz.
+\item \textbf{Entrada:} adaptada a cargas capacitivas del orden de nF.
+\item \textbf{Protección funcional:} corte en bajas frecuencias para reducir saturación por componentes de gran amplitud.
+\item \textbf{Alimentación:} entrada principal entre 9~V y 15~V, con generación local de tensión negativa.
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{0.38\textwidth}
+\centering
+\includegraphics[width=\linewidth]{graficos/preamp.jpg}
+\captionof{figure}{Preamplificador para hidrófonos DAS utilizado en la cadena acústica de EAMMRA.}
+\label{fig:preamp-das}
 
-    \begin{minipage}[b]{0.36\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{graficos/preamp.jpg}
-        \captionof{figure}{Preamplificador para hidrófonos DAS utilizado en la cadena acústica de EAMMRA.}
-        \label{fig:preamp-das}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.60\textwidth}
-        \begin{itemize}
-            \item \textbf{Identificación:} preamplificadores DAS-1 y DAS-2.
-            \item \textbf{Aplicación:} acondicionamiento de hidrófonos.
-            \item \textbf{Topología:} amplificador no inversor de bajo ruido.
-            \item \textbf{Amplificador operacional:} LT1792.
-            \item \textbf{Ganancia nominal:} aproximadamente 40~dB.
-            \item \textbf{Respuesta en frecuencia:} compatible con mediciones hasta 100~kHz.
-            \item \textbf{Entrada:} adaptada a cargas capacitivas (nF).
-            \item \textbf{Protección funcional:} corte en bajas frecuencias para reducir saturación por componentes de gran amplitud.
-            \item \textbf{Alimentación:} entrada principal entre 9~V y 15~V, con generación local de tensión negativa.
-        \end{itemize}
-    \end{minipage}
-
+\end{minipage}
 \end{figure}
 
-La etapa de preamplificación cumple tres funciones principales. En primer lugar, eleva la amplitud de las señales generadas por los hidrófonos para que superen el ruido propio de la placa de adquisición. En segundo lugar, presenta una impedancia de entrada adecuada para evitar una carga excesiva sobre el hidrófono y preservar la respuesta en bajas frecuencias. En tercer lugar, incorpora un corte en bajas frecuencias que atenúa componentes de gran amplitud capaces de saturar la etapa de digitalización. Esta última condición resulta importante en registros de ruido ambiente, donde pueden coexistir señales de baja frecuencia con niveles elevados y componentes de interés en bandas superiores.
+\vspace{20px}
 
-La digitalización de la señal acondicionada se realiza mediante una placa de audio USB Behringer UMC202HD. Esta placa proporciona dos canales de adquisición simultánea, frecuencia de muestreo de hasta 192~kHz por canal y resolución nominal de 24~bits. En la boya, la placa actúa como interfaz entre la cadena analógica de hidrófono-preamplificador y la computadora principal, donde el software de adquisición genera archivos WAV y metadatos asociados.
+La etapa de preamplificación cumple tres funciones principales. En primer lugar, eleva la amplitud de las señales generadas por los hidrófonos para que superen el ruido propio de la placa de adquisición. En segundo lugar, presenta una impedancia de entrada adecuada para evitar una carga excesiva sobre el hidrófono y preservar la respuesta de la cadena. En tercer lugar, incorpora un corte en bajas frecuencias que atenúa componentes de gran amplitud capaces de saturar la etapa de digitalización. Esta última condición resulta importante en registros de ruido ambiente, donde pueden coexistir señales de baja frecuencia con niveles elevados y componentes de interés en bandas superiores.
 
+\vspace{10pt}
+
+\noindent \textbf{Placa de audio Behringer UMC202HD.}
+
+La digitalización de la señal acondicionada se realiza mediante una placa de audio USB Behringer UMC202HD. Esta placa proporciona dos canales de adquisición simultánea, frecuencia de muestreo de hasta 192~kHz por canal y resolución nominal de 24~bits. En la boya, la placa actúa como interfaz entre la cadena analógica hidrófono-preamplificador y la computadora principal. En la Figura~\ref{fig:behringer-umc202hd} se presenta la placa utilizada y se resumen sus características principales.
+
+\vspace{20px}
 \begin{figure}[htbp]
-    \centering
-
-    \begin{minipage}[b]{0.36\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{graficos/behringer_umc202hd.png}
-        \captionof{figure}{Placa de audio Behringer UMC202HD utilizada para la digitalización de señales acústicas.}
-        \label{fig:behringer-umc202hd}
-    \end{minipage}
-    \hfill
-    \begin{minipage}[b]{0.60\textwidth}
-        \begin{itemize}
-            \item \textbf{Modelo:} Behringer UMC202HD.
-            \item \textbf{Tipo:} placa de audio USB de dos canales.
-            \item \textbf{Canales:} 2 entradas de adquisición simultánea.
-            \item \textbf{Frecuencia de muestreo máxima:} 192~kHz por canal.
-            \item \textbf{Resolución nominal:} 24~bits.
-            \item \textbf{Modo de entrada utilizado:} \textit{inst}, según configuración de ensayo.
-            \item \textbf{Interfaz con la computadora:} USB.
-            \item \textbf{Formato de almacenamiento:} archivos WAV.
-            \item \textbf{Uso en EAMMRA:} digitalización de señales acústicas acondicionadas.
-        \end{itemize}
-    \end{minipage}
-
+\centering
+\begin{minipage}[c]{0.36\textwidth}
+\centering
+\includegraphics[width=\linewidth]{graficos/behringer_umc202hd.png}
+\captionof{figure}{Placa de audio Behringer UMC202HD utilizada para la digitalización de señales acústicas.}
+\label{fig:behringer-umc202hd}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.60\textwidth}
+\begin{itemize}
+\item \textbf{Modelo:} Behringer UMC202HD.
+\item \textbf{Tipo:} placa de audio USB.
+\item \textbf{Canales:} 2 entradas de adquisición simultánea.
+\item \textbf{Frecuencia de muestreo máxima:} 192~kHz por canal.
+\item \textbf{Resolución nominal:} 24~bits.
+\item \textbf{Uso en EAMMRA:} digitalización de señales acústicas provenientes de los preamplificadores DAS-1/DAS-2.
+\end{itemize}
+\end{minipage}
 \end{figure}
 
 La caracterización del conjunto placa-preamplificador se documenta en la Nota Técnica AS~02/26 \citep{Cinquini2026_AS0226}. En dicho trabajo se relevaron la respuesta en frecuencia de la placa de audio, la respuesta de los preamplificadores DAS-1 y DAS-2, la figura de ruido propio y el crosstalk entre canales. Los resultados obtenidos permitieron verificar que la cadena de adquisición acústica es compatible con el uso previsto en EAMMRA y que el hardware de adquisición no constituye un limitante para la medición de niveles de ruido ambiente submarino dentro del rango operativo considerado.
 
-Desde el punto de vista funcional de la plataforma de hardware, el subsistema acústico constituye una cadena de adquisición formada por sensores hidroacústicos, etapas de acondicionamiento analógico y una interfaz de audio digital. Los hidrófonos convierten las variaciones de presión acústica submarina en señales eléctricas de bajo nivel, que son adaptadas por los preamplificadores antes de ingresar a la placa de audio USB. Esta última actúa como conversor analógico--digital multicanal y establece el vínculo entre el frente analógico de medición y la computadora principal. La separación física entre transductores, acondicionamiento e interfaz digital permite preservar la modularidad del conjunto, facilita el ensayo independiente de cada etapa y permite reemplazar componentes sin modificar la arquitectura general del sistema.
-
+En conjunto, el subsistema acústico queda definido como una cadena instrumental calibrable y modular. Los hidrófonos establecen la sensibilidad primaria frente al campo acústico submarino, los preamplificadores adecuan la señal a los niveles requeridos por la etapa de digitalización y la placa de audio convierte ambos canales en datos digitales disponibles para la computadora principal. Esta separación por etapas facilita la verificación individual de componentes, la trazabilidad de la cadena de medición y el mantenimiento del sistema durante la operación de la boya.
 
 \subsection{Módem satelital Iridium SBD.}
 
-El subsistema Iridium permite la transmisión remota de mensajes mediante el servicio SBD. En la boya se utiliza para enviar información compacta de estado, diagnóstico y resultados seleccionados del procesamiento acústico. La telemetría satelital no reemplaza al almacenamiento local, sino que provee un canal de supervisión remota y recuperación parcial de información crítica.
+El subsistema Iridium proporciona el enlace de telemetría satelital de la boya EAMMRA mediante el servicio \textit{Short Burst Data} (SBD). Este servicio está orientado a la transmisión bidireccional de mensajes cortos entre equipos remotos y sistemas centrales, por lo que resulta adecuado para plataformas autónomas con bajo volumen de datos transmitidos y operación fuera de cobertura celular o infraestructura costera \citep{IridiumSBDService}. En la boya, el enlace satelital se utiliza para transmitir información compacta de estado, diagnóstico y resultados seleccionados, sin reemplazar al almacenamiento local de datos completos.
 
+La familia de transceptores Iridium 9603/9603N constituye una referencia técnica representativa para este tipo de integración. Estos módulos están diseñados como transceptores SBD de placa única, destinados a incorporarse dentro de un sistema anfitrión que provee alimentación, lógica de control, antena y acondicionamiento de interfaces. El transceptor no implementa voz, datos conmutados por circuito ni SMS, sino exclusivamente comunicación SBD. Esta característica es consistente con el uso previsto en EAMMRA, donde la telemetría se limita a mensajes breves y seleccionados \citep{Iridium9603NDevGuide}. En la Figura~\ref{fig:iridium} se muestra el módem satelital Iridium utilizado como periférico de telemetría remota.
+
+\begin{figure}[htbp]
+\centering
+\begin{minipage}[b]{0.36\textwidth}
+\centering
+\includegraphics[width=0.90\linewidth]{graficos/iridium.png}
+\captionof{figure}{Módem satelital Iridium utilizado para telemetría remota mediante el servicio SBD.}
+\label{fig:iridium}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{0.60\textwidth}
 \begin{itemize}
-    \item \textbf{Tecnología:} Iridium SBD.
-    \item \textbf{Interfaz eléctrica:} RS232.
-    \item \textbf{Protocolo de control:} comandos AT.
-    \item \textbf{Configuración serie de referencia:} 8 bits de datos, sin paridad, 1 bit de parada.
-    \item \textbf{Tipo de mensajes:} mensajes binarios de estado y resultados compactos de procesamiento.
-    \item \textbf{Uso en la boya:} diagnóstico remoto, supervisión de continuidad operativa y transmisión de información resumida.
+\item \textbf{Servicio:} Iridium Short Burst Data.
+\item \textbf{Tipo de enlace:} comunicación satelital en banda L.
+\item \textbf{Mensajes:} \textit{Mobile Originated} y \textit{Mobile Terminated}.
+\item \textbf{Interfaz de control:} puerto serie con comandos AT.
+\item \textbf{Interfaz RF:} antena externa para banda Iridium.
+\item \textbf{Impedancia nominal de antena:} 50~($\Omega$).
+\item \textbf{Función en EAMMRA:} transmisión remota de estado, diagnóstico y resultados compactos.
 \end{itemize}
+\end{minipage}
+\end{figure}
 
-El servicio SBD impone restricciones de tamaño de mensaje, por lo que los datos transmitidos deben seleccionarse, compactarse y codificarse de manera eficiente. En la arquitectura del sistema, la transmisión se ejecuta en ciclos regulares definidos por el planificador de tareas y se desacopla de la finalización inmediata de una adquisición. Esta estrategia evita dependencias temporales rígidas entre adquisición, procesamiento y comunicación satelital.
 
-\textbf{Almacenamiento local.}
 
-El almacenamiento local constituye el repositorio primario de datos de la boya. Allí se conservan archivos WAV de audio, mediciones estructuradas, resultados de procesamiento, registros de eventos, logs de ejecución y estados del sistema. La telemetría satelital transmite sólo un subconjunto resumido de esta información.
+Desde el punto de vista eléctrico, la integración del módem requiere considerar dos aspectos principales: la interfaz serie de control y la alimentación durante los ciclos de transmisión. El transceptor 9603/9603N utiliza una interfaz serie de tipo DCE hacia la aplicación anfitriona y transfiere comandos, respuestas y datos SBD mediante comandos AT. Si el sistema anfitrión emplea niveles RS-232 convencionales, debe incorporarse la adaptación de niveles correspondiente. 
 
-\begin{itemize}
-    \item \textbf{Datos almacenados:} archivos WAV, mediciones JSONL, resultados JSON, logs y estados de sistema.
-    \item \textbf{Función principal:} preservación de datos completos de campaña.
-    \item \textbf{Función secundaria:} soporte a diagnóstico posterior y trazabilidad operativa.
-    \item \textbf{Criterio de diseño:} priorizar la integridad de datos ya adquiridos frente a nuevas adquisiciones.
-\end{itemize}
+La antena satelital constituye un elemento crítico del enlace. Debe estar ubicada con una vista despejada del cielo y con mínima obstrucción por la estructura de la boya, el mástil u otros periféricos instalados. El tramo de RF entre el módem y la antena debe mantener la impedancia adecuada, minimizar pérdidas y utilizar conectores y cable coaxial compatibles con operación en ambiente marítimo. En términos de diseño físico, la instalación debe proteger conectores, evitar esfuerzos mecánicos sobre el cableado y asegurar una puesta a masa coherente con el resto de la electrónica embarcada.
 
-La política de almacenamiento asociada a la adquisición acústica es conservadora. Antes de iniciar una grabación se verifica la existencia del directorio de destino, la disponibilidad de espacio libre y el tamaño máximo esperado del archivo WAV. Si las condiciones no son aceptables, el sistema rechaza la adquisición y registra la causa. Esta decisión protege la información previamente adquirida y reduce el riesgo de archivos incompletos durante operación autónoma.
+El uso de SBD impone una restricción deliberada sobre el volumen de información transmitida. Por esta razón, el enlace satelital se reserva para datos resumidos y de alto valor operativo, tales como estado general del sistema, continuidad de operación, condiciones energéticas, disponibilidad de almacenamiento, posición, diagnóstico de periféricos y resultados compactos derivados de mediciones acústicas. Los archivos completos, en particular los registros WAV y los datos de mayor volumen, permanecen almacenados localmente en la boya.
+
+En conjunto, el módem Iridium SBD se incorpora como periférico de comunicación remota de baja tasa de datos y alta cobertura geográfica. Su valor dentro de EAMMRA no reside en transportar grandes volúmenes de información, sino en permitir seguimiento remoto, verificación de continuidad operativa y recuperación parcial de información crítica durante campañas prolongadas. Esta función complementa el almacenamiento local y proporciona una vía de supervisión externa cuando la boya opera fuera del alcance de redes terrestres.
+
+\vspace{20px}
+\subsection{Almacenamiento local.}
+
+La boya EAMMRA incorpora almacenamiento local mediante una unidad de estado sólido de 1~TB. Este dispositivo constituye el soporte primario para conservar los datos científicos y operativos adquiridos durante una campaña. La telemetría satelital Iridium SBD permite transmitir información compacta de estado, diagnóstico y resultados seleccionados, pero no está destinada al envío de archivos de gran volumen. Por este motivo, los registros completos, en particular los archivos acústicos, permanecen almacenados en la boya hasta su recuperación durante tareas de mantenimiento o al finalizar la operación.
+
+La elección de una unidad SSD resulta adecuada para una plataforma marítima autónoma. A diferencia de un disco rígido mecánico, un SSD no posee partes móviles, presenta mayor tolerancia frente a vibraciones y movimientos, y reduce el riesgo de fallas asociadas a golpes durante maniobras de despliegue, recuperación o transporte. Además, su bajo volumen físico y su consumo moderado facilitan la integración dentro del gabinete electrónico de la boya, junto con la computadora principal y los periféricos de adquisición.
+
+El almacenamiento local concentra información de distinta naturaleza. Los archivos acústicos WAV constituyen el conjunto de datos de mayor volumen y representan el registro primario del subsistema acústico. Junto con ellos se almacenan mediciones meteorológicas del anemómetro WindSonic, variables ambientales internas provistas por el AHT10, variables inerciales medidas por el MPU6050, parámetros energéticos del controlador solar MPPT, datos de posición y tiempo, registros de eventos, mensajes de diagnóstico y mensajes de telemetría generados o pendientes de transmisión.
+
+El volumen de almacenamiento requerido está dominado por la adquisición acústica. Para una señal digital de $N_c$ canales, frecuencia de muestreo $f_s$ y $N_b$ bytes por muestra, el flujo ideal de datos puede estimarse como:
+
+\begin{equation}
+R = N_c \cdot f_s \cdot N_b
+\label{eq:flujo-datos-acusticos}
+\end{equation}
+
+En una configuración de dos canales, frecuencia de muestreo de 192~kHz y resolución de 24~bits, equivalente a 3~bytes por muestra, el flujo resultante es aproximadamente 1.15~MB/s. Esto corresponde a unos 4.15~GB/h, o cerca de 100~GB por día de adquisición continua. Por lo tanto, una unidad de 1~TB permite almacenar del orden de varios días de audio continuo a máxima tasa, y un período mayor cuando la adquisición se organiza en ventanas temporales o con frecuencias de muestreo menores. Si el formato de almacenamiento utiliza palabras de 32~bits por muestra, el volumen diario aumenta en forma proporcional.
+
+
+
+Además de la capacidad nominal, el almacenamiento local debe considerarse como parte de la confiabilidad operativa del sistema. La boya puede experimentar reinicios, interrupciones de energía o apagados controlados durante períodos de baja disponibilidad energética. Por este motivo, el uso del SSD debe complementarse con criterios de escritura robusta, cierre ordenado de archivos y separación entre datos científicos, registros de estado y mensajes de telemetría. Esta organización facilita la recuperación posterior de la información y permite reconstruir la secuencia de operación de la boya ante eventos anómalos.
+
+En conjunto, el SSD de 1~TB actúa como memoria persistente principal del sistema embebido. Su función es preservar la totalidad de los datos de campaña, mientras que la telemetría satelital proporciona una vía de supervisión remota limitada a información compacta. Esta separación entre almacenamiento local de alto volumen y transmisión remota de baja tasa permite compatibilizar la adquisición acústica de alta demanda con la operación autónoma y energéticamente restringida de la boya.
+
 
 \section{Diseño e Implementación}
 \label{sec:diseno_e_implementacion}
