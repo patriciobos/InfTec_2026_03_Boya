@@ -133,73 +133,199 @@ Los requerimientos no funcionales responden a las restricciones propias de una p
 
 En conjunto, estos requerimientos justifican la arquitectura adoptada. La combinación de módulos de bajo nivel, FSM, Router, scheduler central, almacenamiento estructurado, telemetría binaria, pruebas automatizadas y soporte de simulación permite abordar la complejidad de una boya operativa sin concentrar toda la lógica en un bloque monolítico. La Introducción Específica presentada en esta sección establece, por lo tanto, el marco técnico necesario para comprender las decisiones de diseño e implementación desarrolladas en las secciones siguientes.
 
-\section{Entorno de Trabajo, Repositorio y Herramientas}
-\label{sec:entorno-trabajo-repositorio-herramientas}
+\section{Introducción Específica}
+\label{sec:introduccion_especifica}
 
-Esta sección describe el entorno utilizado para desarrollar, ejecutar, probar y mantener el sistema embebido de la boya EAMMRA. El objetivo no es presentar todavía la arquitectura interna del software, sino documentar las condiciones de trabajo que permiten reproducir la instalación, operar el programa principal, verificar periféricos y sostener la trazabilidad técnica del desarrollo. En este sentido, se describen la plataforma de ejecución, las dependencias del sistema operativo, el entorno Python, la organización general del repositorio del sistema, las herramientas de desarrollo y los mecanismos de ejecución operativa en la computadora embarcada.
+\subsection{Alcance Técnico del Sistema Documentado}\label{subsec:alcance_tecnico_del_sistema_documentado}
 
-\subsection{Plataforma de ejecución y dependencias}
+El presente informe documenta el sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría de la boya instrumental EAMMRA. El sistema comprende la computadora principal embarcada, los periféricos de sensado, la cadena de adquisición acústica, el subsistema de energía, el almacenamiento local, la telemetría satelital y el software que coordina la operación autónoma de la plataforma.
 
-El software de control de la boya se ejecuta sobre una computadora embarcada con sistema operativo GNU/Linux. Esta elección permite disponer de un entorno de propósito general, estable y extensible, adecuado para integrar periféricos heterogéneos mediante interfaces USB, I2C, RS-232, RS-485 y audio digital. A su vez, facilita el uso de herramientas estándar para administración de procesos, registro de eventos, acceso a dispositivos, instalación de dependencias y ejecución automática de servicios al inicio del sistema.
+La Sección~\ref{sec:introduccion_especifica} introduce el sistema concreto sobre el cual se desarrolla el informe. Su objetivo es describir la plataforma de hardware, las herramientas de software, el entorno de trabajo, la arquitectura funcional general y los requerimientos que justifican las decisiones de diseño. El detalle de implementación del proceso principal, la estructura interna del repositorio, los módulos de bajo nivel, las Máquinas de Estados Finitos, el enrutador de eventos, el planificador de tareas, las políticas de persistencia y los flujos internos de mensajes se desarrolla en la Sección~\ref{sec:diseno_e_implementacion}.
 
-El lenguaje de implementación principal es Python~3. El proyecto utiliza un entorno virtual, ubicado en \texttt{.venv}, dentro del directorio de trabajo, para aislar las dependencias del sistema embebido respecto de los paquetes instalados globalmente en la computadora. Esta decisión mejora la reproducibilidad del entorno, evita conflictos entre versiones de bibliotecas y permite reinstalar el sistema a partir de archivos de requerimientos incluidos en el repositorio. Las dependencias de ejecución se agrupan en \texttt{support/requirements.txt}, mientras que las dependencias adicionales para desarrollo, pruebas y análisis se agrupan en \texttt{support/requirements-dev.txt} \citep{BoyaRepo}.
+Desde el punto de vista del alcance, el sistema documentado incluye:
 
-En el sistema operativo se requieren paquetes asociados al soporte de audio, compilación de extensiones, acceso a buses de bajo nivel y diagnóstico de dispositivos. Entre las dependencias de sistema se incluyen \texttt{portaudio19-dev}, utilizado por las bibliotecas de adquisición de audio, \texttt{python3-dev}, necesario para compilar o instalar ciertos paquetes Python, e \texttt{i2c-tools}, utilizado para inspeccionar buses I2C y verificar la presencia de dispositivos conectados.
-
-La integración de los sensores AHT10 y MPU6050 mediante el adaptador USB--I2C requiere, además, soporte específico para el controlador CH431A/CH341. En el README del repositorio se documenta la instalación del driver \texttt{ch341-i2c-spi-gpio}, junto con dependencias de compilación como \texttt{git}, \texttt{build-essential}, las cabeceras del núcleo Linux correspondiente, \texttt{i2c-tools} y \texttt{python3-pip}. El procedimiento incluye la compilación del driver, la carga del módulo \texttt{i2c-dev}, la inserción de los módulos \texttt{ch341-core.ko} e \texttt{i2c-ch341.ko}, y la verificación del bus mediante \texttt{i2cdetect}. Esta verificación permite confirmar que el adaptador USB--I2C fue reconocido por el sistema operativo y que los sensores conectados al bus pueden ser inspeccionados antes de ejecutar el software de adquisición \citep{BoyaRepo}.
-
-También se documenta la configuración de permisos para acceder a los dispositivos \texttt{/dev/i2c-*} sin privilegios de administrador. Para ello se crea o utiliza el grupo \texttt{i2c}, se incorpora el usuario operativo a dicho grupo y se actualiza la sesión de trabajo. Este aspecto es relevante para la operación embarcada, ya que permite que el proceso principal acceda a los sensores I2C sin ejecutarse como usuario administrador, lo que reduce riesgos operativos y simplifica la administración del sistema.
-
-\subsection{Repositorio del sistema embebido}
-
-El repositorio del sistema embebido actúa como unidad de trazabilidad técnica del desarrollo. En él se integran el código fuente, los archivos de configuración, los scripts auxiliares, la documentación de periféricos, los datos de soporte, las pruebas automatizadas y los reportes generados durante ensayos. Todas las rutas relativas se resuelven desde la raíz del repositorio, lo que simplifica la ejecución reproducible del sistema tanto en laboratorio como en la computadora embarcada \citep{BoyaRepo}.
-
-La organización general del repositorio separa los elementos de operación, configuración, documentación y prueba. La carpeta \texttt{modules/} contiene los módulos del sistema embebido, organizados por subsistema. La carpeta \texttt{configs/} contiene archivos de configuración general, intervalos de adquisición y selección de módulos simulados. La carpeta \texttt{docs/} reúne manuales y documentación técnica de periféricos. La carpeta \texttt{support/} contiene tablas, calibraciones, datos de referencia y archivos de requerimientos. La carpeta \texttt{scripts/} agrupa utilidades de ejecución, detención y ensayo. La carpeta \texttt{test/} contiene pruebas automatizadas y reportes asociados \citep{BoyaRepoDocs}.
-
-El archivo \texttt{main.py} constituye el punto de entrada del sistema. A nivel de organización general, el repositorio distingue módulos de bajo nivel, orientados al acceso al hardware o al procesamiento específico, y máquinas de estados asociadas a cada subsistema. La arquitectura interna, incluyendo el enrutador de eventos, el planificador de tareas, las máquinas de estados y los flujos de comunicación entre procesos, se desarrolla en la sección de Diseño e Implementación. En esta sección sólo se destaca que dicha organización queda reflejada en la estructura del repositorio y permite separar código operativo, configuración, documentación y pruebas.
-
-Los archivos de configuración principales son:
 \begin{itemize}
-\item \texttt{configs/config.json}
-\item \texttt{configs/scheduler.json}
-\item \texttt{configs/mock\_modules.json}
-\end{itemize}. 
+    \item La computadora principal embarcada como núcleo de procesamiento y control.
+    \item Los sensores ambientales, inerciales, meteorológicos, de posicionamiento y de navegación.
+    \item El subsistema de adquisición acústica, compuesto por hidrófonos, preamplificadores y placa de audio USB.
+    \item El subsistema de supervisión energética, asociado al controlador de carga solar y al banco de baterías.
+    \item El almacenamiento local de archivos de audio, mediciones estructuradas, resultados procesados, logs y estados del sistema.
+    \item La telemetría satelital mediante Iridium SBD para transmisión remota de mensajes de estado y productos seleccionados de procesamiento.
+    \item El software de control desarrollado en Python~3, con soporte para operación con hardware real, simulación parcial mediante \emph{mocks}, pruebas automatizadas y configuración externa.
+\end{itemize}
 
-El primero concentra parámetros generales de adquisición, directorios de datos y registros, y habilitación de funciones de comunicación. El segundo define intervalos de operación del planificador central. El tercero permite declarar módulos de bajo nivel simulados para ensayos repetibles. Esta separación facilita modificar parámetros de operación sin alterar el código fuente y permite distinguir configuraciones de laboratorio, pruebas y operación embarcada.
-
-\subsection{Herramientas de desarrollo, calidad y pruebas}
-
-El desarrollo se realiza con herramientas orientadas a mantener legibilidad, consistencia y verificabilidad del código. Como entorno de edición se emplea Visual Studio Code, junto con extensiones de asistencia para Python. Pylance proporciona análisis en el editor, autocompletado, detección temprana de errores y apoyo para navegación de código \citep{PylanceDocs}. Pylint se utiliza como analizador estático para identificar problemas de estilo, errores potenciales, código no utilizado, convenciones incumplidas y construcciones de mantenimiento riesgoso \citep{PylintDocs}. Black se emplea como formateador automático para mantener un estilo uniforme en todos los archivos Python del proyecto \citep{BlackDocs}.
-
-Las pruebas automatizadas se implementan con \texttt{pytest}, lo que permite verificar componentes del sistema en forma repetible y separar ensayos que requieren hardware real de pruebas que pueden ejecutarse en cualquier entorno de desarrollo \citep{pytestDocs}. La suite local por defecto se ejecuta sin hardware, excluyendo pruebas marcadas como dependientes de periféricos físicos. Para evaluar módulos de bajo nivel contra dispositivos reales, el repositorio incluye scripts de ensayo que ejecutan pruebas específicas y generan reportes en \texttt{test/reports/}. Esta separación permite mantener un ciclo rápido de desarrollo sin hardware y, al mismo tiempo, conservar pruebas operacionales para banco de integración.
-
-El uso de módulos simulados, o \emph{mocks}, permite reproducir flujos de ejecución sin conectar todos los periféricos físicos. El repositorio contempla la activación global de simulaciones mediante la variable de entorno \texttt{USE\_LL\_MOCKS=1}, así como la activación selectiva de módulos individuales, por ejemplo \texttt{USE\_MOCK\_AHT10=1}. También puede definirse una selección persistente de módulos simulados mediante \texttt{configs/mock\_modules.json}. Esta capacidad resulta útil para ensayos de integración, depuración de lógica de control y validación de flujos de operación en ausencia de hardware completo.
-
-Los registros generados durante ejecución y pruebas se almacenan en la carpeta \texttt{logs/}, mientras que las mediciones y salidas de adquisición se registran en \texttt{data/}. Los archivos de mediciones utilizan formato JSONL, con una línea por medición y campos con unidades explícitas cuando corresponde. Esta convención permite inspección incremental, procesamiento posterior y recuperación parcial de datos aun cuando la ejecución se interrumpa antes de finalizar una campaña.
-
-\subsection{Ejecución operativa en la PC embarcada}
-
-La ejecución operativa del sistema se concentra en \texttt{main.py}, que actúa como programa principal de la boya. En ejecución directa con hardware real, el programa se inicia desde la raíz del repositorio utilizando el intérprete Python del entorno virtual. Esta modalidad resulta apropiada para desarrollo, pruebas de banco o ejecución manual controlada. Para operación embarcada se utilizan scripts auxiliares que encapsulan las tareas de arranque, detención, limpieza de procesos previos y redirección de salidas.
-
-El script \texttt{scripts/start\_main.sh} inicia \texttt{main.py} con una limpieza previa de procesos anteriores y registra la salida en \texttt{logs/main.out}. Esta utilidad permite iniciar el sistema de manera uniforme, sin depender de comandos manuales largos ni de la memoria del operador. Además, centraliza criterios de arranque que son relevantes durante pruebas repetidas, mantenimiento o reinstalación del sistema.
-
-El script \texttt{scripts/stop\_main.sh} detiene \texttt{main.py} y sus subprocesos asociados en forma controlada. El procedimiento documentado envía primero una señal \texttt{SIGTERM}, espera la finalización de los procesos y sólo recurre a \texttt{SIGKILL} si permanecen procesos activos. También limpia archivos de identificación de proceso obsoletos, como \texttt{main.pid}, y verifica que no queden variables de entorno de simulación activas o procesos remanentes de \texttt{main.py}. Esta lógica de detención ordenada es importante para preservar registros, evitar escrituras incompletas y dejar el sistema en un estado conocido antes de tareas de mantenimiento o reinicio.
-
-En la computadora embarcada, \texttt{main.py} queda cargado como servicio del sistema operativo para ejecutarse automáticamente durante el arranque de la PC. Esta configuración es necesaria para una plataforma autónoma: si la boya se energiza, reinicia o recupera alimentación luego de un evento transitorio, el sistema de adquisición y supervisión debe iniciar sin intervención manual. La ejecución como servicio complementa los scripts de arranque y detención, ya que permite administrar el proceso principal con mecanismos estándar del sistema operativo y asegurar su activación durante la secuencia de inicio.
-
-La operación distingue tres modos principales. El primero corresponde a la ejecución con hardware real, utilizada durante campañas o ensayos de integración completos. El segundo corresponde a la ejecución con módulos simulados, empleada para validar flujos de control y comportamiento general sin todos los periféricos conectados. El tercero corresponde a la ejecución de pruebas automatizadas, que permite verificar unidades funcionales, módulos de bajo nivel y condiciones de error en forma repetible. Estos modos comparten el mismo repositorio y entorno de dependencias, lo que favorece la continuidad entre desarrollo, banco de pruebas y operación embarcada.
-
-La definición explícita del entorno de ejecución, las dependencias del sistema operativo, el uso de un entorno virtual, la estructura del repositorio, las herramientas de análisis y prueba, y la ejecución automática como servicio establecen una base operativa reproducible para el sistema embebido. Esta base permite reinstalar el software, verificar periféricos, ejecutar ensayos con y sin hardware real, y recuperar la operación luego de reinicios o cortes de energía. Sobre estas condiciones de trabajo se apoya la integración de la plataforma física descripta en la sección siguiente y, posteriormente, la arquitectura de control, adquisición, almacenamiento y telemetría desarrollada para la boya EAMMRA.
-
-\vspace{10pt}
-
-
-\vspace{10pt}
+No forman parte del alcance principal de esta sección el diseño mecánico detallado de la boya, el análisis estructural, la ingeniería electrónica interna de cada periférico comercial ni la presentación de resultados experimentales. Estos aspectos se citan cuando resultan necesarios para justificar la arquitectura, pero el foco del presente informe es el sistema embebido que controla la boya operativa.
 
 
 
+\subsection{Entorno de Software, Lenguaje y Dependencias}\label{subsec:entorno_de_software_lenguaje_y_dependencias}
 
-\clearpage
+El lenguaje principal utilizado para el desarrollo del sistema embebido de control fue Python~3. La elección de este lenguaje responde a la necesidad de integrar, en una misma plataforma de software, acceso a periféricos, comunicación serie, adquisición de audio, procesamiento de señales, almacenamiento estructurado, telemetría, pruebas automatizadas y herramientas de simulación. Python ofrece una sintaxis expresiva, amplia disponibilidad de bibliotecas y buena integración con sistemas GNU/Linux, características adecuadas para una computadora principal embarcada.
+
+En este proyecto, Python se utiliza como lenguaje de coordinación del sistema. Las funciones de lectura de periféricos, procesamiento, persistencia, transmisión y control de estado se organizan mediante módulos independientes, Máquinas de Estados Finitos, un enrutador de eventos y un planificador de tareas central. De esta manera, el lenguaje no se emplea sólo para scripts auxiliares, sino como base de la aplicación principal de control de la boya.
+
+Para aislar las dependencias del proyecto respecto del sistema operativo base se utilizó un entorno virtual de Python, ubicado convencionalmente en el directorio \texttt{.venv}. Este mecanismo permite mantener un intérprete y un conjunto de bibliotecas específicos para la aplicación, lo que reduce interferencias con otros paquetes instalados en el sistema y favorece la reproducibilidad del entorno de ejecución \cite{PythonVenvDocs,PyPAPackagingGuide}.
+
+La instalación del entorno se realiza desde la raíz del repositorio. En primer lugar, se requiere disponer de ciertas dependencias del sistema operativo asociadas al acceso a hardware, interfaces de bajo nivel y adquisición de audio. En particular, el proyecto recomienda instalar los paquetes:
+
+\begin{verbatim}
+sudo apt-get update
+sudo apt-get install -y portaudio19-dev python3-dev i2c-tools
+\end{verbatim}
+
+Luego, el entorno virtual se activa mediante:
+
+\begin{verbatim}
+source .venv/bin/activate
+\end{verbatim}
+
+y las dependencias de Python se instalan mediante \texttt{pip}. Para una instalación orientada exclusivamente a ejecución, sin herramientas de prueba, se utiliza:
+
+\begin{verbatim}
+python -m pip install -r support/requirements.txt
+\end{verbatim}
+
+Para desarrollo, verificación y ejecución de pruebas automatizadas, se instala el conjunto ampliado de dependencias:
+
+\begin{verbatim}
+python -m pip install -r support/requirements-dev.txt
+\end{verbatim}
+
+El archivo \texttt{support/requirements.txt} define las bibliotecas necesarias para la operación nominal del sistema. Las versiones se especifican mediante restricciones de compatibilidad, salvo en el caso de \texttt{PyAudio}, cuya versión se fija explícitamente.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Dependencias principales de ejecución del sistema.}
+    \label{tab:runtime-dependencies}
+    \begin{tabular}{lll}
+        \hline
+        \textbf{Biblioteca} & \textbf{Versión requerida} & \textbf{Uso principal} \\
+        \hline
+        \texttt{numpy}    & \texttt{>=2.0,<3}    & Cálculo numérico y procesamiento de datos. \\
+        \texttt{pandas}   & \texttt{>=2.0,<4}    & Manejo de datos tabulares y archivos estructurados. \\
+        \texttt{scipy}    & \texttt{>=1.14,<2}   & Procesamiento científico y análisis de señales. \\
+        \texttt{PyAudio}  & \texttt{==0.2.14}    & Interfaz con PortAudio para adquisición de audio. \\
+        \texttt{pyserial} & \texttt{>=3.5,<4}    & Comunicación con periféricos mediante puertos serie. \\
+        \texttt{smbus2}   & \texttt{>=0.5,<1}    & Comunicación con dispositivos sobre bus I2C. \\
+        \hline
+    \end{tabular}
+\end{table}
+
+El archivo \texttt{support/requirements-dev.txt} extiende las dependencias de ejecución e incorpora herramientas específicas para desarrollo, pruebas y generación de gráficos.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Dependencias adicionales de desarrollo y pruebas.}
+    \label{tab:dev-dependencies}
+    \begin{tabular}{lll}
+        \hline
+        \textbf{Biblioteca} & \textbf{Versión requerida} & \textbf{Uso principal} \\
+        \hline
+        \texttt{pytest}     & \texttt{>=8,<10}     & Ejecución de pruebas automatizadas. \\
+        \texttt{pytest-cov} & \texttt{>=7,<8}      & Medición de cobertura de pruebas. \\
+        \texttt{matplotlib} & \texttt{>=3.8,<4}    & Generación de gráficos y reportes técnicos. \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Esta separación entre dependencias de ejecución y dependencias de desarrollo permite distinguir el entorno mínimo requerido para operar la boya del entorno ampliado utilizado durante integración, depuración y validación. En una plataforma embebida operativa resulta conveniente mantener el entorno de ejecución tan acotado como sea posible, mientras que en laboratorio se justifica incorporar herramientas adicionales para pruebas, análisis y generación de evidencia.
+
+El uso del entorno virtual también facilita la ejecución explícita de comandos desde el intérprete asociado al proyecto. Por ejemplo, la aplicación principal puede iniciarse con:
+
+\begin{verbatim}
+PYTHONPATH=. .venv/bin/python main.py
+\end{verbatim}
+
+mientras que la suite de pruebas sin hardware puede ejecutarse mediante:
+
+\begin{verbatim}
+PYTHONPATH=. .venv/bin/python -m pytest -m "not hardware" -q
+\end{verbatim}
+
+De esta manera, el entorno de trabajo queda definido por tres niveles complementarios: paquetes del sistema operativo necesarios para interfaces físicas, entorno virtual Python para aislamiento de bibliotecas y archivos \texttt{requirements} para reproducir las versiones compatibles de las dependencias del proyecto. Esta organización contribuye a la trazabilidad, repetibilidad y mantenibilidad del software embarcado.
+
+\subsection{Herramientas de Desarrollo y Calidad de Código}\label{subsec:herramientas_de_desarrollo_y_calidad_de_codigo}
+
+El desarrollo del software se gestionó mediante un repositorio Git alojado en GitHub. El repositorio integra en una única base de trabajo el código fuente del sistema embebido, los archivos de configuración, los manuales de periféricos, los scripts auxiliares, los datos de soporte y los ensayos automatizados \cite{BoyaRepo}. En esta sección se describe el repositorio como herramienta de desarrollo, control de versiones y trazabilidad. La organización concreta del código fuente se detalla en la Sección~\ref{sec:diseno_e_implementacion}.
+
+Para asistir el desarrollo se utilizó Visual Studio Code con la extensión Pylance. Esta extensión provee soporte de lenguaje para Python, con funciones de autocompletado, navegación de símbolos, análisis de tipos, detección temprana de errores y asistencia durante la edición del código. Su uso resulta especialmente útil en un proyecto modular, donde las interfaces entre módulos, clases, funciones y estructuras de datos deben mantenerse consistentes a lo largo del desarrollo \cite{PylanceDocs}.
+
+Asimismo, se prevé incorporar Pylint como herramienta de análisis estático. Pylint permite inspeccionar el código fuente sin ejecutarlo, detectar errores probables, identificar problemas de estilo, advertir sobre construcciones potencialmente confusas y sugerir refactorizaciones. En un sistema embebido autónomo, este tipo de herramienta contribuye a reducir defectos antes de la etapa de integración con hardware, mejorar la mantenibilidad del código y reforzar criterios homogéneos de calidad \cite{PylintDocs}.
+
+También se incorpora Black como formateador automático de código. Su función es aplicar un estilo de formato consistente y reproducible sobre los archivos Python. Esta decisión reduce diferencias manuales de formato entre desarrolladores, facilita las revisiones de código, simplifica la interpretación de cambios entre versiones y favorece una base de código visualmente homogénea \cite{BlackDocs}.
+
+Para la ejecución de pruebas automatizadas se utilizó \texttt{pytest}, un framework de pruebas para Python orientado a la escritura de tests unitarios, funcionales y de integración con una sintaxis simple y legible \cite{pytestDocs}. A diferencia de enfoques más verbosos, \texttt{pytest} permite expresar verificaciones mediante sentencias \texttt{assert} convencionales, descubrir automáticamente archivos y funciones de prueba siguiendo convenciones de nombre, definir contextos reutilizables mediante \emph{fixtures} y organizar subconjuntos de ensayos mediante marcas o configuraciones específicas.
+
+En el presente desarrollo, \texttt{pytest} se empleó como herramienta principal para verificar el comportamiento de módulos individuales, validar la lógica de las Máquinas de Estados Finitos, ejecutar pruebas con componentes simulados y separar ensayos que no requieren hardware de aquellos destinados a periféricos reales. Su incorporación permite mejorar la repetibilidad de los ensayos, reducir regresiones durante el desarrollo y sostener una estrategia de verificación compatible con una arquitectura modular y mantenible.
+
+En conjunto, el entorno de desarrollo se estructura en tres niveles complementarios: el intérprete Python y su entorno virtual para aislar dependencias; las bibliotecas de ejecución y desarrollo declaradas en los archivos de requerimientos; y las herramientas de asistencia, análisis estático, formateo y prueba empleadas para mejorar la calidad del código. Esta combinación permite sostener un flujo de desarrollo controlado, repetible y auditable, compatible con la documentación técnica y la validación progresiva del sistema.
+
+\subsection{Arquitectura Funcional General del Sistema}\label{subsec:arquitectura_funcional_general_del_sistema}
+
+La arquitectura general del sistema se basa en una organización modular orientada a eventos. Cada subsistema se representa mediante una Máquina de Estados Finitos que encapsula sus estados, transiciones, acciones y condiciones de error. La comunicación entre módulos se realiza mediante mensajes, y un enrutador de eventos actúa como intermediario encargado de distribuir información entre productores y consumidores.
+
+Desde un punto de vista funcional, la arquitectura puede representarse mediante las siguientes capas:
+
+\begin{itemize}
+    \item \textbf{Capa de hardware:} comprende sensores, placa de audio, módem satelital, controlador solar, interfaces serie, buses I2C, almacenamiento y dispositivos físicos asociados.
+    \item \textbf{Capa de bajo nivel:} implementa el acceso directo a cada dispositivo o servicio específico. Incluye inicialización de interfaces, lectura de sensores, adquisición de audio, comunicación AT/SBD, lectura de controladores de energía y funciones auxiliares de hardware.
+    \item \textbf{Capa de control por estados:} implementa la lógica de estado de cada módulo. Cada Máquina de Estados Finitos recibe eventos, ejecuta acciones, valida resultados, registra estados y comunica eventos de salida al resto del sistema.
+    \item \textbf{Capa de enrutamiento:} centraliza la distribución de mensajes y evita dependencias directas entre módulos.
+    \item \textbf{Capa de planificación:} ejecuta el planificador de tareas central, responsable de disparar adquisiciones periódicas, transmisiones, tareas de mantenimiento y ciclos operativos de acuerdo con la configuración vigente.
+    \item \textbf{Capa de persistencia:} administra la escritura de mediciones, logs, estados, archivos de audio, resultados procesados y mensajes preparados para transmisión.
+    \item \textbf{Capa de telemetría:} prepara y transmite mensajes binarios mediante Iridium SBD, incluidos estados de sistema y resultados seleccionados de procesamiento acústico.
+\end{itemize}
+
+El flujo general de operación comienza con la inicialización de configuraciones, módulos y recursos del sistema. Una vez iniciado el proceso principal, el planificador de tareas central dispara eventos de adquisición de acuerdo con intervalos definidos. Los sensores ambientales, meteorológicos, inerciales, de posición y energía generan registros periódicos. Para los ensayos de verificación, la adquisición acústica se ejecuta con una periodicidad menor que la de los sensores de bajo ancho de banda, debido al mayor volumen de datos generado.
+
+El módulo de adquisición acústica realiza la grabación de audio y genera archivos WAV con metadatos asociados. Al finalizar una adquisición válida, el resultado queda disponible para el módulo de procesamiento de audio, que procesa el archivo y genera resultados compactos, persistidos en formato estructurado. Estos resultados pueden ser posteriormente seleccionados por el subsistema Iridium para su transmisión satelital.
+
+La telemetría Iridium se organiza en ciclos regulares. El sistema puede transmitir mensajes de estado que resumen la condición operativa de las Máquinas de Estados Finitos, los módulos de bajo nivel, la disponibilidad de almacenamiento, el estado energético y el tiempo desde el arranque. También puede transmitir resultados derivados del procesamiento de audio, compactados en formato binario para adecuarse a las restricciones de tamaño del enlace SBD.
+
+El diseño evita que la transmisión satelital dependa directamente de la finalización de una adquisición. En su lugar, el sistema registra la disponibilidad del último resultado válido y el planificador de tareas gobierna los momentos de transmisión. Esta decisión reduce acoplamientos, simplifica el control temporal del enlace satelital y permite mantener un comportamiento predecible aun cuando alguna tarea se demore, falle o produzca datos incompletos.
+
+\subsection{Requerimientos Funcionales y No Funcionales}\label{subsec:requerimientos_funcionales_y_no_funcionales}
+
+Los requerimientos funcionales del sistema surgen de la necesidad de controlar una boya instrumental autónoma con múltiples subsistemas integrados. En términos generales, el sistema debe ser capaz de adquirir datos, validarlos, almacenarlos, procesarlos parcialmente y transmitir información seleccionada en forma remota.
+
+Los requerimientos funcionales principales son:
+
+\begin{itemize}
+    \item Adquirir mediciones ambientales de temperatura y humedad.
+    \item Adquirir mediciones inerciales de aceleración y velocidad angular.
+    \item Adquirir información de posicionamiento, tiempo y datos de navegación mediante AIS/GPS.
+    \item Adquirir mediciones meteorológicas de velocidad y dirección del viento.
+    \item Relevar variables eléctricas del sistema de alimentación, incluidos parámetros asociados a panel solar, carga y batería.
+    \item Ejecutar adquisiciones acústicas mediante placa de audio USB y almacenar archivos WAV con metadatos asociados.
+    \item Procesar archivos de audio para obtener productos compactos compatibles con almacenamiento local y telemetría satelital.
+    \item Registrar mediciones en archivos persistentes con formato estructurado y unidades explícitas.
+    \item Registrar logs de ejecución, eventos relevantes, errores, advertencias y condiciones de diagnóstico.
+    \item Transmitir mensajes de estado de sistema mediante Iridium SBD.
+    \item Transmitir resultados seleccionados de procesamiento acústico mediante Iridium SBD.
+    \item Ejecutar tareas periódicas mediante un planificador de tareas central configurable.
+    \item Representar el comportamiento de cada módulo mediante Máquinas de Estados Finitos.
+    \item Permitir ejecución con hardware real, con todos los módulos simulados o con simulación parcial de módulos seleccionados.
+    \item Permitir pruebas automatizadas sin hardware y pruebas específicas contra hardware real.
+    \item Mantener archivos de configuración editables para adaptar intervalos, rutas, parámetros de adquisición, habilitación de telemetría y uso de \emph{mocks}.
+\end{itemize}
+
+Los requerimientos no funcionales responden a las restricciones propias de una plataforma autónoma embarcada. Entre ellos se destacan:
+
+\begin{itemize}
+    \item \textbf{Autonomía operativa:} el sistema debe ejecutar ciclos de adquisición, almacenamiento y transmisión sin intervención humana continua.
+    \item \textbf{Robustez:} el sistema debe tolerar fallas parciales de módulos, errores de lectura, indisponibilidad transitoria de periféricos y condiciones de comunicación no ideales.
+    \item \textbf{Persistencia segura:} los datos adquiridos no deben perderse por fallas evitables de software, configuraciones ambiguas o políticas agresivas de liberación de espacio.
+    \item \textbf{Bajo consumo relativo:} el software debe permitir ciclos de adquisición y transmisión compatibles con el presupuesto energético disponible.
+    \item \textbf{Mantenibilidad:} la separación entre bajo nivel, Máquinas de Estados Finitos, enrutador de eventos y planificador de tareas debe facilitar la modificación de módulos individuales sin afectar la arquitectura completa.
+    \item \textbf{Extensibilidad:} la arquitectura debe permitir la incorporación futura de nuevos sensores, nuevos productos de procesamiento o nuevos formatos de telemetría.
+    \item \textbf{Verificabilidad:} el comportamiento del sistema debe poder probarse mediante tests automatizados, ejecución con \emph{mocks}, ensayos de bajo nivel y pruebas de integración.
+    \item \textbf{Trazabilidad:} las mediciones, eventos, configuraciones y resultados de prueba deben poder relacionarse con módulos, horarios de ejecución y condiciones operativas.
+    \item \textbf{Degradación controlada:} ante una falla, el sistema debe registrar la condición, conservar datos previos, evitar acciones inseguras y continuar operando en la medida de lo posible.
+    \item \textbf{Diagnóstico remoto:} los mensajes satelitales deben permitir inferir el estado general de la boya, incluida la salud de módulos, almacenamiento, energía y continuidad operativa.
+\end{itemize}
+
+En conjunto, estos requerimientos justifican la arquitectura adoptada. La combinación de módulos de bajo nivel, Máquinas de Estados Finitos, enrutador de eventos, planificador de tareas central, almacenamiento estructurado, telemetría binaria, pruebas automatizadas y soporte de simulación permite abordar la complejidad de una boya operativa sin concentrar toda la lógica en un bloque monolítico. La Introducción Específica presentada en esta sección establece, por lo tanto, el marco técnico necesario para comprender las decisiones de diseño e implementación desarrolladas en las secciones siguientes.
+
 \section{Plataforma de Hardware y Periféricos Integrados}\label{sec:plataforma_de_hardware_y_perifericos_integrados}
 
 La boya EAMMRA integra una computadora principal embarcada y un conjunto de periféricos de sensado, adquisición, supervisión energética, almacenamiento y telemetría. La función del sistema embebido es coordinar estos dispositivos bajo un ciclo de operación autónomo, con registro persistente de datos, diagnóstico local y transmisión remota de información crítica. En esta sección se presenta la plataforma de hardware utilizada, con énfasis en los dispositivos que se vinculan directamente con el software de control, sus interfaces de comunicación, sus variables de operación y su función dentro de la arquitectura general del sistema.
@@ -241,7 +367,6 @@ La descripción de cada componente no se limita a sus características nominales, 
 
 El núcleo de procesamiento está constituido por una PC industrial Kaise KBOX-S-J6412, que se muestra en la Figura~\ref{fig:kaise}. Este equipo actúa como computadora principal de la boya y ejecuta el software de control desarrollado en Python~3 sobre un sistema operativo GNU/Linux. Su función es coordinar los periféricos, ejecutar los módulos de control, administrar el enrutador de eventos, ejecutar el planificador de tareas, adquirir datos, procesar archivos de audio, almacenar información y preparar mensajes de telemetría.
 
-\vspace{10px}
 \begin{figure}[htbp]
     \centering
     \begin{minipage}[b]{0.48\textwidth}
@@ -411,9 +536,6 @@ La alimentación del MANDO 301 se realiza desde el sistema de energía de la boya,
 En términos operativos, el aporte del MANDO 301 al sistema EAMMRA es doble. Por un lado, incrementa la seguridad de la plataforma al hacer visible la boya dentro del ecosistema AIS utilizado por embarcaciones y estaciones costeras. Por otro lado, proporciona datos de posición y tiempo que permiten asociar las mediciones ambientales, meteorológicas, energéticas y acústicas con una referencia espacial y temporal. 
 
 \vspace{10px}
-
-
-
 \subsection{Anemómetro ultrasónico WindSonic.}
 
 El equipo WindSonic de Gill Instruments es un anemómetro ultrasónico de dos ejes utilizado para medir velocidad y dirección del viento. En la boya EAMMRA, este instrumento aporta información meteorológica de superficie que resulta relevante para la caracterización ambiental del sitio de medición y para el análisis posterior de las condiciones asociadas al ruido ambiente submarino. 
@@ -493,51 +615,22 @@ Para una boya instrumental autónoma, esta diferencia es relevante. La energía di
 La diferencia funcional entre controladores PWM y MPPT se sintetiza en la Tabla~\ref{tab:pwm-mppt}. En el contexto de EAMMRA, la alternativa MPPT resulta más adecuada porque mejora el aprovechamiento energético disponible y permite obtener variables de supervisión útiles para la operación autónoma.
 
 \begin{table}[htbp]
-\centering
-\small
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.18}
-
-\caption{Comparación conceptual entre controladores solares PWM y MPPT.}
-\label{tab:pwm-mppt}
-
-\begin{tabular}{p{0.24\textwidth}p{0.35\textwidth}p{0.35\textwidth}}
-    \hline
-    \textbf{Característica} &
-    \textbf{PWM} &
-    \textbf{MPPT} \\
-    \hline
-
-    Punto de operación del panel &
-    Vinculado en forma directa a la tensión instantánea de la batería. &
-    Ajustado para operar cerca del punto de máxima potencia del panel. \\
-
-    Conversión de energía &
-    No realiza adaptación DC/DC optimizada entre panel y batería. &
-    Utiliza conversión DC/DC para adaptar tensión y corriente de carga. \\
-
-    Aprovechamiento energético &
-    Menor cuando la tensión óptima del panel difiere de la tensión de batería. &
-    Mayor aprovechamiento del arreglo fotovoltaico en condiciones variables. \\
-
-    Complejidad electrónica &
-    Baja, con arquitectura más simple. &
-    Mayor, debido al seguimiento del punto de máxima potencia y a la etapa de conversión. \\
-
-    Costo relativo &
-    Generalmente menor. &
-    Generalmente mayor. \\
-
-    Adecuación a EAMMRA &
-    Limitada para una plataforma autónoma con presupuesto energético restringido. &
-    Más adecuada para maximizar autonomía y supervisar variables eléctricas del sistema. \\
-
-    \hline
-\end{tabular}
-
+    \centering
+    \caption{Comparación conceptual entre controladores solares PWM y MPPT.}
+    \label{tab:pwm-mppt}
+    \begin{tabular}{lll}
+        \hline
+        \textbf{Característica} & \textbf{PWM} & \textbf{MPPT} \\
+        \hline
+        Punto de operación del panel & Cercano a tensión de batería & Cercano a máxima potencia \\
+        Conversión DC/DC & No optimizada & Con adaptación de tensión y corriente \\
+        Aprovechamiento energético & Menor en condiciones no ideales & Mayor aprovechamiento del panel \\
+        Complejidad electrónica & Baja & Mayor \\
+        Costo relativo & Menor & Mayor \\
+        Adecuación a EAMMRA & Limitada & Más adecuada para autonomía \\
+        \hline
+    \end{tabular}
 \end{table}
-
-
 
 Además de su función de carga, el XTRA2210N aporta información útil para el software de control mediante comunicación serie RS485 con protocolo Modbus. Entre las variables de interés se incluyen tensión y corriente del panel, tensión y corriente de batería, potencia de carga, temperatura de batería, temperatura interna del dispositivo, estado de carga estimado y estados de protección o falla. Estas mediciones permiten registrar la evolución energética de la boya, detectar condiciones anómalas y correlacionar el estado de energía con la ejecución de tareas de adquisición, procesamiento y transmisión satelital.
 
@@ -545,177 +638,137 @@ En términos funcionales, el controlador cumple cuatro roles dentro de EAMMRA: ma
 
 \subsection{Subsistema acústico.}
 
-El subsistema acústico constituye la cadena principal de adquisición científica de la boya EAMMRA. Su función es convertir el campo de presión acústica submarina en señales eléctricas, acondicionarlas mediante una etapa analógica de bajo ruido y digitalizarlas mediante una placa de adquisición de audio conectada a la computadora principal. Desde el punto de vista de hardware, la cadena está compuesta por dos hidrófonos analógicos calibrados Br{"u}el \& Kj{\ae}r 8105, dos preamplificadores para hidrófonos desarrollados por la División Acústica Submarina y una placa de audio USB Behringer UMC202HD.
+El subsistema acústico constituye la cadena principal de adquisición científica de la boya EAMMRA. Su función es convertir el campo de presión acústica submarina en señales eléctricas, acondicionarlas mediante una etapa analógica de bajo ruido, digitalizarlas mediante una placa de adquisición de audio y almacenarlas localmente para su posterior procesamiento. Desde el punto de vista funcional, el subsistema está compuesto por dos hidrófonos analógicos calibrados, dos preamplificadores para hidrófonos, una placa de audio USB de dos canales y el software de adquisición y procesamiento asociado.
 
-La arquitectura de adquisición responde a una separación funcional entre transducción, acondicionamiento y digitalización. Los hidrófonos convierten las variaciones de presión acústica en tensión eléctrica; los preamplificadores adaptan la impedancia, elevan el nivel de señal y limitan componentes de baja frecuencia capaces de saturar la etapa posterior; finalmente, la placa de audio digitaliza dos canales en forma simultánea y entrega los datos a la computadora principal mediante USB. Esta organización permite utilizar sensores acústicos calibrados y preservar una cadena instrumental verificable, con etapas diferenciadas para medición, acondicionamiento y conversión analógico-digital.
+Los sensores utilizados para captar las señales acústicas son dos hidrófonos analógicos calibrados Br{\"u}el \& Kj{\ae}r, modelo 8105. Se trata de transductores piezoeléctricos cerámicos, sin preamplificación interna, adecuados para mediciones de banda ancha en ambiente submarino. Su selección se justifica por su ancho de banda, sensibilidad, comportamiento omnidireccional y aptitud mecánica para operación sumergida \citep{byk}.
 
-\vspace{10pt}
-
-\noindent \textbf{Hidrófonos Br{"u}el \& Kj{\ae}r 8105.}
-
-Los sensores utilizados para captar las señales acústicas son dos hidrófonos analógicos calibrados Br{"u}el \& Kj{\ae}r, modelo 8105. Se trata de transductores piezoeléctricos cerámicos, sin preamplificación interna, adecuados para mediciones de banda ancha en ambiente submarino. Su selección se justifica por su ancho de banda, sensibilidad, comportamiento omnidireccional y aptitud mecánica para operación sumergida \citep{byk}. En la Figura~\ref{fig:8105} se presentan las dimensiones mecánicas principales del hidrófono junto con las características técnicas más relevantes para su integración en EAMMRA.
-
-\vspace{20px}
-\begin{figure}[htbp]
-\centering
-\begin{minipage}[b]{0.42\textwidth}
-\centering
-\includegraphics[height=.30\textheight]{graficos/8105.jpg}
-\captionof{figure}{Dimensiones mecánicas del hidrófono Br{"u}el \& Kj{\ae}r modelo 8105.}
-\label{fig:8105}
-\end{minipage}
-\hfill
-\begin{minipage}[b]{0.54\textwidth}
 \begin{itemize}
-\item \textbf{Modelo:} Br{"u}el \& Kj{\ae}r 8105.
-\item \textbf{Tipo:} hidrófono analógico piezoeléctrico calibrado.
-\item \textbf{Rango de frecuencia:} 0.1~Hz a 160~kHz.
-\item \textbf{Sensibilidad nominal:} (-205)~dB re 1~V/($\mu$)Pa.
-\item \textbf{Directividad:} omnidireccional en su rango operativo.
-\item \textbf{Presión hidrostática admisible:} 9.8~MPa, aproximadamente 1000~m de profundidad.
-\item \textbf{Protección externa:} recubrimiento polimérico apto para operación en medio marino.
-\item \textbf{Conexión:} cable sumergible integrado, con terminación BNC no sumergible.
+    \item \textbf{Modelo:} Br{\"u}el \& Kj{\ae}r 8105.
+    \item \textbf{Tipo:} hidrófono analógico piezoeléctrico calibrado.
+    \item \textbf{Rango de frecuencia:} 0.1~Hz a 160~kHz.
+    \item \textbf{Sensibilidad nominal:} \(-205\)~dB re 1~V/\(\mu\)Pa.
+    \item \textbf{Directividad:} omnidireccional en su rango operativo.
+    \item \textbf{Presión hidrostática admisible:} 9.8~MPa, aproximadamente 1000~m de profundidad.
+    \item \textbf{Protección externa:} recubrimiento polimérico apto para operación en medio marino.
 \end{itemize}
-\end{minipage}
+
+En la Figura~\ref{fig:8105} se presentan las dimensiones mecánicas principales del hidrófono B\&K 8105. En la Figura~\ref{fig:8105-patron} se muestra un patrón polar típico de directividad para el mismo modelo. Ambas figuras corresponden a documentación técnica del fabricante.
+
+\begin{figure}[htbp]
+    \centering
+
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[height=.30\textheight]{graficos/8105.jpg}
+        \captionof{figure}{Dimensiones mecánicas del hidrófono Br{\"u}el \& Kj{\ae}r modelo 8105.}
+        \label{fig:8105}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[height=.30\textheight]{graficos/8105-patron.png}
+        \captionof{figure}{Patrón de directividad típico del hidrófono Br{\"u}el \& Kj{\ae}r modelo 8105.}
+        \label{fig:8105-patron}
+    \end{minipage}
+
 \end{figure}
 
-Las curvas de respuesta en frecuencia y las características particulares de cada hidrófono utilizado en la boya están dadas por las respectivas hojas de calibración provistas por el fabricante. En dichas calibraciones se considera el efecto del cable integrado al elemento sensor, cuyo aporte capacitivo modifica la impedancia vista desde el terminal de conexión. Los hidrófonos adquiridos para el desarrollo poseen longitudes de cable de 50~m y 20~m, respectivamente.
+Los patrones reales de directividad y las curvas de respuesta en frecuencia de los hidrófonos utilizados en la boya están dados por las respectivas hojas de calibración provistas por el fabricante. En dichas calibraciones se considera el efecto del cable integrado al elemento sensor, cuyo aporte capacitivo modifica la impedancia vista desde el terminal de conexión. Los hidrófonos adquiridos para el desarrollo poseen longitudes de cable de 50~m y 20~m, respectivamente.
 
-El cable integrado al hidrófono es sumergible, de tipo \textit{waterblocked}, grado militar DSS-2, especificado en el estándar MIL-DTL-915/8 \citep{mil-std:dtl-915}. Se trata de un cable flexible, aislado y blindado, de dos conductores, apto para electrónica, comunicaciones e instrumentación en equipamiento embarcado. Los cables de ambos hidrófonos finalizan en conectores BNC no sumergibles, por lo que la integración mecánica y eléctrica debe garantizar protección adecuada dentro de la boya y evitar la exposición directa del conector al ambiente marino.
-
-\vspace{10pt}
-
-\noindent \textbf{Preamplificadores DAS-1/DAS-2.}
+El cable integrado al hidrófono es sumergible, de tipo \textit{waterblocked}, grado militar DSS-2, especificado en el estándar MIL-DTL-915/8 \citep{mil-std:dtl-915}. Se trata de un cable flexible, aislado y blindado, de dos conductores, apto para electrónica, comunicaciones e instrumentación en equipamiento embarcado. Los cables de ambos hidrófonos finalizan en conectores BNC no sumergibles, por lo que la integración mecánica y eléctrica debe garantizar protección adecuada en el interior de la boya y evitar exposición directa del conector al ambiente marino.
 
 Debido a que los hidrófonos B\&K 8105 no poseen preamplificación interna, las señales eléctricas generadas pueden presentar amplitudes muy bajas frente al ruido propio de la etapa de adquisición. Además, vistos desde sus terminales de salida, los hidrófonos se comportan como fuentes de alta impedancia con una componente capacitiva significativa. Esta condición exige una etapa de acondicionamiento analógico con muy alta impedancia de entrada, bajo ruido propio y ancho de banda compatible con el rango de medición previsto.
 
-Como parte de los desarrollos previos de EAMMRA, se diseñó y fabricó un preamplificador específico para hidrófonos B\&K 8105, orientado a trabajar con cargas capacitivas y con un ancho de banda aproximado de 100~kHz \citep{AS0518_Preamp}. El diseño se basó en amplificadores operacionales de bajo ruido LT1792, en configuración no inversora, con alimentación dual generada a partir de una fuente principal de tipo \textit{single supply}. En la configuración actual de la boya se utilizan dos unidades de preamplificación, denominadas DAS-1 y DAS-2. En la Figura~\ref{fig:preamp-das} se muestra una de las unidades utilizadas junto con sus características principales de integración.
+Como parte de los desarrollos previos de EAMMRA, se diseñó y fabricó un preamplificador específico para hidrófonos B\&K 8105, orientado a trabajar con cargas capacitivas y con un ancho de banda aproximado de 100~kHz \citep{AS0518_Preamp}. El diseño se basó en amplificadores operacionales de bajo ruido LT1792, en configuración no inversora, con alimentación dual generada a partir de una fuente principal de tipo \textit{single supply}. En la configuración actual de la boya se utilizan dos unidades de preamplificación, denominadas DAS-1 y DAS-2.
 
-\vspace{20px}
 \begin{figure}[htbp]
-\centering
-\begin{minipage}[b]{0.36\textwidth}
-\centering
-\includegraphics[width=\linewidth]{graficos/preamp_definitivo.jpg}
-\captionof{figure}{Preamplificador para hidrófonos DAS utilizado en la cadena acústica de EAMMRA.}
-\label{fig:preamp-das}
-\end{minipage}
-\hfill
-\begin{minipage}[b]{0.60\textwidth}
-\begin{itemize}
-\item \textbf{Identificación:} preamplificadores DAS-1 y DAS-2.
-\item \textbf{Aplicación:} acondicionamiento de B\&K 8105.
-\item \textbf{Topología:} amplificador no inversor de bajo ruido.
-\item \textbf{Amplificador operacional:} LT1792.
-\item \textbf{Ganancia nominal:} aproximadamente 40~dB.
-\item \textbf{Respuesta en frecuencia:} hasta 100~kHz.
-\item \textbf{Entrada:} adaptada a cargas capacitivas del orden de nF.
-\item \textbf{Protección funcional:} corte en bajas frecuencias para reducir saturación por componentes de gran amplitud.
-\item \textbf{Alimentación:} entrada principal entre 9~V y 15~V, con generación local de tensión negativa.
-\end{itemize}
-\end{minipage}
+    \centering
+
+    \begin{minipage}[b]{0.36\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graficos/preamp_definitivo.jpg}
+        \captionof{figure}{Preamplificador para hidrófonos DAS utilizado en la cadena acústica de EAMMRA.}
+        \label{fig:preamp-das}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.60\textwidth}
+        \begin{itemize}
+            \item \textbf{Identificación:} preamplificadores DAS-1 y DAS-2.
+            \item \textbf{Aplicación:} acondicionamiento de hidrófonos.
+            \item \textbf{Topología:} amplificador no inversor de bajo ruido.
+            \item \textbf{Amplificador operacional:} LT1792.
+            \item \textbf{Ganancia nominal:} aproximadamente 40~dB.
+            \item \textbf{Respuesta en frecuencia:} compatible con mediciones hasta 100~kHz.
+            \item \textbf{Entrada:} adaptada a cargas capacitivas (nF).
+            \item \textbf{Protección funcional:} corte en bajas frecuencias para reducir saturación por componentes de gran amplitud.
+            \item \textbf{Alimentación:} entrada principal entre 9~V y 15~V, con generación local de tensión negativa.
+        \end{itemize}
+    \end{minipage}
+
 \end{figure}
 
-\vspace{20px}
+La etapa de preamplificación cumple tres funciones principales. En primer lugar, eleva la amplitud de las señales generadas por los hidrófonos para que superen el ruido propio de la placa de adquisición. En segundo lugar, presenta una impedancia de entrada adecuada para evitar una carga excesiva sobre el hidrófono y preservar la respuesta en bajas frecuencias. En tercer lugar, incorpora un corte en bajas frecuencias que atenúa componentes de gran amplitud capaces de saturar la etapa de digitalización. Esta última condición resulta importante en registros de ruido ambiente, donde pueden coexistir señales de baja frecuencia con niveles elevados y componentes de interés en bandas superiores.
 
-La etapa de preamplificación cumple tres funciones principales. En primer lugar, eleva la amplitud de las señales generadas por los hidrófonos para que superen el ruido propio de la placa de adquisición. En segundo lugar, presenta una impedancia de entrada adecuada para evitar una carga excesiva sobre el hidrófono y preservar la respuesta de la cadena. En tercer lugar, incorpora un corte en bajas frecuencias que atenúa componentes de gran amplitud capaces de saturar la etapa de digitalización. Esta última condición resulta importante en registros de ruido ambiente, donde pueden coexistir señales de baja frecuencia con niveles elevados y componentes de interés en bandas superiores.
+La digitalización de la señal acondicionada se realiza mediante una placa de audio USB Behringer UMC202HD. Esta placa proporciona dos canales de adquisición simultánea, frecuencia de muestreo de hasta 192~kHz por canal y resolución nominal de 24~bits. En la boya, la placa actúa como interfaz entre la cadena analógica de hidrófono-preamplificador y la computadora principal, donde el software de adquisición genera archivos WAV y metadatos asociados.
 
-\vspace{10pt}
-
-\noindent \textbf{Placa de audio Behringer UMC202HD.}
-
-La digitalización de la señal acondicionada se realiza mediante una placa de audio USB Behringer UMC202HD. Esta placa proporciona dos canales de adquisición simultánea, frecuencia de muestreo de hasta 192~kHz por canal y resolución nominal de 24~bits. En la boya, la placa actúa como interfaz entre la cadena analógica hidrófono-preamplificador y la computadora principal. En la Figura~\ref{fig:behringer-umc202hd} se presenta la placa utilizada y se resumen sus características principales.
-
-\vspace{20px}
 \begin{figure}[htbp]
-\centering
-\begin{minipage}[c]{0.36\textwidth}
-\centering
-\includegraphics[width=\linewidth]{graficos/behringer_umc202hd.png}
-\captionof{figure}{Placa de audio Behringer UMC202HD utilizada para la digitalización de señales acústicas.}
-\label{fig:behringer-umc202hd}
-\end{minipage}
-\hfill
-\begin{minipage}[c]{0.60\textwidth}
-\begin{itemize}
-\item \textbf{Modelo:} Behringer UMC202HD.
-\item \textbf{Tipo:} placa de audio USB.
-\item \textbf{Canales:} 2 entradas de adquisición simultánea.
-\item \textbf{Frecuencia de muestreo máxima:} 192~kHz por canal.
-\item \textbf{Resolución nominal:} 24~bits.
-\item \textbf{Uso en EAMMRA:} digitalización de señales acústicas provenientes de los preamplificadores DAS-1/DAS-2.
-\end{itemize}
-\end{minipage}
+    \centering
+
+    \begin{minipage}[b]{0.36\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{graficos/behringer_umc202hd.png}
+        \captionof{figure}{Placa de audio Behringer UMC202HD utilizada para la digitalización de señales acústicas.}
+        \label{fig:behringer-umc202hd}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.60\textwidth}
+        \begin{itemize}
+            \item \textbf{Modelo:} Behringer UMC202HD.
+            \item \textbf{Tipo:} placa de audio USB de dos canales.
+            \item \textbf{Canales:} 2 entradas de adquisición simultánea.
+            \item \textbf{Frecuencia de muestreo máxima:} 192~kHz por canal.
+            \item \textbf{Resolución nominal:} 24~bits.
+            \item \textbf{Modo de entrada utilizado:} \textit{inst}, según configuración de ensayo.
+            \item \textbf{Interfaz con la computadora:} USB.
+            \item \textbf{Formato de almacenamiento:} archivos WAV.
+            \item \textbf{Uso en EAMMRA:} digitalización de señales acústicas acondicionadas.
+        \end{itemize}
+    \end{minipage}
+
 \end{figure}
 
 La caracterización del conjunto placa-preamplificador se documenta en la Nota Técnica AS~02/26 \citep{Cinquini2026_AS0226}. En dicho trabajo se relevaron la respuesta en frecuencia de la placa de audio, la respuesta de los preamplificadores DAS-1 y DAS-2, la figura de ruido propio y el crosstalk entre canales. Los resultados obtenidos permitieron verificar que la cadena de adquisición acústica es compatible con el uso previsto en EAMMRA y que el hardware de adquisición no constituye un limitante para la medición de niveles de ruido ambiente submarino dentro del rango operativo considerado.
 
-En conjunto, el subsistema acústico queda definido como una cadena instrumental calibrable y modular. Los hidrófonos establecen la sensibilidad primaria frente al campo acústico submarino, los preamplificadores adecuan la señal a los niveles requeridos por la etapa de digitalización y la placa de audio convierte ambos canales en datos digitales disponibles para la computadora principal. Esta separación por etapas facilita la verificación individual de componentes, la trazabilidad de la cadena de medición y el mantenimiento del sistema durante la operación de la boya.
+Desde el punto de vista del software, el subsistema acústico se divide en dos funciones principales: adquisición y procesamiento. La adquisición controla la placa de audio, configura los parámetros de muestreo, registra los datos en formato WAV y verifica condiciones mínimas de almacenamiento antes de iniciar una grabación. El procesamiento posterior opera sobre los archivos generados, calcula productos compactos y prepara resultados que pueden almacenarse localmente o ser seleccionados para telemetría satelital. Esta separación permite preservar los datos crudos de campaña y, al mismo tiempo, disponer de productos resumidos aptos para diagnóstico y transmisión remota.
 
 \subsection{Módem satelital Iridium SBD.}
 
-El subsistema Iridium proporciona el enlace de telemetría satelital de la boya EAMMRA mediante el servicio \textit{Short Burst Data} (SBD). Este servicio está orientado a la transmisión bidireccional de mensajes cortos entre equipos remotos y sistemas centrales, por lo que resulta adecuado para plataformas autónomas con bajo volumen de datos transmitidos y operación fuera de cobertura celular o infraestructura costera \citep{IridiumSBDService}. En la boya, el enlace satelital se utiliza para transmitir información compacta de estado, diagnóstico y resultados seleccionados, sin reemplazar al almacenamiento local de datos completos.
+El subsistema Iridium permite la transmisión remota de mensajes mediante el servicio SBD. En la boya se utiliza para enviar información compacta de estado, diagnóstico y resultados seleccionados del procesamiento acústico. La telemetría satelital no reemplaza al almacenamiento local, sino que provee un canal de supervisión remota y recuperación parcial de información crítica.
 
-La familia de transceptores Iridium 9603/9603N constituye una referencia técnica representativa para este tipo de integración. Estos módulos están diseñados como transceptores SBD de placa única, destinados a incorporarse dentro de un sistema anfitrión que provee alimentación, lógica de control, antena y acondicionamiento de interfaces. El transceptor no implementa voz, datos conmutados por circuito ni SMS, sino exclusivamente comunicación SBD. Esta característica es consistente con el uso previsto en EAMMRA, donde la telemetría se limita a mensajes breves y seleccionados \citep{Iridium9603NDevGuide}. En la Figura~\ref{fig:iridium} se muestra el módem satelital Iridium utilizado como periférico de telemetría remota.
-
-\begin{figure}[htbp]
-\centering
-\begin{minipage}[b]{0.36\textwidth}
-\centering
-\includegraphics[width=0.90\linewidth]{graficos/iridium.png}
-\captionof{figure}{Módem satelital Iridium utilizado para telemetría remota mediante el servicio SBD.}
-\label{fig:iridium}
-\end{minipage}
-\hfill
-\begin{minipage}[b]{0.60\textwidth}
 \begin{itemize}
-\item \textbf{Servicio:} Iridium Short Burst Data.
-\item \textbf{Tipo de enlace:} comunicación satelital en banda L.
-\item \textbf{Mensajes:} \textit{Mobile Originated} y \textit{Mobile Terminated}.
-\item \textbf{Interfaz de control:} puerto serie con comandos AT.
-\item \textbf{Interfaz RF:} antena externa para banda Iridium.
-\item \textbf{Impedancia nominal de antena:} 50~($\Omega$).
-\item \textbf{Función en EAMMRA:} transmisión remota de estado, diagnóstico y resultados compactos.
+    \item \textbf{Tecnología:} Iridium SBD.
+    \item \textbf{Interfaz eléctrica:} RS232.
+    \item \textbf{Protocolo de control:} comandos AT.
+    \item \textbf{Configuración serie de referencia:} 8 bits de datos, sin paridad, 1 bit de parada.
+    \item \textbf{Tipo de mensajes:} mensajes binarios de estado y resultados compactos de procesamiento.
+    \item \textbf{Uso en la boya:} diagnóstico remoto, supervisión de continuidad operativa y transmisión de información resumida.
 \end{itemize}
-\end{minipage}
-\end{figure}
 
+El servicio SBD impone restricciones de tamaño de mensaje, por lo que los datos transmitidos deben seleccionarse, compactarse y codificarse de manera eficiente. En la arquitectura del sistema, la transmisión se ejecuta en ciclos regulares definidos por el planificador de tareas y se desacopla de la finalización inmediata de una adquisición. Esta estrategia evita dependencias temporales rígidas entre adquisición, procesamiento y comunicación satelital.
 
+\textbf{Almacenamiento local.}
 
-Desde el punto de vista eléctrico, la integración del módem requiere considerar dos aspectos principales: la interfaz serie de control y la alimentación durante los ciclos de transmisión. El transceptor 9603/9603N utiliza una interfaz serie de tipo DCE hacia la aplicación anfitriona y transfiere comandos, respuestas y datos SBD mediante comandos AT. Si el sistema anfitrión emplea niveles RS-232 convencionales, debe incorporarse la adaptación de niveles correspondiente. 
+El almacenamiento local constituye el repositorio primario de datos de la boya. Allí se conservan archivos WAV de audio, mediciones estructuradas, resultados de procesamiento, registros de eventos, logs de ejecución y estados del sistema. La telemetría satelital transmite sólo un subconjunto resumido de esta información.
 
-La antena satelital constituye un elemento crítico del enlace. Debe estar ubicada con una vista despejada del cielo y con mínima obstrucción por la estructura de la boya, el mástil u otros periféricos instalados. El tramo de RF entre el módem y la antena debe mantener la impedancia adecuada, minimizar pérdidas y utilizar conectores y cable coaxial compatibles con operación en ambiente marítimo. En términos de diseño físico, la instalación debe proteger conectores, evitar esfuerzos mecánicos sobre el cableado y asegurar una puesta a masa coherente con el resto de la electrónica embarcada.
+\begin{itemize}
+    \item \textbf{Datos almacenados:} archivos WAV, mediciones JSONL, resultados JSON, logs y estados de sistema.
+    \item \textbf{Función principal:} preservación de datos completos de campaña.
+    \item \textbf{Función secundaria:} soporte a diagnóstico posterior y trazabilidad operativa.
+    \item \textbf{Criterio de diseño:} priorizar la integridad de datos ya adquiridos frente a nuevas adquisiciones.
+\end{itemize}
 
-El uso de SBD impone una restricción deliberada sobre el volumen de información transmitida. Por esta razón, el enlace satelital se reserva para datos resumidos y de alto valor operativo, tales como estado general del sistema, continuidad de operación, condiciones energéticas, disponibilidad de almacenamiento, posición, diagnóstico de periféricos y resultados compactos derivados de mediciones acústicas. Los archivos completos, en particular los registros WAV y los datos de mayor volumen, permanecen almacenados localmente en la boya.
+La política de almacenamiento asociada a la adquisición acústica es conservadora. Antes de iniciar una grabación se verifica la existencia del directorio de destino, la disponibilidad de espacio libre y el tamaño máximo esperado del archivo WAV. Si las condiciones no son aceptables, el sistema rechaza la adquisición y registra la causa. Esta decisión protege la información previamente adquirida y reduce el riesgo de archivos incompletos durante operación autónoma.
 
-En conjunto, el módem Iridium SBD se incorpora como periférico de comunicación remota de baja tasa de datos y alta cobertura geográfica. Su valor dentro de EAMMRA no reside en transportar grandes volúmenes de información, sino en permitir seguimiento remoto, verificación de continuidad operativa y recuperación parcial de información crítica durante campañas prolongadas. Esta función complementa el almacenamiento local y proporciona una vía de supervisión externa cuando la boya opera fuera del alcance de redes terrestres.
-
-\vspace{20px}
-\subsection{Almacenamiento local.}
-
-La boya EAMMRA incorpora almacenamiento local mediante una unidad de estado sólido de 1~TB. Este dispositivo constituye el soporte primario para conservar los datos científicos y operativos adquiridos durante una campaña. La telemetría satelital Iridium SBD permite transmitir información compacta de estado, diagnóstico y resultados seleccionados, pero no está destinada al envío de archivos de gran volumen. Por este motivo, los registros completos, en particular los archivos acústicos, permanecen almacenados en la boya hasta su recuperación durante tareas de mantenimiento o al finalizar la operación.
-
-La elección de una unidad SSD resulta adecuada para una plataforma marítima autónoma. A diferencia de un disco rígido mecánico, un SSD no posee partes móviles, presenta mayor tolerancia frente a vibraciones y movimientos, y reduce el riesgo de fallas asociadas a golpes durante maniobras de despliegue, recuperación o transporte. Además, su bajo volumen físico y su consumo moderado facilitan la integración dentro del gabinete electrónico de la boya, junto con la computadora principal y los periféricos de adquisición.
-
-El almacenamiento local concentra información de distinta naturaleza. Los archivos acústicos WAV constituyen el conjunto de datos de mayor volumen y representan el registro primario del subsistema acústico. Junto con ellos se almacenan mediciones meteorológicas del anemómetro WindSonic, variables ambientales internas provistas por el AHT10, variables inerciales medidas por el MPU6050, parámetros energéticos del controlador solar MPPT, datos de posición y tiempo, registros de eventos, mensajes de diagnóstico y mensajes de telemetría generados o pendientes de transmisión.
-
-El volumen de almacenamiento requerido está dominado por la adquisición acústica. Para una señal digital de $N_c$ canales, frecuencia de muestreo $f_s$ y $N_b$ bytes por muestra, el flujo ideal de datos puede estimarse como:
-
-\begin{equation}
-R = N_c \cdot f_s \cdot N_b
-\label{eq:flujo-datos-acusticos}
-\end{equation}
-
-En una configuración de dos canales, frecuencia de muestreo de 192~kHz y resolución de 24~bits, equivalente a 3~bytes por muestra, el flujo resultante es aproximadamente 1.15~MB/s. Esto corresponde a unos 4.15~GB/h, o cerca de 100~GB por día de adquisición continua. Por lo tanto, una unidad de 1~TB permite almacenar del orden de varios días de audio continuo a máxima tasa, y un período mayor cuando la adquisición se organiza en ventanas temporales o con frecuencias de muestreo menores. Si el formato de almacenamiento utiliza palabras de 32~bits por muestra, el volumen diario aumenta en forma proporcional.
-
-
-
-Además de la capacidad nominal, el almacenamiento local debe considerarse como parte de la confiabilidad operativa del sistema. La boya puede experimentar reinicios, interrupciones de energía o apagados controlados durante períodos de baja disponibilidad energética. Por este motivo, el uso del SSD debe complementarse con criterios de escritura robusta, cierre ordenado de archivos y separación entre datos científicos, registros de estado y mensajes de telemetría. Esta organización facilita la recuperación posterior de la información y permite reconstruir la secuencia de operación de la boya ante eventos anómalos.
-
-En conjunto, el SSD de 1~TB actúa como memoria persistente principal del sistema embebido. Su función es preservar la totalidad de los datos de campaña, mientras que la telemetría satelital proporciona una vía de supervisión remota limitada a información compacta. Esta separación entre almacenamiento local de alto volumen y transmisión remota de baja tasa permite compatibilizar la adquisición acústica de alta demanda con la operación autónoma y energéticamente restringida de la boya.
-
-
-\clearpage
 \section{Diseño e Implementación}
 \label{sec:diseno_e_implementacion}
 \subsection{Arquitectura del sistema}
