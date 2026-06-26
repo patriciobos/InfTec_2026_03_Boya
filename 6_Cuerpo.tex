@@ -4,11 +4,11 @@
 \subsection{Antecedentes}
 \label{subsec:antecedentes}
 
-El presente informe técnico documenta el desarrollo del sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría satelital de la boya instrumental EAMMRA. El sistema se orienta a la operación autónoma de una plataforma marítima capaz de adquirir variables ambientales, meteorológicas, de posición, energéticas y acústicas, almacenar datos localmente y transmitir información seleccionada mediante un enlace satelital.
+El presente informe técnico documenta el desarrollo del sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría satelital de la boya instrumental EAMMRA. El sistema se orienta a la operación autónoma de una plataforma marítima capaz de adquirir variables ambientales, meteorológicas, de posición, energéticas y acústicas, almacenar datos localmente y transmitir información seleccionada mediante un enlace satelital.  
 
-La línea de trabajo EAMMRA se origina en la necesidad de disponer de una estación autónoma para la medición de Nivel de Ruido submarino, (NL), y de variables asociadas al ambiente marítimo. Una primera etapa estuvo vinculada con la caracterización ambiental de la Zona de Adiestramiento en Inmersión de Sumergibles (ZAIS), donde se reunió información acústica, oceanográfica y de tráfico marítimo con el propósito de evaluar la factibilidad de instalar una Estación Autónoma Marítima para el Monitoreo de Ruido Ambiente \citep{AS0215_ZAIS}.
+La línea de trabajo EAMMRA se origina en la necesidad de disponer de una estación autónoma para la medición de Nivel de Ruido submarino, \(NL\), y de variables asociadas al ambiente marítimo. Una primera etapa estuvo vinculada con la caracterización ambiental de la Zona de Adiestramiento en Inmersión de Sumergibles (ZAIS), donde se reunió información acústica, oceanográfica y de tráfico marítimo con el propósito de evaluar la factibilidad de instalar una Estación Autónoma Marítima para el Monitoreo de Ruido Ambiente \citep{AS0215_ZAIS}.
 
-Sobre esa base, la ingeniería conceptual de EAMMRA estableció los objetivos generales del sistema, los requerimientos de alto nivel, el escenario de operación y los criterios iniciales de aceptación \citep{AS0316_EAMMRAConceptual}. En ese marco se adoptó la distinción entre ruido ambiente propiamente dicho, ($NL_\mathrm{a}$), ruido propio del sistema de medición, ($NL_\mathrm{a}$), y ruido radiado por fuentes identificables. Esta separación resulta central para el diseño de la estación, ya que la calidad de una medición hidroacústica no depende únicamente del hidrófono y de la cadena de adquisición, sino también de la plataforma, del montaje, del fondeo, del acondicionamiento electrónico, del procesamiento y de la información contextual asociada a cada registro.
+Sobre esa base, la ingeniería conceptual de EAMMRA estableció los objetivos generales del sistema, los requerimientos de alto nivel, el escenario de operación y los criterios iniciales de aceptación \citep{AS0316_EAMMRAConceptual}. En ese marco se adoptó la distinción entre ruido ambiente propiamente dicho, \(NL_\mathrm{a}\), ruido propio del sistema de medición, \(NL_\mathrm{p}\), y ruido radiado por fuentes identificables. Esta separación resulta central para el diseño de la estación, ya que la calidad de una medición hidroacústica no depende únicamente del hidrófono y de la cadena de adquisición, sino también de la plataforma, del montaje, del fondeo, del acondicionamiento electrónico, del procesamiento y de la información contextual asociada a cada registro.
 
 En paralelo, se realizaron ensayos experimentales destinados a verificar componentes críticos de la cadena acústica. Las mediciones efectuadas en la dársena de la Base Naval Mar del Plata permitieron contrastar hidrófonos de banda ancha, evaluar el funcionamiento de amplificadores de carga, registrar ruido ambiente subacuático y analizar la respuesta frente a señales acústicas controladas \citep{AS0415_HidrofonosMDP}. Estos antecedentes aportaron criterios prácticos para la selección de sensores, el acondicionamiento de señal, la estimación espectral y la definición de procedimientos de adquisición.
 
@@ -25,7 +25,7 @@ El presente informe corresponde a una nueva etapa de maduración tecnológica. A d
 
 Las plataformas autónomas de observación marítima permiten adquirir información en sitios donde la presencia continua de operadores resulta impracticable, costosa o técnicamente inconveniente. En el caso de EAMMRA, la plataforma debe operar en un ambiente con humedad, salinidad, variaciones térmicas, vibraciones, oleaje, viento, restricciones energéticas y ventanas de mantenimiento limitadas. Estas condiciones imponen exigencias simultáneas sobre el diseño mecánico, la electrónica, el software de control, la alimentación y la confiabilidad general del sistema.
 
-La Figura~\ref{fig:boya_bastidor_eammra} muestra el diseño esquemático de la plataforma física donde se puede apreciar las dimensiones de la boya, junto con una foto real de la boya sobre una base de apoyo.
+La Figura~\ref{fig:boya_eammra} muestra la configuración general de la plataforma física de la boya EAMMRA, mediante un esquema dimensional y una fotografía del prototipo construido.
 
 \begin{figure}[htbp]
 	\centering
@@ -33,19 +33,19 @@ La Figura~\ref{fig:boya_bastidor_eammra} muestra el diseño esquemático de la pla
 		\centering
 		\includegraphics[height=9cm]{graficos/boya_esquema_1.png}
 		\vspace{0.2cm}
-		\small{ \\Diagrama esquemático de la boya EAMMRA.}
+		\small{\\Diagrama esquemático de la boya EAMMRA.}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[b]{0.48\textwidth}
 		\centering
 		\includegraphics[height=9cm]{graficos/boya.png}
-%		\includegraphics[width=.5\linewidth]{graficos/bastidor.png}
 		\vspace{0.2cm}
-		\small{\\Foto real de la boya EAMMRA}
+		\small{\\Boya EAMMRA sobre su base de apoyo.}
 	\end{minipage}
-	\caption{Plataforma física de la boya instrumental EAMMRA y subconjunto de integración electrónica. La operación autónoma requiere articular la estructura de superficie, el sistema de alimentación, los sensores, la adquisición acústica, el almacenamiento local y las comunicaciones remotas.}
-	\label{fig:boya_bastidor_eammra}
+	 \caption{Boya instrumental EAMMRA. A la izquierda se muestra un esquema general de la plataforma de superficie con sus dimensiones principales; a la derecha, una fotografía de la boya montada sobre su base de apoyo.}
+	\label{fig:boya_eammra}
 \end{figure}
+
 
 Desde el punto de vista funcional, la boya debe integrar subsistemas heterogéneos que no operan de manera aislada. La adquisición acústica, el sensado ambiental y meteorológico, el posicionamiento, la supervisión energética, el almacenamiento local y las comunicaciones remotas forman parte de un mismo ciclo de operación. La coordinación de estos bloques requiere una arquitectura capaz de ordenar tareas, registrar estados, detectar condiciones anómalas y preservar la trazabilidad de la información adquirida.
 
@@ -61,11 +61,13 @@ La motivación principal del proyecto es disponer de una boya instrumental autóno
 
 En sistemas de este tipo, el dato acústico aislado resulta insuficiente si no se encuentra acompañado por información contextual. La interpretación de un registro hidroacústico requiere conocer, entre otros factores, la fecha y hora de adquisición, la ubicación de la plataforma, el estado de la boya, las condiciones ambientales, el viento, la temperatura, el estado energético y la validez del ciclo de medición. Por esta razón, el sistema embebido debe concebirse como una infraestructura de adquisición multisensor, y no únicamente como un controlador de un dispositivo acústico.
 
-La motivación tecnológica se vincula con la necesidad de incrementar el nivel de maduración del sistema respecto de etapas anteriores. En una primera instancia, el objetivo fue demostrar la factibilidad de una arquitectura de control modular y ensayable \citep{Bos2018MSE}. En la etapa actual, el objetivo es controlar una plataforma real, con mayor cantidad de hardware integrado, mayores exigencias de comunicación, almacenamiento, diagnóstico y tolerancia a fallas. Esto requiere pasar de una lógica de prototipo a una lógica de sistema operativo en campo.
+Asimismo, la operación de una estación autónoma permite pasar de mediciones puntuales, dependientes de campañas específicas, a un esquema de observación más sistemático. Esta transición resulta relevante porque muchos fenómenos acústicos y ambientales presentan variabilidad temporal significativa, asociada a condiciones meteorológicas, tráfico marítimo, estado de mar, actividad biológica y régimen operativo de la propia plataforma. Contar con un sistema capaz de registrar datos en forma sostenida, contextualizada y trazable permite mejorar la comparación entre mediciones, identificar patrones recurrentes y disponer de una base más robusta para análisis posteriores.
 
-La motivación de diseño no se limita a automatizar lecturas de sensores, sino a asegurar que la operación de la boya pueda describirse, verificarse y diagnosticarse de manera sistemática. En una plataforma autónoma, cada adquisición, transmisión, registro o condición de falla debe quedar asociada a un estado operativo reconocible y a una secuencia de eventos trazable. Esto permite reducir ambigüedades durante el análisis posterior de los datos, facilita la detección de comportamientos anómalos y proporciona una base más sólida para el mantenimiento y la evolución del sistema.
+Desde el punto de vista tecnológico, el desarrollo busca incrementar el nivel de maduración alcanzado en etapas anteriores. En una primera instancia, se demostró la factibilidad de una arquitectura de control modular y ensayable \citep{Bos2018MSE}. En la etapa actual, el desafío consiste en controlar una plataforma real, con mayor cantidad de hardware integrado, mayores exigencias de comunicación, almacenamiento, diagnóstico y tolerancia a fallas. Esto requiere pasar de una lógica de prototipo a una lógica de sistema preparado para operación en campo.
 
-La motivación práctica del informe es dejar una base técnica verificable para la continuidad del desarrollo. La boya integra hardware comercial, electrónica propia, sensores con protocolos diversos, adquisición acústica, almacenamiento persistente y comunicaciones satelitales. Documentar la arquitectura, las interfaces, los formatos de datos, los criterios de robustez y las pruebas previstas permite reducir dependencia de conocimiento tácito, facilitar el mantenimiento y sostener futuras ampliaciones del sistema.
+El diseño del sistema no se limita a automatizar lecturas de sensores, sino que busca asegurar que la operación de la boya pueda describirse, verificarse y diagnosticarse de manera sistemática. En una plataforma autónoma, cada adquisición, transmisión, registro o condición de falla debe quedar asociada a un estado operativo reconocible y a una secuencia de eventos trazable. Esto permite reducir ambigüedades durante el análisis posterior de los datos, facilita la detección de comportamientos anómalos y proporciona una base más sólida para el mantenimiento y la evolución del sistema.
+
+Finalmente, este informe busca dejar una base técnica verificable para la continuidad del desarrollo. La boya integra hardware comercial, electrónica propia, sensores con protocolos diversos, adquisición acústica, almacenamiento persistente y comunicaciones satelitales. Documentar la arquitectura, las interfaces, los formatos de datos, los criterios de robustez y las pruebas previstas permite reducir la dependencia de conocimiento tácito, facilitar el mantenimiento y sostener futuras ampliaciones del sistema.
 
 \subsection{Propuesta de valor y objetivos}
 \label{subsec:propuesta_valor_objetivos}
@@ -79,23 +81,15 @@ El objetivo general del trabajo es desarrollar y documentar el sistema embebido 
 Los objetivos específicos son:
 
 \begin{itemize}
-\item Documentar la arquitectura general del sistema embebido y su relación con la plataforma física de la boya.
+    \item Documentar la arquitectura general del sistema embebido y su relación con la plataforma física de la boya.
 
-\item Describir los periféricos integrados, sus interfaces de comunicación y su función dentro del ciclo de operación.
+    \item Describir la integración entre sensores, adquisición acústica, supervisión energética, almacenamiento local y telemetría satelital.
 
-\item Implementar una estructura modular basada en capas de bajo nivel y Máquinas de Estados Finitos para cada subsistema relevante.
+    \item Establecer los criterios de organización modular, trazabilidad, diagnóstico y tolerancia a fallas del sistema.
 
-\item Coordinar la operación mediante un proceso principal con enrutador de eventos y planificador de tareas central.
+    \item Presentar los formatos de datos, registros y mensajes utilizados para almacenamiento local y transmisión remota.
 
-\item Registrar mediciones, eventos, estados y productos de procesamiento en formatos persistentes y trazables.
-
-\item Incorporar telemetría satelital para transmisión remota de información seleccionada, estados de salud y eventos relevantes.
-
-\item Facilitar la verificación mediante pruebas automatizadas, componentes sustitutos y ensayos progresivos de integración.
-
-\item Establecer criterios de robustez, diagnóstico y degradación controlada ante fallas parciales del sistema.
-
-
+    \item Definir una base técnica para la verificación, el mantenimiento y la evolución futura del sistema.
 \end{itemize}
 
 El alcance de esta sección es presentar el marco general del desarrollo y su continuidad con los antecedentes técnicos de EAMMRA. El detalle de hardware integrado, arquitectura de software, módulos funcionales, formatos de datos, telemetría y pruebas se desarrolla en las secciones siguientes.
@@ -103,132 +97,53 @@ El alcance de esta sección es presentar el marco general del desarrollo y su con
 
 
 \clearpage
+
 \section{INTRODUCCIÓN ESPECÍFICA}
 \label{sec:introduccion_especifica}
 
-\subsection{Alcance técnico del sistema documentado}\label{subsec:alcance_tecnico_del_sistema_documentado}
+Esta sección delimita el sistema técnico documentado en el informe y presenta los criterios generales que permiten interpretar las secciones posteriores.
 
-El presente informe documenta el sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría de la boya instrumental EAMMRA. El sistema comprende la computadora principal embarcada, los periféricos de sensado, la cadena de adquisición acústica, el subsistema de energía, el almacenamiento local, la telemetría satelital y el software que coordina la operación autónoma de la plataforma.
+\subsection{Alcance técnico del sistema documentado}
+\label{subsec:alcance_tecnico}
 
-La Sección~\ref{sec:introduccion_especifica} introduce el sistema concreto sobre el cual se desarrolla el informe. Su objetivo es describir la plataforma de hardware, las herramientas de software, el entorno de trabajo, la arquitectura funcional general y los requerimientos que justifican las decisiones de diseño. El detalle de implementación del proceso principal, la estructura interna del repositorio, los módulos de bajo nivel, las Máquinas de Estados Finitos, el enrutador de eventos, el planificador de tareas, las políticas de persistencia y los flujos internos de mensajes se desarrolla en la Sección~\ref{sec:diseno_e_implementacion}.
+El presente informe documenta el sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría satelital de la boya instrumental EAMMRA. El sistema comprende la computadora principal embarcada, los periféricos de sensado, la cadena de adquisición acústica, el subsistema de supervisión energética, el almacenamiento local, el módem satelital y el software encargado de coordinar la operación autónoma de la plataforma.
 
-Desde el punto de vista del alcance, el sistema documentado incluye:
+Desde el punto de vista funcional, el sistema documentado incluye la lectura de sensores ambientales, inerciales, meteorológicos y de posicionamiento; la adquisición y el procesamiento básico de señales acústicas; la supervisión de variables energéticas; el registro persistente de datos, eventos y estados; y la transmisión remota de información seleccionada mediante telemetría satelital. Estos bloques no se consideran dispositivos aislados, sino partes de un ciclo de operación coordinado por software.
 
-\begin{itemize}
-    \item La computadora principal embarcada como núcleo de procesamiento y control.
-    \item Los sensores ambientales, inerciales, meteorológicos, de posicionamiento y de navegación.
-    \item El subsistema de adquisición acústica, compuesto por hidrófonos, preamplificadores y placa de audio USB.
-    \item El subsistema de supervisión energética, asociado al controlador de carga solar y al banco de baterías.
-    \item El almacenamiento local de archivos de audio, mediciones estructuradas, resultados procesados, logs y estados del sistema.
-    \item La telemetría satelital mediante Iridium SBD para transmisión remota de mensajes de estado y productos seleccionados de procesamiento.
-    \item El software de control desarrollado en Python~3, con soporte para operación con hardware real, simulación parcial mediante \emph{mocks}, pruebas automatizadas y configuración externa.
-\end{itemize}
+El alcance principal del informe se concentra en la integración embebida de esos bloques: interfaces de comunicación, arquitectura de software, mecanismos de coordinación, persistencia de datos, telemetría, diagnóstico y pruebas. Por lo tanto, no se desarrolla aquí el diseño mecánico detallado de la boya, el análisis estructural, la ingeniería electrónica interna de periféricos comerciales ni la caracterización experimental completa de campañas de medición. Esos aspectos corresponden a antecedentes técnicos, documentación de fabricante o etapas específicas de ensayo.
 
-No forman parte del alcance principal de esta sección el diseño mecánico detallado de la boya, el análisis estructural, la ingeniería electrónica interna de cada periférico comercial ni la presentación de resultados experimentales. Estos aspectos se citan cuando resultan necesarios para justificar la arquitectura, pero el foco del presente informe es el sistema embebido que controla la boya operativa.
+La descripción del hardware integrado se presenta en la Sección~\ref{sec:hardware}; el diseño e implementación del software se desarrolla en la Sección~\ref{sec:disenio_implementacion}; y las pruebas previstas o realizadas para verificar el comportamiento del sistema se documentan en la Sección~\ref{sec:pruebas_ensayos}.
 
+\subsection{Entorno de software y dependencias}
+\label{subsec:entorno_software}
 
+El sistema embebido se implementa sobre una computadora principal que ejecuta un sistema operativo GNU/Linux. Esta elección permite disponer de un entorno flexible para adquisición de datos, manejo de archivos, comunicación con periféricos, ejecución de procesos y desarrollo de herramientas de diagnóstico. La plataforma de software se organiza alrededor de Python~3, utilizado como lenguaje principal para la implementación de los módulos de control, adquisición, supervisión, almacenamiento y telemetría.
 
-\subsection{Entorno de software, lenguaje y dependencias}\label{subsec:entorno_de_software_lenguaje_y_dependencias}
+La elección de Python responde a la necesidad de contar con un entorno de desarrollo expresivo, portable y adecuado para integrar periféricos heterogéneos mediante bibliotecas de comunicación serie, interfaces de archivos, procesamiento numérico y herramientas de prueba. En este sistema, Python no se utiliza como una herramienta de análisis posterior, sino como lenguaje de implementación del software embarcado que coordina la operación de la boya.
 
-El lenguaje principal utilizado para el desarrollo del sistema embebido de control fue Python~3. La elección de este lenguaje responde a la necesidad de integrar, en una misma plataforma de software, acceso a periféricos, comunicación serie, adquisición de audio, procesamiento de señales, almacenamiento estructurado, telemetría, pruebas automatizadas y herramientas de simulación. Python ofrece una sintaxis expresiva, amplia disponibilidad de bibliotecas y buena integración con sistemas GNU/Linux, características adecuadas para una computadora principal embarcada.
+Para favorecer la reproducibilidad del entorno, las dependencias del proyecto se agrupan en archivos específicos. Las dependencias necesarias para la ejecución del sistema se registran en un archivo de requerimientos principal, mientras que las herramientas utilizadas durante el desarrollo, las pruebas y el control de calidad se mantienen separadas en un archivo de requerimientos de desarrollo. Esta separación permite distinguir el entorno mínimo necesario para operación del sistema respecto del entorno ampliado utilizado para mantenimiento y verificación.
 
-En este proyecto, Python se utiliza como lenguaje de coordinación del sistema. Las funciones de lectura de periféricos, procesamiento, persistencia, transmisión y control de estado se organizan mediante módulos independientes, Máquinas de Estados Finitos, un enrutador de eventos y un planificador de tareas central. De esta manera, el lenguaje no se emplea sólo para scripts auxiliares, sino como base de la aplicación principal de control de la boya.
+El uso de un entorno virtual permite aislar las dependencias del proyecto respecto del sistema operativo base. Esto reduce conflictos entre versiones de bibliotecas, facilita la replicación del entorno en distintas computadoras de desarrollo o ensayo, y mejora la trazabilidad de los paquetes utilizados durante una determinada etapa del proyecto.
 
-Para aislar las dependencias del proyecto respecto del sistema operativo base se utilizó un entorno virtual de Python, ubicado convencionalmente en el directorio \texttt{.venv}. Este mecanismo permite mantener un intérprete y un conjunto de bibliotecas específicos para la aplicación, lo que reduce interferencias con otros paquetes instalados en el sistema y favorece la reproducibilidad del entorno de ejecución \citep{PythonVenvDocs,PyPAPackagingGuide}.
+El repositorio del proyecto incluye además archivos de configuración y documentación destinados a facilitar la instalación, ejecución y prueba del sistema. No obstante, el presente informe se concentra en los criterios técnicos de organización del entorno y no en instrucciones operativas detalladas de instalación, las cuales corresponden a la documentación específica del repositorio.
 
-La instalación del entorno se realiza desde la raíz del repositorio. En primer lugar, se requiere disponer de ciertas dependencias del sistema operativo asociadas al acceso a hardware, interfaces de bajo nivel y adquisición de audio. En particular, el proyecto recomienda instalar los paquetes:
+\subsection{Herramientas de desarrollo y verificación}
+\label{subsec:herramientas_desarrollo}
 
-\begin{verbatim}
-sudo apt-get update
-sudo apt-get install -y portaudio19-dev python3-dev i2c-tools
-\end{verbatim}
+El desarrollo del software se gestiona mediante un repositorio Git alojado en GitHub, donde se integran el código fuente, los archivos de configuración, la documentación técnica, los scripts auxiliares y los ensayos automatizados del sistema \citep{BoyaRepo}. El uso de control de versiones permite registrar la evolución del proyecto, identificar cambios entre etapas de desarrollo, recuperar versiones previas y mantener trazabilidad entre modificaciones de código, pruebas y documentación asociada.
 
-Luego, el entorno virtual se activa mediante:
+El repositorio constituye además el punto de referencia para reproducir el entorno de trabajo y ejecutar las verificaciones disponibles. En este sentido, no cumple solamente una función de almacenamiento, sino que organiza la base técnica utilizada para el desarrollo, mantenimiento e integración del sistema embebido. La documentación complementaria del repositorio se utiliza para concentrar instrucciones operativas, criterios de instalación y notas de uso que no forman parte del cuerpo principal de este informe \citep{BoyaRepoDocs}.
 
-\begin{verbatim}
-source .venv/bin/activate
-\end{verbatim}
+Para asistir la edición y revisión del código se utiliza Visual Studio Code con la extensión Pylance. Esta herramienta provee soporte de lenguaje para Python, navegación entre símbolos, asistencia de autocompletado, análisis de tipos y detección temprana de errores durante la edición \citep{PylanceDocs}. Su uso resulta especialmente útil en un proyecto modular, donde las interfaces entre clases, funciones, estructuras de datos y archivos de configuración deben mantenerse consistentes durante la evolución del sistema.
 
-y las dependencias de Python se instalan mediante \texttt{pip}. Para una instalación orientada exclusivamente a ejecución, sin herramientas de prueba, se utiliza:
+Como herramienta de análisis estático se incorpora Pylint, que permite inspeccionar el código fuente sin ejecutarlo, detectar errores probables, identificar problemas de estilo, advertir sobre construcciones ambiguas y sugerir refactorizaciones \citep{PylintDocs}. En el contexto de una plataforma embebida autónoma, este tipo de verificación es relevante porque permite detectar defectos antes de la integración con hardware, etapa en la cual los errores suelen ser más costosos de reproducir y diagnosticar.
 
-\begin{verbatim}
-python -m pip install -r support/requirements.txt
-\end{verbatim}
+También se utiliza Black como formateador automático de código Python \citep{BlackDocs}. La aplicación de un formato uniforme reduce diferencias de estilo entre archivos, simplifica la revisión de cambios y evita que las discusiones sobre presentación del código interfieran con el análisis funcional. Esta decisión contribuye a mantener una base de código homogénea y legible, especialmente durante etapas de crecimiento del repositorio.
 
-Para desarrollo, verificación y ejecución de pruebas automatizadas, se instala el conjunto ampliado de dependencias:
+La verificación funcional del software se apoya en pruebas automatizadas implementadas con \texttt{pytest} \citep{pytestDocs}. Estas pruebas permiten ejercitar módulos individuales, validar comportamientos esperados, detectar regresiones y ejecutar ensayos sin requerir siempre la presencia de hardware físico. Cuando corresponde, el uso de componentes sustitutos permite reproducir respuestas de periféricos, eventos y condiciones de error de manera controlada.
 
-\begin{verbatim}
-python -m pip install -r support/requirements-dev.txt
-\end{verbatim}
+En conjunto, estas herramientas aportan una capa de control técnico sobre el proceso de desarrollo. El objetivo no es imponer una metodología externa al proyecto, sino reducir errores evitables, mejorar la mantenibilidad del código, facilitar la integración progresiva con hardware real y dejar evidencia reproducible del comportamiento del sistema durante su evolución.
 
-El archivo \texttt{support/requirements.txt} define las bibliotecas necesarias para la operación nominal del sistema. Las versiones se especifican mediante restricciones de compatibilidad, salvo en el caso de \texttt{PyAudio}, cuya versión se fija explícitamente.
-
-\begin{table}[htbp]
-    \centering
-    \caption{Dependencias principales de ejecución del sistema.}
-    \label{tab:runtime-dependencies}
-    \begin{tabular}{lll}
-        \hline
-        \textbf{Biblioteca} & \textbf{Versión requerida} & \textbf{Uso principal} \\
-        \hline
-        \texttt{numpy}    & \texttt{>=2.0,<3}    & Cálculo numérico y procesamiento de datos. \\
-        \texttt{pandas}   & \texttt{>=2.0,<4}    & Manejo de datos tabulares y archivos estructurados. \\
-        \texttt{scipy}    & \texttt{>=1.14,<2}   & Procesamiento científico y análisis de señales. \\
-        \texttt{PyAudio}  & \texttt{==0.2.14}    & Interfaz con PortAudio para adquisición de audio. \\
-        \texttt{pyserial} & \texttt{>=3.5,<4}    & Comunicación con periféricos mediante puertos serie. \\
-        \texttt{smbus2}   & \texttt{>=0.5,<1}    & Comunicación con dispositivos sobre bus I2C. \\
-        \hline
-    \end{tabular}
-\end{table}
-
-El archivo \texttt{support/requirements-dev.txt} extiende las dependencias de ejecución e incorpora herramientas específicas para desarrollo, pruebas y generación de gráficos.
-
-\begin{table}[htbp]
-    \centering
-    \caption{Dependencias adicionales de desarrollo y pruebas.}
-    \label{tab:dev-dependencies}
-    \begin{tabular}{lll}
-        \hline
-        \textbf{Biblioteca} & \textbf{Versión requerida} & \textbf{Uso principal} \\
-        \hline
-        \texttt{pytest}     & \texttt{>=8,<10}     & Ejecución de pruebas automatizadas. \\
-        \texttt{pytest-cov} & \texttt{>=7,<8}      & Medición de cobertura de pruebas. \\
-        \texttt{matplotlib} & \texttt{>=3.8,<4}    & Generación de gráficos y reportes técnicos. \\
-        \hline
-    \end{tabular}
-\end{table}
-
-Esta separación entre dependencias de ejecución y dependencias de desarrollo permite distinguir el entorno mínimo requerido para operar la boya del entorno ampliado utilizado durante integración, depuración y validación. En una plataforma embebida operativa resulta conveniente mantener el entorno de ejecución tan acotado como sea posible, mientras que en laboratorio se justifica incorporar herramientas adicionales para pruebas, análisis y generación de evidencia.
-
-El uso del entorno virtual también facilita la ejecución explícita de comandos desde el intérprete asociado al proyecto. Por ejemplo, la aplicación principal puede iniciarse con:
-
-\begin{verbatim}
-PYTHONPATH=. .venv/bin/python main.py
-\end{verbatim}
-
-mientras que la suite de pruebas sin hardware puede ejecutarse mediante:
-
-\begin{verbatim}
-PYTHONPATH=. .venv/bin/python -m pytest -m "not hardware" -q
-\end{verbatim}
-
-De esta manera, el entorno de trabajo queda definido por tres niveles complementarios: paquetes del sistema operativo necesarios para interfaces físicas, entorno virtual Python para aislamiento de bibliotecas y archivos \texttt{requirements} para reproducir las versiones compatibles de las dependencias del proyecto. Esta organización contribuye a la trazabilidad, repetibilidad y mantenibilidad del software embarcado.
-
-\subsection{Herramientas de desarrollo y calidad de código}\label{subsec:herramientas_de_desarrollo_y_calidad_de_codigo}
-
-El desarrollo del software se gestionó mediante un repositorio Git alojado en GitHub. El repositorio integra en una única base de trabajo el código fuente del sistema embebido, los archivos de configuración, los manuales de periféricos, los scripts auxiliares, los datos de soporte y los ensayos automatizados \citep{BoyaRepo}. En esta sección se describe el repositorio como herramienta de desarrollo, control de versiones y trazabilidad. La organización concreta del código fuente se detalla en la Sección~\ref{sec:diseno_e_implementacion}.
-
-Para asistir el desarrollo se utilizó Visual Studio Code con la extensión Pylance. Esta extensión provee soporte de lenguaje para Python, con funciones de autocompletado, navegación de símbolos, análisis de tipos, detección temprana de errores y asistencia durante la edición del código. Su uso resulta especialmente útil en un proyecto modular, donde las interfaces entre módulos, clases, funciones y estructuras de datos deben mantenerse consistentes a lo largo del desarrollo \citep{PylanceDocs}.
-
-Asimismo, se prevé incorporar Pylint como herramienta de análisis estático. Pylint permite inspeccionar el código fuente sin ejecutarlo, detectar errores probables, identificar problemas de estilo, advertir sobre construcciones potencialmente confusas y sugerir refactorizaciones. En un sistema embebido autónomo, este tipo de herramienta contribuye a reducir defectos antes de la etapa de integración con hardware, mejorar la mantenibilidad del código y reforzar criterios homogéneos de calidad \citep{PylintDocs}.
-
-También se incorpora Black como formateador automático de código. Su función es aplicar un estilo de formato consistente y reproducible sobre los archivos Python. Esta decisión reduce diferencias manuales de formato entre desarrolladores, facilita las revisiones de código, simplifica la interpretación de cambios entre versiones y favorece una base de código visualmente homogénea \citep{BlackDocs}.
-
-Para la ejecución de pruebas automatizadas se utilizó \texttt{pytest}, un framework de pruebas para Python orientado a la escritura de tests unitarios, funcionales y de integración con una sintaxis simple y legible \citep{pytestDocs}. A diferencia de enfoques más verbosos, \texttt{pytest} permite expresar verificaciones mediante sentencias \texttt{assert} convencionales, descubrir automáticamente archivos y funciones de prueba siguiendo convenciones de nombre, definir contextos reutilizables mediante \emph{fixtures} y organizar subconjuntos de ensayos mediante marcas o configuraciones específicas.
-
-En el presente desarrollo, \texttt{pytest} se empleó como herramienta principal para verificar el comportamiento de módulos individuales, validar la lógica de las Máquinas de Estados Finitos, ejecutar pruebas con componentes simulados y separar ensayos que no requieren hardware de aquellos destinados a periféricos reales. Su incorporación permite mejorar la repetibilidad de los ensayos, reducir regresiones durante el desarrollo y sostener una estrategia de verificación compatible con una arquitectura modular y mantenible.
-
-En conjunto, el entorno de desarrollo se estructura en tres niveles complementarios: el intérprete Python y su entorno virtual para aislar dependencias; las bibliotecas de ejecución y desarrollo declaradas en los archivos de requerimientos; y las herramientas de asistencia, análisis estático, formateo y prueba empleadas para mejorar la calidad del código. Esta combinación permite sostener un flujo de desarrollo controlado, repetible y auditable, compatible con la documentación técnica y la validación progresiva del sistema.
 
 \subsection{Arquitectura funcional general del sistema}\label{subsec:arquitectura_funcional_general_del_sistema}
 
