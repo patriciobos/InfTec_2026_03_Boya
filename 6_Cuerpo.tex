@@ -672,9 +672,7 @@ R = N_c \cdot f_s \cdot N_b
 \label{eq:flujo-datos-acusticos}
 \end{equation}
 
-En una configuración de dos canales, frecuencia de muestreo de 192~kHz y resolución de 24~bits, equivalente a 3~bytes por muestra, el flujo resultante es aproximadamente 1.15~MB/s. Esto corresponde a unos 4.15~GB/h, o cerca de 100~GB por día de adquisición continua. Por lo tanto, una unidad de 1~TB permite almacenar del orden de varios días de audio continuo a máxima tasa, y un período mayor cuando la adquisición se organiza en ventanas temporales o con frecuencias de muestreo menores. Si el formato de almacenamiento utiliza palabras de 32~bits por muestra, el volumen diario aumenta en forma proporcional.
-
-
+En una configuración de dos canales, frecuencia de muestreo de 192~kHz y resolución de 24~bits, equivalente a 3~bytes por muestra, el flujo resultante es aproximadamente 1.15~MB/s. Esto corresponde a unos 4.15~GB/h, o cerca de 100~GB por día de adquisición continua. Por lo tanto, una unidad de 1~TB permite almacenar del orden de varios días de audio continuo a máxima tasa, y un período mayor cuando la adquisición se organiza en ventanas temporales o con frecuencias de muestreo menores.
 
 Además de la capacidad nominal, el almacenamiento local debe considerarse como parte de la confiabilidad operativa del sistema. La boya puede experimentar reinicios, interrupciones de energía o apagados controlados durante períodos de baja disponibilidad energética. Por este motivo, el uso del SSD debe complementarse con criterios de escritura robusta, cierre ordenado de archivos y separación entre datos científicos, registros de estado y mensajes de telemetría. Esta organización facilita la recuperación posterior de la información y permite reconstruir la secuencia de operación de la boya ante eventos anómalos.
 
@@ -703,7 +701,7 @@ El sistema fue diseñado a partir de los siguientes criterios generales:
 
  \item \textbf{Ejecución concurrente.} Las Máquinas de Estados Finitos se ejecutan como procesos separados. De esta manera, una adquisición, una lectura de sensor o una comunicación serie no bloquea directamente el funcionamiento del resto del sistema.
 
- \item \textbf{Comunicación por eventos.} La interacción entre módulos se realiza mediante mensajes. El enrutador de eventos distribuye información entre productores y consumidores, evitando dependencias directas innecesarias.
+ \item \textbf{Comunicación por eventos.} La interacción entre módulos se realiza mediante mensajes. El enrutador de eventos distribuye información entre productores y consumidores,  y así evita dependencias directas innecesarias.
 
  \item \textbf{Planificación centralizada.} Las adquisiciones periódicas y transmisiones se disparan desde un planificador de tareas central. Los módulos no implementan planificadores internos, lo que simplifica el análisis temporal del sistema.
 
@@ -744,55 +742,10 @@ Desde el punto de vista funcional, el sistema se estructura en las siguientes ca
 La Figura~\ref{fig:arquitectura_capas} resume esta organización.
 
 \begin{figure}[htbp]
-\centering
-\resizebox{\textwidth}{!}{%
-\begin{tikzpicture}[
-    font=\small,
-    layer/.style={
-        draw,
-        rounded corners,
-        align=center,
-        minimum width=13.5cm,
-        minimum height=1.1cm,
-        fill=gray!8
-    },
-    smallbox/.style={
-        draw,
-        rounded corners,
-        align=center,
-        minimum width=3.2cm,
-        minimum height=0.85cm,
-        fill=white
-    },
-    arrow/.style={-{Latex[length=2.5mm]}, thick}
-]
-
-\node[layer] (phys) {Capa física\\
-\footnotesize sensores, placa de audio, módem satelital, controlador solar, almacenamiento e interfaces};
-\node[layer, above=0.35cm of phys] (ll) {Capa de bajo nivel\\
-\footnotesize archivos \texttt{*\_LL.py}: drivers, parseo, adquisición, transporte y procesamiento específico};
-\node[layer, above=0.35cm of ll] (fsm) {Capa de Máquinas de Estados Finitos\\
-\footnotesize archivos \texttt{*\_fsm.py}: estados, transiciones, acciones, validación y reporte};
-\node[layer, above=0.35cm of fsm] (coord) {Capa de coordinación\\
-\footnotesize \texttt{main.py}, enrutador de eventos, planificador de tareas central, reporte de estado};
-\node[layer, above=0.35cm of coord] (persist) {Capa de persistencia y telemetría\\
-\footnotesize configuración, mediciones \texttt{JSONL}, audio \texttt{WAV}, resultados \texttt{JSON}, logs y payloads binarios};
-
-\draw[arrow] (phys) -- (ll);
-\draw[arrow] (ll) -- (fsm);
-\draw[arrow] (fsm) -- (coord);
-\draw[arrow] (coord) -- (persist);
-
-\draw[arrow, dashed] ([xshift=-5.8cm]persist.south) -- ([xshift=-5.8cm]coord.north);
-\draw[arrow, dashed] ([xshift=5.8cm]coord.south) -- ([xshift=5.8cm]fsm.north);
-
-\node[align=left, font=\footnotesize] at ([xshift=-6.6cm,yshift=-0.15cm]persist.south) {configuración\\persistida};
-\node[align=left, font=\footnotesize] at ([xshift=6.6cm,yshift=-0.15cm]coord.south) {mensajes\\y estados};
-
-\end{tikzpicture}
-}
-\caption{Arquitectura por capas del software embebido de la boya EAMMRA.}
-\label{fig:arquitectura_capas}
+	\centering
+	\includegraphics[width=0.90\linewidth]{graficos/layers.pdf}
+	\caption{Arquitectura por capas del software embebido de la boya EAMMRA.}
+	\label{fig:arquitectura_capas}
 \end{figure}
 
 Esta separación permite distinguir con claridad las responsabilidades de cada nivel. La capa física no contiene lógica de control. La capa de bajo nivel no decide cuándo adquirir o transmitir, sino cómo hacerlo. La capa de Máquinas de Estados Finitos no implementa detalles eléctricos o de protocolo más allá de invocar la interfaz correspondiente. Finalmente, la capa de coordinación administra el ciclo temporal general y la comunicación entre módulos sin incorporar detalles propios de cada periférico.
@@ -910,49 +863,6 @@ El uso de Máquinas de Estados Finitos permite representar explícitamente las f
     \caption{Patrón general de Máquina de Estados Finitos utilizado por los módulos funcionales.}
     \label{fig:patron_fsm}
 \end{figure}
-
-
-
-
-%\begin{figure}[htbp]
-%\centering
-%\resizebox{0.92\textwidth}{!}{%
-%\begin{tikzpicture}[
-%    font=\small,
-%    state/.style={
-%        draw,
-%        rounded corners,
-%        align=center,
-%        minimum width=2.6cm,
-%        minimum height=0.9cm,
-%        fill=gray!8
-%    },
-%    arrow/.style={-{Latex[length=2.5mm]}, thick}
-%]
-%
-%\node[state] (disable) {DISABLE};
-%\node[state, right=1.2cm of disable] (init) {INIT};
-%\node[state, right=1.2cm of init] (test) {TEST};
-%\node[state, right=1.2cm of test] (idle) {IDLE};
-%\node[state, right=1.2cm of idle] (acq) {ACQUIRE};
-%\node[state, below=1.2cm of test] (error) {ERROR};
-%
-%\draw[arrow] (disable) -- node[above, font=\footnotesize]{SIG\_INIT} (init);
-%\draw[arrow] (init) -- node[above, font=\footnotesize]{OK} (test);
-%\draw[arrow] (test) -- node[above, font=\footnotesize]{OK} (idle);
-%\draw[arrow] (idle) -- node[above, font=\footnotesize]{SIG\_TIMEOUT / SIG\_ACQUIRE} (acq);
-%\draw[arrow] (acq) .. controls +(0,1.1) and +(0,1.1) .. node[above, font=\footnotesize]{OK} (idle);
-%
-%\draw[arrow] (init) -- node[left, font=\footnotesize]{ERROR} (error);
-%\draw[arrow] (test) -- node[right, font=\footnotesize]{ERROR} (error);
-%\draw[arrow] (acq) -- node[right, font=\footnotesize]{ERROR} (error);
-%\draw[arrow, dashed] (error) .. controls +(-3.8,-0.9) and +(0,-1.2) .. node[below, font=\footnotesize]{reintento controlado} (init);
-%
-%\end{tikzpicture}
-%}
-%\caption{Patrón general de Máquina de Estados Finitos utilizado por los módulos funcionales.}
-%\label{fig:patron_fsm}
-%\end{figure}
 
 La separación entre ambas capas facilita el reemplazo del acceso físico por implementaciones simuladas durante desarrollo e integración. También permite que el comportamiento del módulo sea analizado desde su Máquina de Estados Finitos sin depender de los detalles eléctricos o temporales de cada periférico.
 
