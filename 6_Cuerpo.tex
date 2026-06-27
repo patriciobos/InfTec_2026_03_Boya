@@ -6,7 +6,9 @@
 
 El presente informe técnico documenta el desarrollo del sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría satelital de la boya instrumental EAMMRA. El sistema se orienta a la operación autónoma de una plataforma marítima capaz de adquirir variables ambientales, meteorológicas, de posición, energéticas y acústicas, almacenar datos localmente y transmitir información seleccionada mediante un enlace satelital.  
 
-La línea de trabajo EAMMRA se origina en la necesidad de disponer de una estación autónoma para la medición de Nivel de Ruido submarino, \(NL\), y de variables asociadas al ambiente marítimo. Una primera etapa estuvo vinculada con la caracterización ambiental de la Zona de Adiestramiento en Inmersión de Sumergibles (ZAIS), donde se reunió información acústica, oceanográfica y de tráfico marítimo con el propósito de evaluar la factibilidad de instalar una Estación Autónoma Marítima para el Monitoreo de Ruido Ambiente \citep{AS0215_ZAIS}.
+La línea de trabajo EAMMRA se origina en la necesidad de disponer de una estación autónoma para la medición de Nivel de Ruido submarino, \(NL\), y de variables asociadas al ambiente marítimo. El conocimiento de este parámetro posee una importancia dual: desde el punto de vista operativo naval, contribuye a la caracterización del medio acústico y es un dato de entrada de los sistemas de Predicción SONAR; desde el punto de vista ambiental, permite establecer líneas de base para evaluar la variabilidad del ruido subacuático y el posible impacto de actividades antrópicas en zonas de interés marítimo \textbf{BUSCAR REFERENCIA}. Por otra parte, el valor local de \(NL\) constituye el nivel mínimo que debe superar una señal acústica para poder ser detectada.
+
+Una primera etapa estuvo vinculada con la caracterización ambiental de la Zona de Adiestramiento en Inmersión de Sumergibles (ZAIS), donde se reunió información acústica, oceanográfica y de tráfico marítimo con el propósito de evaluar la factibilidad de instalar una Estación Autónoma Marítima para el Monitoreo de Ruido Ambiente \citep{AS0215_ZAIS}.
 
 Sobre esa base, la ingeniería conceptual de EAMMRA estableció los objetivos generales del sistema, los requerimientos de alto nivel, el escenario de operación y los criterios iniciales de aceptación \citep{AS0316_EAMMRAConceptual}. En ese marco se adoptó la distinción entre ruido ambiente propiamente dicho, \(NL_\mathrm{a}\), ruido propio del sistema de medición, \(NL_\mathrm{p}\), y ruido radiado por fuentes identificables. Esta separación resulta central para el diseño de la estación, ya que la calidad de una medición hidroacústica no depende únicamente del hidrófono y de la cadena de adquisición, sino también de la plataforma, del montaje, del fondeo, del acondicionamiento electrónico, del procesamiento y de la información contextual asociada a cada registro.
 
@@ -42,7 +44,7 @@ La Figura~\ref{fig:boya_eammra} muestra la configuración general de la plataform
 		\vspace{0.2cm}
 		\small{\\Boya EAMMRA sobre su base de apoyo.}
 	\end{minipage}
-	 \caption{Boya instrumental EAMMRA. A la izquierda se muestra un esquema general de la plataforma de superficie con sus dimensiones principales; a la derecha, una fotografía de la boya montada sobre su base de apoyo.}
+	 \caption{Boya instrumental EAMMRA. A la izquierda se muestra un diagrama esqumático de la plataforma con sus dimensiones principales; a la derecha, una fotografía de la boya montada sobre su base de apoyo.}
 	\label{fig:boya_eammra}
 \end{figure}
 
@@ -98,19 +100,19 @@ El alcance de esta sección es presentar el marco general del desarrollo y su con
 
 \clearpage
 
-\section{INTRODUCCIÓN ESPECÍFICA}
-\label{sec:introduccion_especifica}
+\section{ALCANCE Y MARCO TÉCNICO DEL SISTEMA}
+\label{sec:alcance_marco_tecnico}
 
 Esta sección delimita el sistema técnico documentado en el informe y presenta los criterios generales que permiten interpretar las secciones posteriores.
 
-\subsection{Alcance técnico del sistema documentado}
-\label{subsec:alcance_tecnico}
+\subsection{Sistema documentado}
+\label{subsec:sistema_documentado}
 
-El presente informe documenta el sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría satelital de la boya instrumental EAMMRA. El sistema comprende la computadora principal embarcada, los periféricos de sensado, la cadena de adquisición acústica, el subsistema de supervisión energética, el almacenamiento local, el módem satelital y el software encargado de coordinar la operación autónoma de la plataforma.
+El presente informe documenta el sistema embebido desarrollado para la boya instrumental EAMMRA durante la etapa actual del proyecto. El alcance comprende la integración de la computadora principal embarcada con los periféricos de medición, supervisión, almacenamiento y comunicación, así como el software encargado de coordinar su operación autónoma.
 
-Desde el punto de vista funcional, el sistema documentado incluye la lectura de sensores ambientales, inerciales, meteorológicos y de posicionamiento; la adquisición y el procesamiento básico de señales acústicas; la supervisión de variables energéticas; el registro persistente de datos, eventos y estados; y la transmisión remota de información seleccionada mediante telemetría satelital. Estos bloques no se consideran dispositivos aislados, sino partes de un ciclo de operación coordinado por software.
+El foco del documento está puesto en la arquitectura embebida del sistema: interfaces entre módulos, organización del software, mecanismos de adquisición y registro, telemetría, diagnóstico, configuración y criterios de prueba. La boya se aborda en tanto plataforma física que condiciona dicha integración, pero no se desarrolla aquí su diseño mecánico, estructural o naval en detalle.
 
-El alcance principal del informe se concentra en la integración embebida de esos bloques: interfaces de comunicación, arquitectura de software, mecanismos de coordinación, persistencia de datos, telemetría, diagnóstico y pruebas. Por lo tanto, no se desarrolla aquí el diseño mecánico detallado de la boya, el análisis estructural, la ingeniería electrónica interna de periféricos comerciales ni la caracterización experimental completa de campañas de medición. Esos aspectos corresponden a antecedentes técnicos, documentación de fabricante o etapas específicas de ensayo.
+Tampoco forman parte del alcance principal la caracterización acústica completa de campañas de medición, el diseño interno de periféricos comerciales ni la ingeniería electrónica detallada de cada instrumento. Esos aspectos se consideran antecedentes, documentación de fabricante o contenidos específicos de otras etapas del proyecto.
 
 La descripción del hardware integrado se presenta en la Sección~\ref{sec:hardware}; el diseño e implementación del software se desarrolla en la Sección~\ref{sec:disenio_implementacion}; y las pruebas previstas o realizadas para verificar el comportamiento del sistema se documentan en la Sección~\ref{sec:pruebas_ensayos}.
 
@@ -136,82 +138,70 @@ El repositorio constituye además el punto de referencia para reproducir el entor
 
 Para asistir la edición y revisión del código se utiliza Visual Studio Code con la extensión Pylance. Esta herramienta provee soporte de lenguaje para Python, navegación entre símbolos, asistencia de autocompletado, análisis de tipos y detección temprana de errores durante la edición \citep{PylanceDocs}. Su uso resulta especialmente útil en un proyecto modular, donde las interfaces entre clases, funciones, estructuras de datos y archivos de configuración deben mantenerse consistentes durante la evolución del sistema.
 
-Como herramienta de análisis estático se incorpora Pylint, que permite inspeccionar el código fuente sin ejecutarlo, detectar errores probables, identificar problemas de estilo, advertir sobre construcciones ambiguas y sugerir refactorizaciones \citep{PylintDocs}. En el contexto de una plataforma embebida autónoma, este tipo de verificación es relevante porque permite detectar defectos antes de la integración con hardware, etapa en la cual los errores suelen ser más costosos de reproducir y diagnosticar.
+Como herramienta de análisis estático se incorpora Pylint, que permite inspeccionar el código fuente sin ejecutarlo, detectar errores probables, identificar problemas de estilo, advertir sobre construcciones ambiguas y sugerir refactorizaciones \citep{PylintDocs}. En el contexto de una plataforma embebida autónoma, este tipo de verificación es relevante porque permite detectar defectos antes de la integración con hardware, etapa en la cual los errores suelen ser más costosos de reproducir.
 
 También se utiliza Black como formateador automático de código Python \citep{BlackDocs}. La aplicación de un formato uniforme reduce diferencias de estilo entre archivos, simplifica la revisión de cambios y evita que las discusiones sobre presentación del código interfieran con el análisis funcional. Esta decisión contribuye a mantener una base de código homogénea y legible, especialmente durante etapas de crecimiento del repositorio.
 
-La verificación funcional del software se apoya en pruebas automatizadas implementadas con \texttt{pytest} \citep{pytestDocs}. Estas pruebas permiten ejercitar módulos individuales, validar comportamientos esperados, detectar regresiones y ejecutar ensayos sin requerir siempre la presencia de hardware físico. Cuando corresponde, el uso de componentes sustitutos permite reproducir respuestas de periféricos, eventos y condiciones de error de manera controlada.
+La verificación funcional del software se apoya en pruebas automatizadas implementadas con la \textit{suite}  \texttt{pytest} \citep{pytestDocs}. Estas pruebas permiten ejercitar módulos individuales, validar comportamientos esperados, detectar regresiones y ejecutar ensayos sin requerir siempre la presencia de hardware físico. Cuando corresponde, el uso de componentes sustitutos permite reproducir respuestas de periféricos, eventos y condiciones de error de manera controlada.
 
 En conjunto, estas herramientas aportan una capa de control técnico sobre el proceso de desarrollo. El objetivo no es imponer una metodología externa al proyecto, sino reducir errores evitables, mejorar la mantenibilidad del código, facilitar la integración progresiva con hardware real y dejar evidencia reproducible del comportamiento del sistema durante su evolución.
 
+\subsection{Requerimientos funcionales y no funcionales}
+\label{subsec:requerimientos}
 
-\subsection{Arquitectura funcional general del sistema}\label{subsec:arquitectura_funcional_general_del_sistema}
+Los requerimientos del sistema derivan de la necesidad de operar una boya instrumental autónoma con múltiples subsistemas integrados. En términos generales, el sistema debe adquirir datos, validarlos, almacenarlos, procesarlos parcialmente y transmitir información seleccionada en forma remota. Estos requerimientos actualizan y particularizan, para la etapa de desarrollo documentada en este informe, lineamientos definidos en antecedentes de ingeniería conceptual e integración de subsistemas de EAMMRA \citep{AS0316_EAMMRAConceptual,AS0219_Subsistemas}.
 
-La arquitectura general del sistema se basa en una organización modular orientada a eventos. Cada subsistema se representa mediante una Máquina de Estados Finitos que encapsula sus estados, transiciones, acciones y condiciones de error. La comunicación entre módulos se realiza mediante mensajes, y un enrutador de eventos actúa como intermediario encargado de distribuir información entre productores y consumidores.
-
-Desde un punto de vista funcional, la arquitectura puede representarse mediante las siguientes capas:
-
-\begin{itemize}
-    \item \textbf{Capa de hardware:} comprende sensores, placa de audio, módem satelital, controlador solar, interfaces serie, buses I2C, almacenamiento y dispositivos físicos asociados.
-    \item \textbf{Capa de bajo nivel:} implementa el acceso directo a cada dispositivo o servicio específico. Incluye inicialización de interfaces, lectura de sensores, adquisición de audio, comunicación AT/SBD, lectura de controladores de energía y funciones auxiliares de hardware.
-    \item \textbf{Capa de control por estados:} implementa la lógica de estado de cada módulo. Cada Máquina de Estados Finitos recibe eventos, ejecuta acciones, valida resultados, registra estados y comunica eventos de salida al resto del sistema.
-    \item \textbf{Capa de enrutamiento:} centraliza la distribución de mensajes y evita dependencias directas entre módulos.
-    \item \textbf{Capa de planificación:} ejecuta el planificador de tareas central, responsable de disparar adquisiciones periódicas, transmisiones, tareas de mantenimiento y ciclos operativos de acuerdo con la configuración vigente.
-    \item \textbf{Capa de persistencia:} administra la escritura de mediciones, logs, estados, archivos de audio, resultados procesados y mensajes preparados para transmisión.
-    \item \textbf{Capa de telemetría:} prepara y transmite mensajes binarios mediante Iridium SBD, incluidos estados de sistema y resultados seleccionados de procesamiento acústico.
-\end{itemize}
-
-El flujo general de operación comienza con la inicialización de configuraciones, módulos y recursos del sistema. Una vez iniciado el proceso principal, el planificador de tareas central dispara eventos de adquisición de acuerdo con intervalos definidos. Los sensores ambientales, meteorológicos, inerciales, de posición y energía generan registros periódicos. Para los ensayos de verificación, la adquisición acústica se ejecuta con una periodicidad menor que la de los sensores de bajo ancho de banda, debido al mayor volumen de datos generado.
-
-El módulo de adquisición acústica realiza la grabación de audio y genera archivos WAV con metadatos asociados. Al finalizar una adquisición válida, el resultado queda disponible para el módulo de procesamiento de audio, que procesa el archivo y genera resultados compactos, persistidos en formato estructurado. Estos resultados pueden ser posteriormente seleccionados por el subsistema Iridium para su transmisión satelital.
-
-La telemetría Iridium se organiza en ciclos regulares. El sistema puede transmitir mensajes de estado que resumen la condición operativa de las Máquinas de Estados Finitos, los módulos de bajo nivel, la disponibilidad de almacenamiento, el estado energético y el tiempo desde el arranque. También puede transmitir resultados derivados del procesamiento de audio, compactados en formato binario para adecuarse a las restricciones de tamaño del enlace SBD.
-
-El diseño evita que la transmisión satelital dependa directamente de la finalización de una adquisición. En su lugar, el sistema registra la disponibilidad del último resultado válido y el planificador de tareas gobierna los momentos de transmisión. Esta decisión reduce acoplamientos, simplifica el control temporal del enlace satelital y permite mantener un comportamiento predecible aun cuando alguna tarea se demore, falle o produzca datos incompletos.
-
-\subsection{Requerimientos funcionales y no funcionales}\label{subsec:requerimientos_funcionales_y_no_funcionales}
-
-Los requerimientos funcionales del sistema surgen de la necesidad de controlar una boya instrumental autónoma con múltiples subsistemas integrados. En términos generales, el sistema debe ser capaz de adquirir datos, validarlos, almacenarlos, procesarlos parcialmente y transmitir información seleccionada en forma remota.
+\noindent\textbf{Requerimientos funcionales.}
 
 Los requerimientos funcionales principales son:
 
 \begin{itemize}
-    \item Adquirir mediciones ambientales de temperatura y humedad.
-    \item Adquirir mediciones inerciales de aceleración y velocidad angular.
-    \item Adquirir información de posicionamiento, tiempo y datos de navegación mediante AIS/GPS.
-    \item Adquirir mediciones meteorológicas de velocidad y dirección del viento.
-    \item Relevar variables eléctricas del sistema de alimentación, incluidos parámetros asociados a panel solar, carga y batería.
-    \item Ejecutar adquisiciones acústicas mediante placa de audio USB y almacenar archivos WAV con metadatos asociados.
-    \item Procesar archivos de audio para obtener productos compactos compatibles con almacenamiento local y telemetría satelital.
-    \item Registrar mediciones en archivos persistentes con formato estructurado y unidades explícitas.
-    \item Registrar logs de ejecución, eventos relevantes, errores, advertencias y condiciones de diagnóstico.
-    \item Transmitir mensajes de estado de sistema mediante Iridium SBD.
-    \item Transmitir resultados seleccionados de procesamiento acústico mediante Iridium SBD.
-    \item Ejecutar tareas periódicas mediante un planificador de tareas central configurable.
-    \item Representar el comportamiento de cada módulo mediante Máquinas de Estados Finitos.
-    \item Permitir ejecución con hardware real, con todos los módulos simulados o con simulación parcial de módulos seleccionados.
-    \item Permitir pruebas automatizadas sin hardware y pruebas específicas contra hardware real.
-    \item Mantener archivos de configuración editables para adaptar intervalos, rutas, parámetros de adquisición, habilitación de telemetría y uso de \emph{mocks}.
+    \item \textbf{Adquisición multisensor.} El sistema debe adquirir mediciones ambientales, inerciales, meteorológicas, de posicionamiento y de estado energético. Estas mediciones incluyen, según el periférico correspondiente, temperatura, humedad, aceleración, velocidad angular, posición, fecha y hora, datos de navegación, velocidad y dirección del viento, y variables eléctricas asociadas al sistema de alimentación.
+
+    \item \textbf{Adquisición acústica.} El sistema debe ejecutar adquisiciones acústicas mediante la placa de audio integrada, generar archivos de audio en formato persistente y asociar a cada adquisición los metadatos necesarios para su identificación, interpretación y análisis posterior.
+
+    \item \textbf{Procesamiento básico.} El sistema debe procesar archivos de audio adquiridos para obtener productos compactos compatibles con almacenamiento local y eventual transmisión mediante telemetría satelital.
+
+    \item \textbf{Persistencia de datos y eventos.} El sistema debe registrar mediciones, archivos acústicos, resultados de procesamiento, eventos, errores, advertencias, estados operativos y condiciones de diagnóstico en formatos estructurados, con unidades explícitas y referencias temporales.
+
+    \item \textbf{Telemetría satelital.} El sistema debe transmitir mediante Iridium SBD mensajes de estado de la boya y, cuando corresponda, resultados seleccionados del procesamiento acústico. La información transmitida debe adecuarse a las restricciones de tamaño y disponibilidad propias del enlace satelital.
+
+    \item \textbf{Coordinación de tareas.} El sistema debe ejecutar tareas periódicas y acciones condicionadas mediante una lógica central configurable, capaz de ordenar adquisiciones, verificaciones de estado, registros, procesamiento y transmisiones.
+
+    \item \textbf{Representación de estados.} El comportamiento de los módulos principales debe representarse mediante Máquinas de Estados Finitos, de manera que los estados nominales, las transiciones, las condiciones de error y las acciones de recuperación puedan describirse y verificarse de forma explícita.
+
+    \item \textbf{Configurabilidad.} El sistema debe permitir modificar parámetros de operación mediante archivos de configuración, incluyendo intervalos de adquisición, rutas de almacenamiento, parámetros de audio, habilitación de telemetría y selección de ejecución con hardware real o componentes sustitutos.
+
+    \item \textbf{Prueba y simulación.} El sistema debe poder ejecutarse con hardware real, con módulos simulados o con simulación parcial de periféricos seleccionados, a fin de facilitar pruebas automatizadas, ensayos de bajo nivel y pruebas progresivas de integración.
 \end{itemize}
+
+\noindent\textbf{Requerimientos no funcionales.}
 
 Los requerimientos no funcionales responden a las restricciones propias de una plataforma autónoma embarcada. Entre ellos se destacan:
 
 \begin{itemize}
-    \item \textbf{Autonomía operativa:} el sistema debe ejecutar ciclos de adquisición, almacenamiento y transmisión sin intervención humana continua.
-    \item \textbf{Robustez:} el sistema debe tolerar fallas parciales de módulos, errores de lectura, indisponibilidad transitoria de periféricos y condiciones de comunicación no ideales.
-    \item \textbf{Persistencia segura:} los datos adquiridos no deben perderse por fallas evitables de software, configuraciones ambiguas o políticas agresivas de liberación de espacio.
-    \item \textbf{Bajo consumo relativo:} el software debe permitir ciclos de adquisición y transmisión compatibles con el presupuesto energético disponible.
-    \item \textbf{Mantenibilidad:} la separación entre bajo nivel, Máquinas de Estados Finitos, enrutador de eventos y planificador de tareas debe facilitar la modificación de módulos individuales sin afectar la arquitectura completa.
-    \item \textbf{Extensibilidad:} la arquitectura debe permitir la incorporación futura de nuevos sensores, nuevos productos de procesamiento o nuevos formatos de telemetría.
-    \item \textbf{Verificabilidad:} el comportamiento del sistema debe poder probarse mediante tests automatizados, ejecución con \emph{mocks}, ensayos de bajo nivel y pruebas de integración.
-    \item \textbf{Trazabilidad:} las mediciones, eventos, configuraciones y resultados de prueba deben poder relacionarse con módulos, horarios de ejecución y condiciones operativas.
-    \item \textbf{Degradación controlada:} ante una falla, el sistema debe registrar la condición, conservar datos previos, evitar acciones inseguras y continuar operando en la medida de lo posible.
-    \item \textbf{Diagnóstico remoto:} los mensajes satelitales deben permitir inferir el estado general de la boya, incluida la salud de módulos, almacenamiento, energía y continuidad operativa.
+    \item \textbf{Autonomía operativa.} El sistema debe ejecutar ciclos de adquisición, almacenamiento, procesamiento y transmisión sin intervención humana continua durante el despliegue.
+
+    \item \textbf{Robustez.} El sistema debe tolerar fallas parciales de módulos, errores de lectura, indisponibilidad transitoria de periféricos y condiciones de comunicación no ideales, evitando que una falla local comprometa innecesariamente el funcionamiento completo de la boya.
+
+    \item \textbf{Persistencia segura.} Los datos adquiridos no deben perderse por fallas evitables de software, configuraciones ambiguas o políticas agresivas de liberación de espacio. El almacenamiento local debe priorizar la conservación de registros útiles para análisis posterior.
+
+    \item \textbf{Uso controlado de recursos.} El software debe ejecutar ciclos de adquisición, procesamiento y transmisión compatibles con el presupuesto energético, la capacidad de almacenamiento y las limitaciones de comunicación disponibles en la plataforma.
+
+    \item \textbf{Mantenibilidad.} La organización del sistema debe facilitar la modificación de módulos individuales, la revisión de interfaces, la actualización de periféricos y la corrección de fallas sin requerir cambios extensos en la arquitectura completa.
+
+    \item \textbf{Extensibilidad.} La arquitectura debe permitir la incorporación futura de nuevos sensores, nuevos productos de procesamiento, nuevos formatos de registro o nuevos mensajes de telemetría.
+
+    \item \textbf{Verificabilidad.} El comportamiento del sistema debe poder evaluarse mediante pruebas automatizadas, ejecución con componentes sustitutos, ensayos de bajo nivel y pruebas de integración con hardware real.
+
+    \item \textbf{Trazabilidad.} Las mediciones, eventos, configuraciones, estados y resultados de prueba deben poder relacionarse con módulos específicos, horarios de ejecución y condiciones operativas de la boya.
 \end{itemize}
 
-En conjunto, estos requerimientos justifican la arquitectura adoptada. La combinación de módulos de bajo nivel, Máquinas de Estados Finitos, enrutador de eventos, planificador de tareas central, almacenamiento estructurado, telemetría binaria, pruebas automatizadas y soporte de simulación permite abordar la complejidad de una boya operativa sin concentrar toda la lógica en un bloque monolítico. La Introducción Específica presentada en esta sección establece, por lo tanto, el marco técnico necesario para comprender las decisiones de diseño e implementación desarrolladas en las secciones siguientes.
+Estos requerimientos establecen el marco técnico utilizado en las secciones siguientes para describir la plataforma de hardware, la arquitectura de software, los mecanismos de persistencia, la telemetría y las pruebas de verificación del sistema.
 
-\section{HARDWARE}\label{sec:plataforma_de_hardware_y_perifericos_integrados}
+
+\clearpage
+\section{DESCRIPCIÓN DEL HARDWARE}\label{sec:hardware}
 
 La boya EAMMRA integra una computadora principal embarcada y un conjunto de periféricos de sensado, adquisición, supervisión energética, almacenamiento y telemetría. La función del sistema embebido es coordinar estos dispositivos bajo un ciclo de operación autónomo, con registro persistente de datos, diagnóstico local y transmisión remota de información crítica. En esta sección se presenta la plataforma de hardware utilizada, con énfasis en los dispositivos que se vinculan directamente con el software de control, sus interfaces de comunicación, sus variables de operación y su función dentro de la arquitectura general del sistema.
 
@@ -633,7 +623,7 @@ En conjunto, el subsistema acústico queda definido como una cadena instrumental 
 
 El subsistema Iridium proporciona el enlace de telemetría satelital de la boya EAMMRA mediante el servicio \textit{Short Burst Data} (SBD). Este servicio está orientado a la transmisión bidireccional de mensajes cortos entre equipos remotos y sistemas centrales, por lo que resulta adecuado para plataformas autónomas con bajo volumen de datos transmitidos y operación fuera de cobertura celular o infraestructura costera \citep{IridiumSBDService}. En la boya, el enlace satelital se utiliza para transmitir información compacta de estado, diagnóstico y resultados seleccionados, sin reemplazar al almacenamiento local de datos completos.
 
-La familia de transceptores Iridium 9603/9603N constituye una referencia técnica representativa para este tipo de integración. Estos módulos están diseñados como transceptores SBD de placa única, destinados a incorporarse dentro de un sistema anfitrión que provee alimentación, lógica de control, antena y acondicionamiento de interfaces. El transceptor no implementa voz, datos conmutados por circuito ni SMS, sino exclusivamente comunicación SBD. Esta característica es consistente con el uso previsto en EAMMRA, donde la telemetría se limita a mensajes breves y seleccionados \citep{Iridium9603NDevGuide}. En la Figura~\ref{fig:iridium} se muestra el módem satelital Iridium utilizado como periférico de telemetría remota.
+El módem satelital Iridium se incorpora como periférico de telemetría remota para transmitir mensajes breves de estado y resultados seleccionados del sistema. En EAMMRA no se lo utiliza como enlace de transferencia continua ni para recuperar archivos completos de adquisición, sino como un canal de baja tasa orientado a información resumida, compatible con el servicio \textit{Short Burst Data} (SBD) \citep{Iridium9603NDevGuide}. Esta restricción condiciona el diseño de la telemetría: los mensajes deben ser compactos, priorizados y generados a partir de datos previamente seleccionados o procesados por la computadora principal. La Figura~\ref{fig:iridium} muestra el módem satelital utilizado en el sistema.
 
 \begin{figure}[htbp]
 \centering
@@ -667,7 +657,6 @@ El uso de SBD impone una restricción deliberada sobre el volumen de información 
 
 En conjunto, el módem Iridium SBD se incorpora como periférico de comunicación remota de baja tasa de datos y alta cobertura geográfica. Su valor dentro de EAMMRA no reside en transportar grandes volúmenes de información, sino en permitir seguimiento remoto, verificación de continuidad operativa y recuperación parcial de información crítica durante campañas prolongadas. Esta función complementa el almacenamiento local y proporciona una vía de supervisión externa cuando la boya opera fuera del alcance de redes terrestres.
 
-\vspace{20px}
 \subsection{Almacenamiento local.}
 
 La boya EAMMRA incorpora almacenamiento local mediante una unidad de estado sólido de 1~TB. Este dispositivo constituye el soporte primario para conservar los datos científicos y operativos adquiridos durante una campaña. La telemetría satelital Iridium SBD permite transmitir información compacta de estado, diagnóstico y resultados seleccionados, pero no está destinada al envío de archivos de gran volumen. Por este motivo, los registros completos, en particular los archivos acústicos, permanecen almacenados en la boya hasta su recuperación durante tareas de mantenimiento o al finalizar la operación.
@@ -692,8 +681,8 @@ Además de la capacidad nominal, el almacenamiento local debe considerarse como p
 En conjunto, el SSD de 1~TB actúa como memoria persistente principal del sistema embebido. Su función es preservar la totalidad de los datos de campaña, mientras que la telemetría satelital proporciona una vía de supervisión remota limitada a información compacta. Esta separación entre almacenamiento local de alto volumen y transmisión remota de baja tasa permite compatibilizar la adquisición acústica de alta demanda con la operación autónoma y energéticamente restringida de la boya.
 
 \clearpage
-\section{DISEÑO E IMPLEMENTACIÓN}
-\label{sec:diseno_e_implementacion}
+\section{DISEÑO E IMPLEMENTACIÓN DEL SOFTWARE}
+\label{sec:disenio_implementacion}
 
 En esta sección se describe el diseño e implementación del software embebido de control, adquisición, supervisión, almacenamiento y telemetría de la boya instrumental EAMMRA. La descripción se orienta a documentar la arquitectura adoptada, los bloques funcionales que componen el sistema, las capas de software, los mecanismos de comunicación interna, los formatos de datos persistidos y los formatos binarios empleados para telemetría satelital.
 
