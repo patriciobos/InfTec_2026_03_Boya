@@ -6,11 +6,11 @@
 
 El presente informe técnico documenta el desarrollo del sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría satelital de la boya instrumental EAMMRA. El sistema se orienta a la operación autónoma de una plataforma marítima capaz de adquirir variables ambientales, meteorológicas, de posición, energéticas y acústicas, almacenar datos localmente y transmitir información seleccionada mediante un enlace satelital.  
 
-La línea de trabajo EAMMRA se origina en la necesidad de disponer de una estación autónoma para la medición de Nivel de Ruido submarino, \(NL\), y de variables asociadas al ambiente marítimo. El conocimiento de este parámetro posee una importancia dual: desde el punto de vista operativo naval, contribuye a la caracterización del medio acústico y es un dato de entrada de los sistemas de Predicción SONAR; desde el punto de vista ambiental, permite establecer líneas de base para evaluar la variabilidad del ruido subacuático y el posible impacto de actividades antrópicas en zonas de interés marítimo \textbf{BUSCAR REFERENCIA}. Por otra parte, el valor local de \(NL\) constituye el nivel mínimo que debe superar una señal acústica para poder ser detectada.
+La línea de trabajo EAMMRA se origina en la necesidad de disponer de una estación autónoma para medir, registrar y analizar el Nivel de Ruido submarino, \(NL\), junto con variables asociadas al ambiente marítimo. En acústica submarina, \(NL\) constituye un parámetro SONAR fundamental: interviene en las Ecuaciones SONAR, condiciona la capacidad de detección en escucha pasiva y representa el nivel de fondo respecto del cual debe distinguirse una señal acústica recibida \citep{URICK,UrickNL}. Desde el punto de vista ambiental, la medición de \(NL\) permite caracterizar el ruido ambiente y diferenciarlo de componentes asociadas al ruido propio del sistema y al ruido radiado por fuentes identificables, incluidas fuentes antrópicas tales como tráfico marítimo, plataformas e instalaciones de explotación o generación \citep{Urban2002}. Esta información resulta necesaria para establecer líneas de base, analizar la variabilidad del ruido subacuático y evaluar cambios asociados a actividades humanas en zonas de interés marítimo.
 
 Una primera etapa estuvo vinculada con la caracterización ambiental de la Zona de Adiestramiento en Inmersión de Sumergibles (ZAIS), donde se reunió información acústica, oceanográfica y de tráfico marítimo con el propósito de evaluar la factibilidad de instalar una Estación Autónoma Marítima para el Monitoreo de Ruido Ambiente \citep{AS0215_ZAIS}.
 
-Sobre esa base, la ingeniería conceptual de EAMMRA estableció los objetivos generales del sistema, los requerimientos de alto nivel, el escenario de operación y los criterios iniciales de aceptación \citep{AS0316_EAMMRAConceptual}. En ese marco se adoptó la distinción entre ruido ambiente propiamente dicho, \(NL_\mathrm{a}\), ruido propio del sistema de medición, \(NL_\mathrm{p}\), y ruido radiado por fuentes identificables. Esta separación resulta central para el diseño de la estación, ya que la calidad de una medición hidroacústica no depende únicamente del hidrófono y de la cadena de adquisición, sino también de la plataforma, del montaje, del fondeo, del acondicionamiento electrónico, del procesamiento y de la información contextual asociada a cada registro.
+Sobre esa base, la ingeniería conceptual de EAMMRA estableció los objetivos generales del sistema, los requerimientos de alto nivel y6 el escenario de operación \citep{AS0316_EAMMRAConceptual}. En ese marco se adoptó la distinción entre ruido ambiente propiamente dicho, \(NL_\mathrm{a}\), ruido propio del sistema de medición, \(NL_\mathrm{p}\), y ruido radiado por fuentes identificables. Esta separación resulta central para el diseño de la estación, ya que la calidad de una medición hidroacústica no depende únicamente del hidrófono y de la cadena de adquisición, sino también de la plataforma, del montaje, del fondeo, del acondicionamiento electrónico, del procesamiento y de la información contextual asociada a cada registro.
 
 En paralelo, se realizaron ensayos experimentales destinados a verificar componentes críticos de la cadena acústica. Las mediciones efectuadas en la dársena de la Base Naval Mar del Plata permitieron contrastar hidrófonos de banda ancha, evaluar el funcionamiento de amplificadores de carga, registrar ruido ambiente subacuático y analizar la respuesta frente a señales acústicas controladas \citep{AS0415_HidrofonosMDP}. Estos antecedentes aportaron criterios prácticos para la selección de sensores, el acondicionamiento de señal, la estimación espectral y la definición de procedimientos de adquisición.
 
@@ -33,14 +33,14 @@ La Figura~\ref{fig:boya_eammra} muestra la configuración general de la platafor
 	\centering
 	\begin{minipage}[b]{0.48\textwidth}
 		\centering
-		\includegraphics[height=9cm]{graficos/boya_esquema_1.png}
+		\includegraphics[height=8.5cm]{graficos/boya_esquema_1.png}
 		\vspace{0.2cm}
 		\small{\\Diagrama esquemático de la boya EAMMRA.}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[b]{0.48\textwidth}
 		\centering
-		\includegraphics[height=9cm]{graficos/boya.png}
+		\includegraphics[height=8.5cm]{graficos/boya.png}
 		\vspace{0.2cm}
 		\small{\\Boya EAMMRA sobre su base de apoyo.}
 	\end{minipage}
@@ -59,7 +59,7 @@ La operación autónoma impone además una diferencia importante respecto de un 
 \subsection{Motivación}
 \label{subsec:motivacion}
 
-La motivación principal del proyecto es disponer de una boya instrumental autónoma, robusta y mantenible para adquirir datos relevantes del ambiente marítimo y transmitir información esencial en forma remota. La medición del ruido submarino y de variables asociadas permite construir series temporales de valor científico y técnico, mejorar la caracterización de escenarios acústicos y correlacionar la información hidroacústica con condiciones ambientales, meteorológicas, energéticas y de posición.
+La motivación principal del proyecto es disponer de una boya instrumental autónoma, robusta y mantenible para adquirir datos relevantes del ambiente marítimo y transmitir información esencial en forma remota. La medición del ruido submarino y de variables asociadas permite construir series temporales de valor científico y técnico, mejorar la caracterización de escenarios acústicos y correlacionar la información hidroacústica con condiciones ambientales y meteorológicas.
 
 En sistemas de este tipo, el dato acústico aislado resulta insuficiente si no se encuentra acompañado por información contextual. La interpretación de un registro hidroacústico requiere conocer, entre otros factores, la fecha y hora de adquisición, la ubicación de la plataforma, el estado de la boya, las condiciones ambientales, el viento, la temperatura, el estado energético y la validez del ciclo de medición. Por esta razón, el sistema embebido debe concebirse como una infraestructura de adquisición multisensor, y no únicamente como un controlador de un dispositivo acústico.
 
@@ -74,7 +74,7 @@ Finalmente, este informe busca dejar una base técnica verificable para la conti
 \subsection{Propuesta de valor y objetivos}
 \label{subsec:propuesta_valor_objetivos}
 
-La propuesta de valor del sistema desarrollado consiste en integrar, sobre una plataforma marítima autónoma, las funciones necesarias para adquirir, contextualizar, almacenar y transmitir información ambiental, energética, posicional y acústica. La contribución principal del presente trabajo no reside en un sensor individual ni en una única rutina de procesamiento, sino en la arquitectura embebida que permite coordinar el conjunto de subsistemas de manera ordenada, extensible y verificable.
+La propuesta de valor del sistema desarrollado consiste en integrar, sobre una plataforma marítima autónoma, las funciones necesarias para adquirir, contextualizar, almacenar y transmitir información ambiental y acústica. La contribución principal del presente trabajo no reside en un sensor individual ni en una única rutina de procesamiento, sino en la arquitectura embebida que permite coordinar el conjunto de subsistemas de manera ordenada, extensible y verificable.
 
 Desde el punto de vista operativo, el sistema permite reducir la dependencia de intervenciones presenciales para conocer el estado de la boya, preservar datos localmente para su recuperación posterior y transmitir información seleccionada durante el despliegue. Desde el punto de vista técnico, la arquitectura modular permite aislar responsabilidades, incorporar nuevos periféricos, ensayar componentes por separado y documentar el comportamiento de cada módulo frente a condiciones nominales y de falla.
 
@@ -201,38 +201,56 @@ Estos requerimientos establecen el marco técnico utilizado en las secciones sig
 
 
 \clearpage
-\section{DESCRIPCIÓN DEL HARDWARE}\label{sec:hardware}
+\section{PLATAFORMA DE HARDWARE Y PERIFÉRICOS INTEGRADOS}
+\label{sec:hardware}
 
-La boya EAMMRA integra una computadora principal embarcada y un conjunto de periféricos de sensado, adquisición, supervisión energética, almacenamiento y telemetría. La función del sistema embebido es coordinar estos dispositivos bajo un ciclo de operación autónomo, con registro persistente de datos, diagnóstico local y transmisión remota de información crítica. En esta sección se presenta la plataforma de hardware utilizada, con énfasis en los dispositivos que se vinculan directamente con el software de control, sus interfaces de comunicación, sus variables de operación y su función dentro de la arquitectura general del sistema.
+La plataforma de hardware de la boya EAMMRA se organiza alrededor de una computadora principal embarcada, encargada de coordinar la adquisición de datos, la supervisión de estado, el almacenamiento local y la comunicación con los periféricos. A partir de esta unidad central se integran subsistemas con funciones diferenciadas: sensado ambiental y meteorológico, posicionamiento, adquisición acústica, supervisión energética y telemetría satelital.
 
-Los manuales técnicos de los principales dispositivos se encuentran incorporados en la carpeta \texttt{docs/} del repositorio del proyecto. Esta documentación se utiliza como referencia para la configuración de interfaces, protocolos, comandos, parámetros eléctricos, restricciones operativas y procedimientos de ensayo de los periféricos integrados \citep{BoyaRepoDocs}. En particular, se describen los siguientes componentes y subsistemas:
+La Figura~\ref{fig:diagrama_bloques_hardware} presenta el diagrama de bloques del sistema integrado. En el centro se ubica el sistema principal, implementado sobre la computadora Kaise KBOX-S J6412. A esta unidad se conectan los periféricos mediante interfaces serie RS232 y RS485, y USB. El esquema permite distinguir los subsistemas principales de la boya y las interfaces físicas utilizadas para su integración.
 
-\begin{itemize}
+El subsistema de sensores agrupa los dispositivos orientados a la adquisición de variables ambientales, inerciales, meteorológicas y de posicionamiento. Incluye el AIS/GPS AMEC Mando-301 y el anemómetro GILL WindSonic, comunicados mediante RS232, junto con el sensor ambiental AHT10 y la unidad inercial MPU6050, integrados a través de un puente USB/I2C CH431A. El subsistema de audio está compuesto por la interfaz Behringer UMC204HD, los preamplificadores DAS-1 y DAS-2 y los hidrófonos B\&K 8105, conectados mediante interfaces analógicas BNC y BNC/XLR. El subsistema de energía comprende el panel solar, el regulador EPEVER XTRA2210 y la batería TRV de 12~V y 110~Ah, con supervisión mediante RS485. Finalmente, el subsistema de telemetría incorpora el módem Iridium Edge para transmisión remota de mensajes mediante enlace satelital con interfaz RS232.
 
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=.7\textwidth]{graficos/diagBloques.pdf}
+    \caption{Diagrama de bloques del hardware integrado en la boya EAMMRA. Se muestra la computadora principal como núcleo del sistema y su vinculación con los subsistemas de sensores, audio, energía y telemetría, junto con las interfaces físicas utilizadas para la integración.}
+    \label{fig:diagrama_bloques_hardware}
+\end{figure}
 
-\item \textbf{Computadora principal embarcada Kaise KBOX-S-J6412:} núcleo de procesamiento, control y coordinación general del sistema.
+El detalle de cada periférico se desarrolla en las subsecciones siguientes. En cada caso se describe su función dentro del sistema, la interfaz de comunicación utilizada y su relación con el ciclo general de operación de la boya.
 
-\item \textbf{Sensor ambiental AHT10:} sensor digital de temperatura y humedad relativa, integrado mediante bus I2C.
-
-\item \textbf{Unidad inercial MPU6050:} módulo de acelerómetro y giróscopo triaxial, utilizado para registrar variables asociadas al movimiento de la boya.
-
-\item \textbf{Adaptador USB--I2C basado en CH431A:} interfaz física utilizada para integrar los sensores AHT10 y MPU6050 a la computadora principal.
-
-\item \textbf{Equipo AIS/GPS AMEC MANDO 301:} dispositivo de balizamiento electrónico, posicionamiento y referencia temporal.
-
-\item \textbf{Anemómetro ultrasónico WindSonic:} instrumento meteorológico para medición de velocidad y dirección del viento.
-
-\item \textbf{Controlador solar MPPT XTRA2210N:} controlador de carga y periférico de supervisión energética del sistema fotovoltaico.
-
-\item \textbf{Subsistema acústico:} cadena de adquisición compuesta por hidrófonos Br{\"u}el \& Kj{\ae}r 8105, preamplificadores DAS-1/DAS-2 y placa de audio USB Behringer UMC202HD.
-
-\item \textbf{Módem satelital Iridium SBD:} periférico de comunicación remota para transmisión de mensajes compactos de estado, diagnóstico y resultados seleccionados.
-
-\item \textbf{Almacenamiento local:} soporte primario para archivos de audio, mediciones estructuradas, resultados de procesamiento, registros de eventos y estados del sistema.
-
-\end{itemize}
-
-La descripción de cada componente no se limita a sus características nominales, sino que busca establecer su rol funcional dentro de la boya. Por este motivo, en cada caso se indican las variables adquiridas o transmitidas, el tipo de interfaz empleada, los criterios generales de integración y la relación del dispositivo con los módulos de software desarrollados. Esta organización permite vincular la plataforma física con la arquitectura de control, adquisición, persistencia y telemetría que se analiza en las secciones siguientes.
+%\clearpage
+%
+%La boya EAMMRA integra una computadora principal embarcada y un conjunto de periféricos de sensado, adquisición, supervisión energética, almacenamiento y telemetría. La función del sistema embebido es coordinar estos dispositivos bajo un ciclo de operación autónomo, con registro persistente de datos, diagnóstico local y transmisión remota de información crítica. En esta sección se presenta la plataforma de hardware utilizada, con énfasis en los dispositivos que se vinculan directamente con el software de control, sus interfaces de comunicación, sus variables de operación y su función dentro de la arquitectura general del sistema.
+%
+%Los manuales técnicos de los principales dispositivos se encuentran incorporados en la carpeta \texttt{docs/} del repositorio del proyecto. Esta documentación se utiliza como referencia para la configuración de interfaces, protocolos, comandos, parámetros eléctricos, restricciones operativas y procedimientos de ensayo de los periféricos integrados \citep{BoyaRepoDocs}. En particular, se describen los siguientes componentes y subsistemas:
+%
+%\begin{itemize}
+%
+%
+%\item \textbf{Computadora principal embarcada Kaise KBOX-S-J6412:} núcleo de procesamiento, control y coordinación general del sistema.
+%
+%\item \textbf{Sensor ambiental AHT10:} sensor digital de temperatura y humedad relativa, integrado mediante bus I2C.
+%
+%\item \textbf{Unidad inercial MPU6050:} módulo de acelerómetro y giróscopo triaxial, utilizado para registrar variables asociadas al movimiento de la boya.
+%
+%\item \textbf{Adaptador USB--I2C basado en CH431A:} interfaz física utilizada para integrar los sensores AHT10 y MPU6050 a la computadora principal.
+%
+%\item \textbf{Equipo AIS/GPS AMEC MANDO 301:} dispositivo de balizamiento electrónico, posicionamiento y referencia temporal.
+%
+%\item \textbf{Anemómetro ultrasónico WindSonic:} instrumento meteorológico para medición de velocidad y dirección del viento.
+%
+%\item \textbf{Controlador solar MPPT XTRA2210N:} controlador de carga y periférico de supervisión energética del sistema fotovoltaico.
+%
+%\item \textbf{Subsistema acústico:} cadena de adquisición compuesta por hidrófonos Br{\"u}el \& Kj{\ae}r 8105, preamplificadores DAS-1/DAS-2 y placa de audio USB Behringer UMC202HD.
+%
+%\item \textbf{Módem satelital Iridium SBD:} periférico de comunicación remota para transmisión de mensajes compactos de estado, diagnóstico y resultados seleccionados.
+%
+%\item \textbf{Almacenamiento local:} soporte primario para archivos de audio, mediciones estructuradas, resultados de procesamiento, registros de eventos y estados del sistema.
+%
+%\end{itemize}
+%
+%La descripción de cada componente no se limita a sus características nominales, sino que busca establecer su rol funcional dentro de la boya. Por este motivo, en cada caso se indican las variables adquiridas o transmitidas, el tipo de interfaz empleada, los criterios generales de integración y la relación del dispositivo con los módulos de software desarrollados. Esta organización permite vincular la plataforma física con la arquitectura de control, adquisición, persistencia y telemetría que se analiza en las secciones siguientes.
 
 
 \vspace{10px}
@@ -657,15 +675,51 @@ El uso de SBD impone una restricción deliberada sobre el volumen de informació
 
 En conjunto, el módem Iridium SBD se incorpora como periférico de comunicación remota de baja tasa de datos y alta cobertura geográfica. Su valor dentro de EAMMRA no reside en transportar grandes volúmenes de información, sino en permitir seguimiento remoto, verificación de continuidad operativa y recuperación parcial de información crítica durante campañas prolongadas. Esta función complementa el almacenamiento local y proporciona una vía de supervisión externa cuando la boya opera fuera del alcance de redes terrestres.
 
-\subsection{Almacenamiento local.}
+%\subsection{Almacenamiento local.}
+%
+%La boya EAMMRA incorpora almacenamiento local mediante una unidad de estado sólido de 1~TB. Este dispositivo constituye el soporte primario para conservar los datos científicos y operativos adquiridos durante una campaña. La telemetría satelital Iridium SBD permite transmitir información compacta de estado, diagnóstico y resultados seleccionados, pero no está destinada al envío de archivos de gran volumen. Por este motivo, los registros completos, en particular los archivos acústicos, permanecen almacenados en la boya hasta su recuperación durante tareas de mantenimiento o al finalizar la operación.
+%
+%La organización de archivos distingue tres ubicaciones principales según el tipo de información generada por el sistema. Los archivos de audio en formato \texttt{WAV}, por su mayor volumen y relevancia para el análisis hidroacústico posterior, se almacenan en el disco dedicado montado en \texttt{/storage}. La información estructurada generada por los módulos funcionales, incluyendo mediciones, estados y productos de procesamiento, se registra bajo el directorio \texttt{/data}. Por su parte, los registros de ejecución del sistema, advertencias, errores y mensajes de diagnóstico se almacenan en \texttt{/logs}. Esta separación permite diferenciar datos primarios de adquisición, salidas estructuradas de operación y registros de diagnóstico, facilitando la recuperación, el análisis posterior y el mantenimiento del sistema.
+%
+%La elección de una unidad SSD resulta adecuada para una plataforma marítima autónoma. A diferencia de un disco rígido mecánico, un SSD no posee partes móviles, presenta mayor tolerancia frente a vibraciones y movimientos, y reduce el riesgo de fallas asociadas a golpes durante maniobras de despliegue, recuperación o transporte. Además, su bajo volumen físico y su consumo moderado facilitan la integración dentro del gabinete electrónico de la boya, junto con la computadora principal y los periféricos de adquisición.
+%
+%El almacenamiento local concentra información de distinta naturaleza. Los archivos acústicos WAV constituyen el conjunto de datos de mayor volumen y representan el registro primario del subsistema acústico. Junto con ellos se almacenan mediciones meteorológicas del anemómetro WindSonic, variables ambientales internas provistas por el AHT10, variables inerciales medidas por el MPU6050, parámetros energéticos del controlador solar MPPT, datos de posición y tiempo, registros de eventos, mensajes de diagnóstico y mensajes de telemetría generados o pendientes de transmisión.
+%
+%El volumen de almacenamiento requerido está dominado por la adquisición acústica. Para una señal digital de $N_c$ canales, frecuencia de muestreo $f_s$ y $N_b$ bytes por muestra, el flujo ideal de datos puede estimarse como:
+%
+%\begin{equation}
+%R = N_c \cdot f_s \cdot N_b
+%\label{eq:flujo-datos-acusticos}
+%\end{equation}
+%
+%En una configuración de dos canales, frecuencia de muestreo de 192~kHz y resolución de 24~bits, equivalente a 3~bytes por muestra, el flujo resultante es aproximadamente 1.15~MB/s. Esto corresponde a unos 4.15~GB/h, o cerca de 100~GB por día de adquisición continua. Por lo tanto, una unidad de 1~TB permite almacenar del orden de varios días de audio continuo a máxima tasa, y un período mayor cuando la adquisición se organiza en ventanas temporales o con frecuencias de muestreo menores.
+%
+%Además de la capacidad nominal, el almacenamiento local debe considerarse como parte de la confiabilidad operativa del sistema. La boya puede experimentar reinicios, interrupciones de energía o apagados controlados durante períodos de baja disponibilidad energética. Por este motivo, el uso del SSD debe complementarse con criterios de escritura robusta, cierre ordenado de archivos y separación entre datos científicos, registros de estado y mensajes de telemetría. Esta organización facilita la recuperación posterior de la información y permite reconstruir la secuencia de operación de la boya ante eventos anómalos.
+%
+%En conjunto, el SSD de 1~TB actúa como memoria persistente principal del sistema embebido. Su función es preservar la totalidad de los datos de campaña, mientras que la telemetría satelital proporciona una vía de supervisión remota limitada a información compacta. Esta separación entre almacenamiento local de alto volumen y transmisión remota de baja tasa permite compatibilizar la adquisición acústica de alta demanda con la operación autónoma y energéticamente restringida de la boya.
+%
+%El almacenamiento local se implementa mediante un disco de 1~TB montado en \texttt{/storage}. Este punto de montaje se utiliza como ubicación principal para registros, archivos acústicos, productos de procesamiento y datos de diagnóstico, separando la información adquirida durante la operación del sistema de archivos base de la computadora principal.
+
+\subsection{Almacenamiento local}
+\label{subsec:almacenamiento_local}
 
 La boya EAMMRA incorpora almacenamiento local mediante una unidad de estado sólido de 1~TB. Este dispositivo constituye el soporte primario para conservar los datos científicos y operativos adquiridos durante una campaña. La telemetría satelital Iridium SBD permite transmitir información compacta de estado, diagnóstico y resultados seleccionados, pero no está destinada al envío de archivos de gran volumen. Por este motivo, los registros completos, en particular los archivos acústicos, permanecen almacenados en la boya hasta su recuperación durante tareas de mantenimiento o al finalizar la operación.
 
+La organización de archivos distingue tres ubicaciones principales según el tipo de información generada por el sistema:
+
+\begin{itemize}
+    \item \texttt{/storage}: corresponde al disco dedicado de 1~TB y se utiliza para almacenar los archivos de audio en formato \texttt{WAV}. Estos archivos constituyen el registro primario del subsistema acústico y representan el conjunto de datos de mayor volumen del sistema.
+
+    \item \texttt{/data}: contiene la información estructurada generada por los módulos funcionales, que incluye mediciones, estados, metadatos de adquisición, productos de procesamiento y mensajes de telemetría generados o pendientes de transmisión.
+
+    \item \texttt{/logs}: concentra los registros de ejecución del sistema, advertencias, errores y mensajes de diagnóstico. Esta información permite reconstruir el comportamiento del software durante la operación y facilita el análisis posterior ante eventos anómalos.
+\end{itemize}
+
+Esta separación permite diferenciar datos primarios de adquisición, salidas estructuradas de operación y registros de diagnóstico. Además, evita mezclar archivos acústicos de gran volumen con información de estado o con registros de ejecución, lo que facilita la recuperación, el respaldo, el análisis posterior y el mantenimiento del sistema.
+
 La elección de una unidad SSD resulta adecuada para una plataforma marítima autónoma. A diferencia de un disco rígido mecánico, un SSD no posee partes móviles, presenta mayor tolerancia frente a vibraciones y movimientos, y reduce el riesgo de fallas asociadas a golpes durante maniobras de despliegue, recuperación o transporte. Además, su bajo volumen físico y su consumo moderado facilitan la integración dentro del gabinete electrónico de la boya, junto con la computadora principal y los periféricos de adquisición.
 
-El almacenamiento local concentra información de distinta naturaleza. Los archivos acústicos WAV constituyen el conjunto de datos de mayor volumen y representan el registro primario del subsistema acústico. Junto con ellos se almacenan mediciones meteorológicas del anemómetro WindSonic, variables ambientales internas provistas por el AHT10, variables inerciales medidas por el MPU6050, parámetros energéticos del controlador solar MPPT, datos de posición y tiempo, registros de eventos, mensajes de diagnóstico y mensajes de telemetría generados o pendientes de transmisión.
-
-El volumen de almacenamiento requerido está dominado por la adquisición acústica. Para una señal digital de $N_c$ canales, frecuencia de muestreo $f_s$ y $N_b$ bytes por muestra, el flujo ideal de datos puede estimarse como:
+El volumen de almacenamiento requerido está dominado por la adquisición acústica. Para una señal digital de \(N_c\) canales, frecuencia de muestreo \(f_s\) y \(N_b\) bytes por muestra, el flujo ideal de datos puede estimarse como:
 
 \begin{equation}
 R = N_c \cdot f_s \cdot N_b
@@ -674,9 +728,10 @@ R = N_c \cdot f_s \cdot N_b
 
 En una configuración de dos canales, frecuencia de muestreo de 192~kHz y resolución de 24~bits, equivalente a 3~bytes por muestra, el flujo resultante es aproximadamente 1.15~MB/s. Esto corresponde a unos 4.15~GB/h, o cerca de 100~GB por día de adquisición continua. Por lo tanto, una unidad de 1~TB permite almacenar del orden de varios días de audio continuo a máxima tasa, y un período mayor cuando la adquisición se organiza en ventanas temporales o con frecuencias de muestreo menores.
 
-Además de la capacidad nominal, el almacenamiento local debe considerarse como parte de la confiabilidad operativa del sistema. La boya puede experimentar reinicios, interrupciones de energía o apagados controlados durante períodos de baja disponibilidad energética. Por este motivo, el uso del SSD debe complementarse con criterios de escritura robusta, cierre ordenado de archivos y separación entre datos científicos, registros de estado y mensajes de telemetría. Esta organización facilita la recuperación posterior de la información y permite reconstruir la secuencia de operación de la boya ante eventos anómalos.
+Además de la capacidad nominal, el almacenamiento local debe considerarse como parte de la confiabilidad operativa del sistema. La boya puede experimentar reinicios, interrupciones de energía o apagados controlados durante períodos de baja disponibilidad energética. Por este motivo, el uso del SSD debe complementarse con criterios de escritura robusta, cierre ordenado de archivos y separación entre datos científicos, registros de estado y mensajes de diagnóstico. Esta organización facilita la recuperación posterior de la información y permite reconstruir la secuencia de operación de la boya ante eventos anómalos.
 
-En conjunto, el SSD de 1~TB actúa como memoria persistente principal del sistema embebido. Su función es preservar la totalidad de los datos de campaña, mientras que la telemetría satelital proporciona una vía de supervisión remota limitada a información compacta. Esta separación entre almacenamiento local de alto volumen y transmisión remota de baja tasa permite compatibilizar la adquisición acústica de alta demanda con la operación autónoma y energéticamente restringida de la boya.
+En conjunto, el SSD de 1~TB actúa como memoria persistente principal para los datos de campaña de mayor volumen, mientras que la telemetría satelital proporciona una vía de supervisión remota limitada a información compacta. Esta separación entre almacenamiento local de alta capacidad y transmisión remota de baja tasa permite compatibilizar la adquisición acústica de alta demanda con la operación autónoma y energéticamente restringida de la boya.
+
 
 \clearpage
 \section{DISEÑO E IMPLEMENTACIÓN DEL SOFTWARE}
@@ -743,7 +798,7 @@ La Figura~\ref{fig:arquitectura_capas} resume esta organización.
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.90\linewidth]{graficos/layers.pdf}
+	\includegraphics[width=0.750\linewidth]{graficos/layers.pdf}
 	\caption{Arquitectura por capas del software embebido de la boya EAMMRA.}
 	\label{fig:arquitectura_capas}
 \end{figure}
