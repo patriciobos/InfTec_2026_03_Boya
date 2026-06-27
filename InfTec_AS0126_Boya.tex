@@ -1,12 +1,12 @@
 %======================================================================================================
 %======================================================================================================
-% PLANTILLA PARA INFORMES T…CNICOS de la DAS de la DIIV
-%  VersiÛn 1.35 del 27/8/2015
-% 	-Rearmado de portada. Mayor sobriedad y destaque del tÌtulo del informe tÈcnico.
+% PLANTILLA PARA INFORMES T√âCNICOS de la DAS de la DIIV
+%  Versi√≥n 1.35 del 27/8/2015
+% 	-Rearmado de portada. Mayor sobriedad y destaque del t√≠tulo del informe t√©cnico.
 %	-Incorporados fixes varios para poder referir secciones y que no aparezcan '.' al final.
-%	-Incorporado par·metro para que no se estire hasta el final los Ìtems del glosario.
-%	-Afectada la geometrÌa: tiene menor margen en toda direcciÛn.
-%	-Cambio de color rojo a negro tÌtulos varios.
+%	-Incorporado par√°metro para que no se estire hasta el final los √≠tems del glosario.
+%	-Afectada la geometr√≠a: tiene menor margen en toda direcci√≥n.
+%	-Cambio de color rojo a negro t√≠tulos varios.
 %	-Modificado apa-good.bst --> italizado el "et al"
 %======================================================================================================
 %======================================================================================================
@@ -14,7 +14,7 @@
 
 % =====================================================================================================
 % =====================================================================================================
-% PRE¡MBULO
+% PRE√ÅMBULO
 % =====================================================================================================
 % =====================================================================================================
 
@@ -36,12 +36,12 @@
 \usepackage[ampersand]{easylist}
 
 \usepackage[a4paper,bottom=2.7cm,top=2.7cm,left=2.5cm,right=2.5cm]{geometry}
-\usepackage{fancyhdr} % Esto cambiar· la ubicaciÛn de los numeritos de las p·ginas
+\usepackage{fancyhdr} % Esto cambiar√° la ubicaci√≥n de los numeritos de las p√°ginas
 \usepackage{grffile} % Para tipear nombres de archivo con espacios
-%\usepackage{esvect} % Para poner flechas de vector m·s copadas
+%\usepackage{esvect} % Para poner flechas de vector m√°s copadas
 \usepackage{array} % Paquete que mejora la funcionalidad de array
 
-% Estilo de p·gina
+% Estilo de p√°gina
 
 \fancypagestyle{plain}{%redefining plain pagestyle
 	\fancyhf{} %clear all headers and footers fields
@@ -51,7 +51,7 @@
 	}
 \pagestyle{plain}
 
-% M·s paquetes extra
+% M√°s paquetes extra
 
 \usepackage[usenames,dvipsnames]{color}
 \usepackage{colortbl}
@@ -77,8 +77,8 @@
 \usetikzlibrary{arrows.meta,positioning,fit,calc}
 
 
-\renewcommand{\appendixtocname}{AP…NDICES}
-\renewcommand{\appendixpagename}{\Large\bf\textcolor{black}{AP…NDICES}}
+\renewcommand{\appendixtocname}{AP√âNDICES}
+\renewcommand{\appendixpagename}{\Large\bf\textcolor{black}{AP√âNDICES}}
 
 % Formateo de los caption de figuras y tablas
 
@@ -92,7 +92,7 @@
 \renewcommand{\cfttabpresnum}{\textcolor{black}{TABLA }}
 \setlength{\cfttabnumwidth}{2.25cm}  
 
-% Formateo general de los tÌtulos
+% Formateo general de los t√≠tulos
 
 %% \def\thesection{\Roman{section}}
 %% \def\thesubsection{\thesection .{\arabic{subsection}}}
@@ -140,10 +140,10 @@
 %\titleformat{\subsection}{\normalsize\color{red}}{\thesubsection}{0.5em}{}
 %\titleformat{\subsubsection}{\color{red}}{\thesubsubsection}{0.5em}{}
 
-% Formateo de los tÌtulos la tabla de contenidos
+% Formateo de los t√≠tulos la tabla de contenidos
 
 \renewcommand*{\cftsecpresnum}{\bf\color{black}} 
-\renewcommand*{\cftsecaftersnum}{\Roman{section}.} % Para que despuÈs de escribir el tÌtulo de secciÛn le ponga un punto final.
+\renewcommand*{\cftsecaftersnum}{\Roman{section}.} % Para que despu√©s de escribir el t√≠tulo de secci√≥n le ponga un punto final.
 \renewcommand*\cftsecfont{\color{black}\bf}
 \renewcommand*\cftsubsecfont{\color{black}\bf}
 \renewcommand*{\cftsubsecpresnum}{\bf\color{black}}
@@ -157,11 +157,11 @@
 \renewcommand{\spanishlistfigurename}{\textcolor{black}{LISTA DE FIGURAS}}
 \renewcommand{\spanishlisttablename}{\textcolor{black}{LISTA DE TABLAS}}
 \renewcommand{\spanishrefname}{\textcolor{black}{REFERENCIAS}}
-\renewcommand{\spanishappendixname}{\textcolor{black}{AP…NDICE}}
-\renewcommand{\spanishcontentsname}{\textcolor{black}{ÕNDICE}}
+\renewcommand{\spanishappendixname}{\textcolor{black}{AP√âNDICE}}
+\renewcommand{\spanishcontentsname}{\textcolor{black}{√çNDICE}}
 \newcommand{\mage}[1]{\textcolor{magenta}{#1}}
 
-% TamaÒo de reglas y cajas
+% Tama√±o de reglas y cajas
 
 \setlength{\fboxrule}{1pt}%
 \setlength{\arrayrulewidth}{1pt}
@@ -171,13 +171,13 @@
 \setlength{\parindent}{2em}
 \setlength{\parskip}{1.25ex}
 
-% Formateo de los tÌtulos para la tabla de contenidos
+% Formateo de los t√≠tulos para la tabla de contenidos
 
 %\renewcommand{\cftsecpresnum}{\thesection}
 \renewcommand{\cftsecnumwidth}{3em}
 \setlength{\cftsubsecnumwidth}{3em}
 
-% DefiniciÛn de colores personalizados
+% Definici√≥n de colores personalizados
 
 \definecolor{blue(ryb)}{rgb}{0.01, 0.28, 1.0}
 \definecolor{coolblack}{rgb}{0.0, 0.18, 0.39}
@@ -198,7 +198,7 @@
 % =====================================================================================================
 % =====================================================================================================
 
-%	plantilla_RT.tex   % Este archivo llamar· a los subsiguientes
+%	plantilla_RT.tex   % Este archivo llamar√° a los subsiguientes
 % --> 1_Portada.tex 
 % --> 2_Resumen.tex 
 % --> 3_Pertenencia.tex 
@@ -220,7 +220,7 @@
 
 % =====================================================================================================
 % =====================================================================================================
-% P¡GINA DE RESUMEN EN CASTELLANO Y EN INGL…S
+% P√ÅGINA DE RESUMEN EN CASTELLANO Y EN INGL√âS
 % =====================================================================================================
 % =====================================================================================================
 
@@ -228,7 +228,7 @@
 
 % =====================================================================================================
 % =====================================================================================================
-% P¡GINA DESCRIPTIVA DE PERTENENCIA A PROYECTO DEL TRABAJO
+% P√ÅGINA DESCRIPTIVA DE PERTENENCIA A PROYECTO DEL TRABAJO
 % =====================================================================================================
 % =====================================================================================================
 
@@ -236,16 +236,16 @@
 
 % =====================================================================================================
 % =====================================================================================================
-% P¡GINA DE AGRADECIMIENTOS
+% P√ÅGINA DE AGRADECIMIENTOS
 % =====================================================================================================
 % =====================================================================================================
-% La configuraciÛn est· optimizada para fotos de 3cm de ancho (armÛnicamente).  
+% La configuraci√≥n est√° optimizada para fotos de 3cm de ancho (arm√≥nicamente).  
 %
 
 \include{4_Agradecimientos}
 
 % =====================================================================================================
-% ÕNDICE
+% √çNDICE
 % =====================================================================================================
 % =====================================================================================================
 
@@ -294,7 +294,7 @@
 
 % =====================================================================================================
 % =====================================================================================================
-% P¡GINA DE REFERENCIAS
+% P√ÅGINA DE REFERENCIAS
 % =====================================================================================================
 % =====================================================================================================
 
@@ -302,18 +302,18 @@
 \vspace{4pc}
 \addcontentsline{toc}{section}{REFERENCIAS}
 \bibliographystyle{apa-good}	% (uses file "plain.bst")
-\bibliography{7_Referencias}	% Ac· est· la base de datos de referencias. Espera el archivo "7_Referencias.bib"
+\bibliography{7_Referencias}	% Ac√° est√° la base de datos de referencias. Espera el archivo "7_Referencias.bib"
 
 \clearpage
 
 % =====================================================================================================
 % =====================================================================================================
-% AP…NDICE
+% AP√âNDICE
 % =====================================================================================================
 % =====================================================================================================
 
 
-% Reseteo y cambio de numeraciÛn para los apÈndices
+% Reseteo y cambio de numeraci√≥n para los ap√©ndices
 \setcounter{section}{0}
 \renewcommand\appendix{\Roman{section}}
 %\def\thesection{\Roman{section}}
