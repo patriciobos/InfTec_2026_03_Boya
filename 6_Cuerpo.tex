@@ -1103,8 +1103,9 @@ La coordinación central del sistema se implementa en el proceso principal de la
 
 Esta capa de coordinación cumple un rol distinto al de las Máquinas de Estados Finitos. Mientras cada FSM controla el ciclo operativo de un módulo particular, la coordinación central organiza la interacción entre módulos, el disparo temporal de acciones, la recepción de resultados, la actualización de reportes y el cierre ordenado de la aplicación. Esta separación evita que los módulos tengan dependencias directas entre sí y permite mantener un único punto de control para la ejecución general de la boya.
 
-La lógica general de coordinación se resume en el Listado~\ref{lst:coordinacion_central}. El proceso principal carga la configuración, crea las estructuras de comunicación, inicia los procesos asociados a los módulos, ejecuta el planificador de tareas, procesa los mensajes de estado y finalmente realiza el cierre ordenado del sistema.
+La lógica general de coordinación se resume en el pseudocódigo que se presenta en el Listado~\ref{lst:coordinacion_central}. El proceso principal carga la configuración, crea las estructuras de comunicación, inicia los procesos asociados a los módulos, ejecuta el planificador de tareas, procesa los mensajes de estado y finalmente realiza el cierre ordenado del sistema.
 
+\vspace{20px}
 \begin{lstlisting}[style=pseudocodigo, caption={Pseudocódigo de la coordinación central del sistema.}, label={lst:coordinacion_central}]
 main():
     configuracion = cargar_configuracion()
@@ -1140,12 +1141,44 @@ main():
     registrar_cierre_ordenado()
 \end{lstlisting}
 
+
 \subsubsection{Enrutador de eventos}
 \label{subsubsec:enrutador_eventos}
 
 El enrutador de eventos actúa como intermediario entre los módulos funcionales y el proceso principal. Cada módulo dispone de una cola de entrada, utilizada para recibir señales de control o solicitudes de acción, y de una cola de estado, utilizada para informar cambios de estado, resultados de acciones, advertencias o errores. El enrutador administra estas colas y distribuye los mensajes según su destino lógico.
 
 La función principal del enrutador es desacoplar productores y consumidores de información. Un módulo no necesita conocer directamente la instancia, cola o implementación interna de otro módulo; sólo emite un mensaje con un identificador y un conjunto de datos asociados. A partir de esa información, el proceso principal puede registrar el evento, actualizar el estado del sistema, reenviar una señal a otro módulo o conservar el resultado para procesamiento posterior.
+
+En la implementación actual, el enrutador cumple además funciones de compactación y retención de información reciente. Las lecturas de sensores se almacenan como últimos valores disponibles, de modo que puedan ser utilizadas por reportes o telemetría. Los resultados del procesamiento acústico se conservan como resumen compacto cuando contienen una salida válida. El Listado~\ref{lst:router_eventos} resume esta lógica.
+
+\begin{lstlisting}[style=pseudocodigo, caption={Pseudocódigo simplificado del enrutador de eventos.}, label={lst:router_eventos}]
+route(origen, mensaje):
+    si origen pertenece a modulos_de_sensores
+       y mensaje == ACTION_RESULT:
+        guardar_ultima_lectura_compacta(origen, mensaje)
+        retornar SIN_RUTEO
+
+    si origen == AudioProc
+       y mensaje == ACTION_RESULT:
+
+        si resultado(mensaje) != OK:
+            conservar_transmision_iridium_planificada()
+            retornar SIN_RUTEO
+
+        si mensaje contiene salida_acustica:
+            guardar_ultimo_resumen_acustico(mensaje)
+            retornar SIN_RUTEO
+
+    para cada regla en reglas_de_ruteo:
+        si regla coincide con origen y tipo_de_mensaje:
+            si condicion_de_regla(mensaje) es verdadera:
+                mensaje_ruteado = construir_mensaje_destino(mensaje)
+                enviar_a_cola(regla.destino, mensaje_ruteado)
+                retornar RUTEADO
+
+    registrar_que_no_hubo_regla_aplicable()
+    retornar SIN_RUTEO
+\end{lstlisting}
 
 Esta organización resulta especialmente útil en un sistema con módulos de naturaleza heterogénea. Una lectura de sensor, una adquisición acústica, un resultado de procesamiento o una respuesta de telemetría pueden generar eventos con tiempos, tamaños y frecuencias diferentes. El enrutador permite manejar estos eventos mediante una interfaz común, sin imponer una relación directa entre el módulo que produce la información y el componente que la consume.
 
@@ -1156,7 +1189,27 @@ Desde el punto de vista operativo, el enrutador también contribuye a la trazabi
 
 El planificador de tareas central define cuándo deben ejecutarse las acciones periódicas o programadas del sistema. A diferencia de una arquitectura en la que cada módulo administra sus propios temporizadores, en EAMMRA la planificación temporal se concentra en un único componente. Esta decisión simplifica la configuración del ciclo operativo y permite analizar con mayor claridad la secuencia temporal de adquisiciones, verificaciones, procesamiento y transmisiones.
 
-El planificador utiliza la configuración vigente para generar señales hacia los módulos funcionales. En términos generales, una tarea planificada produce mensajes como \texttt{SIG\_TIMEOUT}, \texttt{SIG\_ACQUIRE} o \texttt{SIG\_TRANSMIT}, que luego son entregados a la FSM correspondiente mediante el enrutador de eventos. De esta manera, el planificador no ejecuta directamente la lectura de sensores ni la transmisión satelital, sino que solicita a cada módulo que realice su acción a través de su propia Máquina de Estados Finitos.
+La configuración temporal se define en el archivo \texttt{scheduler.json}. El Listado~\ref{lst:scheduler_json} muestra un ejemplo de configuración utilizado durante la operación del sistema. Los sensores ambientales, inerciales, de posicionamiento, viento y energía se ejecutan cada 600~s; el módulo Behringer se ejecuta cada 14400~s, equivalente a 4~h; Iridium se activa cada 3600~s; y \texttt{AudioProc} no posee intervalo propio porque se activa a partir de eventos generados por adquisiciones acústicas.
+
+El planificador no calcula las ejecuciones periódicas simplemente a partir del instante de arranque del programa, sino que sincroniza las tareas con una grilla temporal regular referida al inicio del día. Para cada tarea, la próxima ejecución se determina como el siguiente múltiplo entero de su intervalo respecto de las 00:00 de la hora local. De este modo, una tarea configurada cada 600~s se ejecuta en minutos regulares, por ejemplo 00:00, 00:10, 00:20 y así sucesivamente; una tarea horaria se ejecuta al comienzo de cada hora; y una tarea configurada cada 14400~s queda alineada con horarios de 4~h, como 00:00, 04:00, 08:00, 12:00, 16:00 y 20:00. Esta lógica evita que el ciclo de adquisición quede desplazado por la hora de inicio del software, reduce la deriva temporal acumulada y facilita la correlación posterior entre registros de distintos módulos.
+
+
+\begin{lstlisting}[style=pseudocodigo, caption={Ejemplo de configuración temporal en \texttt{scheduler.json}.}, label={lst:scheduler_json}]
+{
+  "schedules": {
+    "AHT10": 600,
+    "AIS": 600,
+    "MPU6050": 600,
+    "Windsonic": 600,
+    "XTRA2210": 600,
+    "Behringer": 14400,
+    "Iridium": 3600,
+    "AudioProc": null
+  }
+}
+\end{lstlisting}
+
+El planificador utiliza esta configuración para generar señales hacia los módulos funcionales. En términos generales, una tarea planificada produce mensajes como \texttt{SIG\_TIMEOUT}, \texttt{SIG\_ACQUIRE} o \texttt{SIG\_TRANSMIT}, que luego son entregados a la FSM correspondiente mediante el enrutador de eventos. De esta manera, el planificador no ejecuta directamente la lectura de sensores ni la transmisión satelital, sino que solicita a cada módulo que realice su acción a través de su propia Máquina de Estados Finitos.
 
 La centralización de la planificación permite modificar intervalos de operación sin alterar la implementación de los módulos. Por ejemplo, pueden ajustarse las frecuencias de lectura de sensores, la periodicidad de generación de reportes, los intervalos de adquisición acústica o las ventanas de transmisión mediante archivos de configuración. Esta capacidad resulta importante durante ensayos de laboratorio, integración progresiva y operación en campo, donde los ciclos de trabajo pueden requerir valores diferentes.
 
@@ -1165,13 +1218,118 @@ El planificador también permite separar conceptualmente el tiempo del sistema r
 \subsubsection{Reporte de estado del sistema}
 \label{subsubsec:reporte_estado_sistema}
 
-El reporte de estado del sistema consolida información generada por los módulos funcionales y por la capa de coordinación. Su finalidad es disponer de una representación persistente y actualizada de la condición general de la boya durante la ejecución. Este reporte puede incluir estado de módulos, resultados recientes de acciones, tiempos de actualización, errores activos, información energética, disponibilidad de almacenamiento y datos necesarios para telemetría.
+El reporte de estado del sistema consolida información generada por los módulos funcionales y por la capa de coordinación. Su finalidad es disponer de una representación persistente y actualizada de la condición general de la boya durante la ejecución. Este reporte incluye el estado de los módulos, su modo de ejecución, la última acción reportada, el resultado de dicha acción, detalles asociados y la marca temporal de actualización.
 
 La actualización del estado global se realiza a partir de los mensajes emitidos por las Máquinas de Estados Finitos. Cuando un módulo informa un cambio de estado o un resultado de acción, el proceso principal interpreta el mensaje y actualiza la representación correspondiente. De esta manera, el reporte de estado no depende de consultas directas a los módulos, sino de los eventos que éstos generan durante la operación normal.
 
+El Listado~\ref{lst:system_status_json} presenta un ejemplo de \texttt{system\_status.json} generado durante la operación de la boya. En este ejemplo, los módulos se encuentran en estado \texttt{IDLE} y en modo \texttt{hardware}, con marcas temporales individuales que permiten identificar la última actualización registrada para cada bloque.
+
+\begin{lstlisting}[style=pseudocodigo, caption={Fragmento representativo del reporte \texttt{system\_status.json}.}, label={lst:system_status_json}]
+{
+  "last_updated": "2026-06-26T11:10:07-03:00",
+  "modules": {
+    "Windsonic": {
+      "state": "IDLE",
+      "mode": "hardware",
+      "last_action": null,
+      "last_result": null,
+      "last_details": {},
+      "updated_at": "2026-06-26T11:10:07-03:00"
+    },
+    "Iridium": {
+      "state": "IDLE",
+      "mode": "hardware",
+      "last_action": null,
+      "last_result": null,
+      "last_details": {},
+      "updated_at": "2026-06-26T11:00:07-03:00"
+    },
+    "AHT10": {
+      "state": "IDLE",
+      "mode": "hardware",
+      "last_action": null,
+      "last_result": null,
+      "last_details": {},
+      "updated_at": "2026-06-26T11:10:03-03:00"
+    }
+  },
+  "summary": {}
+}
+\end{lstlisting}
+
 El reporte de estado cumple varias funciones. En primer lugar, permite monitorear la ejecución durante ensayos o despliegues. En segundo lugar, proporciona información compacta para la generación de mensajes de telemetría. En tercer lugar, deja evidencia persistente para diagnóstico posterior, especialmente ante reinicios, fallas parciales o interrupciones de energía.
 
-Esta representación persistente permite distinguir el estado operativo vigente de los registros históricos completos. Los logs y archivos de datos conservan la secuencia detallada de eventos y mediciones, mientras que el reporte de estado ofrece una síntesis actualizada de la condición del sistema. Ambos niveles son complementarios: uno facilita el diagnóstico detallado y el otro permite supervisión rápida y telemetría compacta.
+Esta representación persistente permite distinguir el estado operativo de los registros históricos. Los logs y archivos de datos conservan la secuencia detallada de eventos, mientras que el reporte de estado ofrece una síntesis actualizada de la condición del sistema. Ambos niveles son complementarios: uno facilita el diagnóstico detallado y el otro permite supervisión rápida y telemetría compacta.
+
+\subsection{Bloques funcionales implementados}
+\label{subsec:bloques_funcionales_software}
+
+El sistema se organiza en módulos funcionales que representan periféricos, procesos de adquisición, procesamiento o comunicación. Cada módulo se integra al modelo general mediante una Máquina de Estados Finitos y una capa de bajo nivel asociada. De este modo, todos los bloques comparten un patrón común de inicialización, prueba, espera, acción principal, reporte de resultados y manejo de errores, aun cuando cada uno interactúe con dispositivos o recursos de naturaleza diferente.
+
+Desde el punto de vista de la arquitectura, los bloques funcionales no se definen únicamente por el periférico físico al que están asociados, sino por la responsabilidad que cumplen dentro del ciclo de operación de la boya. Algunos módulos actúan como fuentes de medición periódica, otros generan archivos de alto volumen, otros producen información derivada a partir de datos ya adquiridos y otros implementan canales de comunicación o supervisión. Esta distinción permite organizar el sistema según flujos de información y no sólo según dispositivos conectados.
+
+La salida de cada módulo se normaliza mediante mensajes, registros estructurados o archivos persistentes, según la naturaleza de la información generada. Las mediciones breves de sensores se registran como datos estructurados; las adquisiciones acústicas se conservan como archivos \texttt{WAV}; los productos derivados del procesamiento se almacenan como resultados compactos; y la telemetría se construye a partir de un subconjunto seleccionado de estados, diagnósticos y productos. Esta organización permite vincular cada resultado con su módulo de origen, su marca temporal y el estado operativo en el que fue generado.
+
+
+La Tabla~\ref{tab:bloques_funcionales_software} resume los módulos principales implementados en el software. La tabla no reproduce la descripción física de los periféricos, desarrollada en la Sección~\ref{sec:hardware}, sino que sintetiza la función que cada bloque cumple dentro de la arquitectura embebida.
+
+\begin{table}[htbp]
+\centering
+\caption{Bloques funcionales principales implementados en el software embebido.}
+\label{tab:bloques_funcionales_software}
+\footnotesize
+\begin{tabularx}{\textwidth}{l l X X}
+\toprule
+\textbf{Módulo} & \textbf{Recurso asociado} & \textbf{Función software} & \textbf{Salida principal} \\
+\midrule
+
+\texttt{AHT10} &
+Sensor ambiental &
+Adquisición de variables ambientales internas de la boya mediante interfaz I2C. &
+Temperatura y humedad relativa, registradas como mediciones estructuradas. \\
+
+\texttt{MPU6050} &
+Unidad inercial &
+Lectura de variables inerciales para caracterizar movimiento, aceleración y orientación relativa de la plataforma. &
+Aceleraciones, velocidades angulares y datos derivados disponibles para registro y diagnóstico. \\
+
+\texttt{AIS} &
+AIS/GPS &
+Recepción y parseo de información de posicionamiento, tiempo y mensajes de navegación disponibles en la interfaz serie. &
+Posición, fecha, hora y datos asociados al receptor de navegación. \\
+
+\texttt{Windsonic} &
+Anemómetro &
+Adquisición de variables meteorológicas externas mediante protocolo serie. &
+Velocidad y dirección del viento, junto con información de estado del sensor. \\
+
+\texttt{XTRA2210} &
+Controlador solar &
+Consulta de variables eléctricas y estado del sistema de alimentación mediante interfaz RS485. &
+Tensión, corriente, potencia, estado de batería, estado de carga y variables energéticas relevantes. \\
+
+\texttt{Behringer} &
+Interfaz de audio &
+Control de la adquisición acústica mediante la interfaz de audio integrada. &
+Archivos de audio en formato \texttt{WAV} y metadatos asociados a cada adquisición. \\
+
+\texttt{AudioProc} &
+Archivos acústicos &
+Procesamiento básico de archivos de audio adquiridos por el subsistema acústico. &
+Productos compactos derivados del audio, utilizables para almacenamiento estructurado o telemetría. \\
+
+\texttt{Iridium} &
+Módem satelital &
+Preparación y transmisión de mensajes remotos mediante el enlace Iridium SBD. &
+Mensajes de estado, diagnóstico o productos seleccionados codificados para telemetría. \\
+
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La separación entre módulos permite que cada bloque evolucione con relativa independencia. Por ejemplo, el reemplazo de un sensor ambiental, la modificación de un protocolo serie, el cambio en la estrategia de adquisición acústica o la incorporación de un nuevo mensaje de telemetría pueden abordarse dentro del módulo correspondiente, manteniendo estable la arquitectura general de coordinación.
+
+Además, esta organización facilita el uso de componentes sustitutos durante pruebas. Un módulo puede ejecutarse con hardware real o con una implementación simulada de su capa de bajo nivel, sin modificar la Máquina de Estados Finitos ni el proceso principal. Esta capacidad resulta útil para ensayos de integración, pruebas automatizadas y validación de comportamiento cuando no todos los periféricos se encuentran disponibles.
 
 
 
