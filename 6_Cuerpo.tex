@@ -869,55 +869,220 @@ La Tabla~\ref{tab:organizacion-repo} resume esta organización.
 
 Cada bloque funcional del sistema se implementa con una estructura de dos capas: capa de bajo nivel y capa de Máquina de Estados Finitos. La capa de bajo nivel concentra el conocimiento específico del periférico, del protocolo o del algoritmo de procesamiento. La Máquina de Estados Finitos administra el comportamiento operativo del módulo dentro del sistema.
 
+
 \subsubsection{Capa de bajo nivel}
 \label{subsubsec:capa_bajo_nivel}
 
-La capa de bajo nivel se implementa en archivos con sufijo \texttt{\_LL.py}. Su responsabilidad principal es ofrecer una interfaz programática concreta para inicializar, probar, adquirir, procesar, transmitir o cerrar un dispositivo o función específica. En esta capa se resuelven detalles tales como:
+La capa de bajo nivel se implementa en archivos con sufijo \texttt{\_LL.py}. Su responsabilidad principal es encapsular el acceso directo a un periférico, recurso físico, archivo, protocolo o función específica del sistema. En esta capa se resuelven detalles tales como apertura y cierre de buses, selección de puertos, configuración de interfaces, envío de comandos, lectura de respuestas crudas, parseo primario, adquisición de audio, acceso a archivos, codificación de payloads binarios e interacción con módems o controladores mediante protocolos específicos.
+
+Desde el punto de vista de diseño, cada módulo de bajo nivel debe ofrecer una interfaz pública mínima, estable y verificable hacia la Máquina de Estados Finitos correspondiente. Esta interfaz actúa como contrato entre la lógica de control y el acceso específico al hardware o al recurso implementado. La Máquina de Estados Finitos no debe depender de los detalles internos del periférico, sino de operaciones de ciclo de vida y diagnóstico con resultados definidos.
+
+La plantilla general de un módulo de bajo nivel contempla el siguiente contrato público:
 
 \begin{itemize}
+    \item \texttt{init}: prepara la configuración interna del módulo, valida parámetros, resuelve candidatos de transporte y deja el objeto en condición inicializada. No debe acceder al hardware ni abrir recursos físicos.
 
- \item apertura y cierre de buses I2C;
- \item configuración de puertos serie;
- \item envío de comandos a periféricos;
- \item lectura de respuestas crudas;
- \item parseo primario de tramas;
- \item inicialización de dispositivos de audio;
- \item adquisición de muestras;
- \item acceso a archivos de entrada y salida;
- \item codificación de payloads binarios;
- \item interacción con el módem satelital mediante comandos AT/SBD.
+    \item \texttt{open}: abre el recurso operativo necesario para comunicarse con el dispositivo o servicio. Puede corresponder, según el módulo, a un bus I2C, un puerto serie, una placa de audio, un archivo, una conexión lógica o un transporte equivalente.
 
+    \item \texttt{close}: cierra el recurso operativo previamente abierto. Debe ser idempotente, es decir, debe poder invocarse sin error aun cuando el recurso ya se encuentre cerrado.
+
+    \item \texttt{test}: ejecuta una prueba rápida de disponibilidad o comunicación. Puede abrir temporalmente el recurso si se encuentra cerrado, pero debe restaurar el estado previo al finalizar.
+
+    \item \texttt{full\_test}: ejecuta una prueba diagnóstica más completa y devuelve un resultado booleano junto con un reporte estructurado. Este reporte incluye, como mínimo, el estado de inicialización, apertura, presencia del dispositivo, errores detectados y detalles diagnósticos.
+
+    \item \texttt{deinit}: realiza la desinicialización completa del módulo, cierra recursos, borra referencias de transporte, limpia configuración temporal y deja el objeto en un estado neutro.
+
+    \item \texttt{probe}: operación opcional de verificación mínima de presencia o comunicación con el dispositivo. Puede ser utilizada internamente por \texttt{test} o \texttt{full\_test}.
 \end{itemize}
 
-Esta capa no debería decidir el calendario de adquisición ni la interacción con otros módulos. Su función es proveer operaciones atómicas y comprobables para que la capa de control las invoque en el momento correspondiente.
+La separación entre \texttt{init} y \texttt{open} es una decisión importante de la arquitectura. La primera operación configura el módulo sin tocar hardware, mientras que la segunda abre efectivamente el recurso físico o lógico. Esta distinción permite inicializar estructuras de software aun cuando un periférico no esté disponible, seleccionar módulos simulados durante pruebas, realizar diagnósticos parciales y controlar explícitamente cuándo se accede al hardware.
+
+La plantilla de bajo nivel mantiene además un conjunto mínimo de variables de estado internas. Entre ellas se incluyen \texttt{is\_initialized}, que indica si el módulo fue configurado correctamente; \texttt{is\_open}, que indica si el recurso operativo está abierto; y \texttt{last\_error}, que conserva la última condición de error relevante para diagnóstico. En módulos basados en buses o puertos, también se registran candidatos de transporte, transporte seleccionado, dirección del dispositivo y condición de transporte forzado o automático.
+
+Los métodos públicos deben capturar excepciones internas y devolver resultados controlados, evitando propagar fallas no tratadas hacia la capa de control. Para ello, la plantilla distingue errores de módulo, errores de disponibilidad, errores de transporte y errores de protocolo. Esta organización permite diferenciar, por ejemplo, la ausencia de una dependencia de software, la imposibilidad de abrir un puerto, una respuesta inválida del dispositivo o una falla inesperada durante una prueba diagnóstica.
+
+La lógica general de ciclo de vida de un módulo de bajo nivel puede resumirse mediante el siguiente pseudocódigo:
+
+\begin{verbatim}
+init(configuracion):
+    validar dependencias
+    cerrar recursos previos si existen
+    cargar parametros de configuracion
+    resolver candidatos de transporte
+    marcar modulo como inicializado
+
+open():
+    verificar que el modulo este inicializado
+    si el recurso ya esta abierto:
+        retornar OK
+    intentar abrir el transporte configurado
+    si no hay transporte forzado:
+        probar candidatos disponibles
+    marcar recurso como abierto o registrar error
+
+test():
+    recordar si el recurso estaba abierto
+    abrir temporalmente si es necesario
+    ejecutar verificacion minima de presencia
+    cerrar si fue abierto temporalmente
+    retornar resultado
+
+full_test():
+    construir reporte diagnostico
+    verificar inicializacion
+    abrir recurso si es necesario
+    verificar presencia del dispositivo
+    recolectar informacion diagnostica
+    restaurar estado original
+    retornar resultado y reporte
+
+deinit():
+    cerrar recurso operativo
+    limpiar transporte, candidatos y configuracion temporal
+    marcar modulo como no inicializado
+\end{verbatim}
+
+Los métodos internos, identificados por convención con guion bajo inicial, concentran el conocimiento específico del periférico o recurso. Entre ellos se incluyen rutinas para validar dependencias, resolver candidatos de transporte, abrir y cerrar el transporte físico, verificar presencia del dispositivo y recolectar información diagnóstica. Estas funciones son las que cada módulo concreto debe especializar de acuerdo con el hardware o servicio que controla.
+
+Esta capa no decide cuándo adquirir, transmitir, procesar o reportar resultados al resto del sistema. Su función es proveer operaciones atómicas, robustas y comprobables para que la Máquina de Estados Finitos las invoque en el momento correspondiente. De este modo, el comportamiento temporal y operativo queda concentrado en la capa de control, mientras que la capa de bajo nivel conserva exclusivamente el conocimiento necesario para interactuar con el dispositivo o recurso asignado.
 
 \subsubsection{Capa de Máquinas de Estados Finitos}
-\label{subsubsec:capa_fsm}
+\label{subsubsec:capa_maquinas_estados}
 
-La capa de Máquinas de Estados Finitos se implementa en archivos con sufijo \texttt{\_fsm.py}. Cada Máquina de Estados Finitos recibe mensajes de entrada, evalúa su estado actual, ejecuta acciones a través de la capa de bajo nivel, registra resultados y emite eventos hacia el proceso principal.
+La capa de Máquinas de Estados Finitos se implementa en archivos con sufijo \texttt{\_fsm.py}. Su función es representar explícitamente el comportamiento operativo de cada módulo del sistema, separando la lógica de control respecto de los detalles de acceso al hardware o recurso específico. Cada Máquina de Estados Finitos utiliza la capa de bajo nivel correspondiente para ejecutar acciones concretas, pero conserva la responsabilidad de decidir cuándo inicializar, probar, adquirir, transmitir, procesar, registrar resultados o pasar a condición de error.
 
-El uso de Máquinas de Estados Finitos permite representar explícitamente las fases de operación de cada módulo. La Figura~\ref{fig:patron_fsm} presenta un patrón general de operación. No representa todos los detalles de cada módulo, sino la lógica común que guía la implementación.
+Desde el punto de vista de diseño, cada módulo funcional se modela mediante un conjunto de estados discretos y transiciones activadas por mensajes. Esta representación permite describir el comportamiento del sistema de manera verificable, evitar secuencias de operación ambiguas y documentar explícitamente qué acciones son válidas en cada condición. La Máquina de Estados Finitos actúa, por lo tanto, como una capa de control intermedia entre el enrutador de eventos y la capa de bajo nivel.
+
+El patrón común de estados utilizado por los módulos funcionales se resume en la Figura~\ref{fig:patron_fsm}. La secuencia básica contempla una condición deshabilitada, una etapa de inicialización, una etapa de prueba, una condición de espera operativa, una acción principal y un estado de error. En módulos particulares, la acción principal representada por \texttt{ACQUIRE} puede complementarse con otros estados específicos, tales como \texttt{PROCESS} o \texttt{TRANSMIT}.
 
 \begin{figure}[htbp]
     \centering
-    \begin{minipage}[c]{0.39\textwidth}
+    \begin{minipage}[c]{0.53\textwidth}
         \vspace{0pt}
-        \begin{itemize}
-	        \item \texttt{DISABLE}: estado inicial o \\deshabilitado.
-			\item \texttt{INIT}: inicialización del módulo.
-			\item \texttt{TEST}: verificación básica o \\diagnóstico del módulo.
-			\item \texttt{IDLE}: espera de eventos.
-			\item \texttt{ACQUIRE}: adquisición o \\ejecución de la acción principal.
-			\item \texttt{ERROR}: condición de error y desinicialización preventiva.		         		\end{itemize}
+        \footnotesize
+		\begin{itemize}
+		    \setlength\itemsep{0.35em}
+		
+		    \item El módulo permanece en \texttt{DISABLE} hasta recibir una señal explícita de inicialización.
+		
+		    \item La transición \texttt{INIT}--\texttt{TEST} separa la configuración interna del módulo respecto de la verificación efectiva de disponibilidad.
+		
+		    \item El estado \texttt{IDLE} representa la condición operativa normal: el módulo está inicializado, verificado y a la espera de eventos.
+		
+		    \item El estado \texttt{ACQUIRE} representa la acción principal del módulo. Según el caso, puede corresponder a una lectura de sensor, una adquisición acústica, una consulta de estado o una operación equivalente.
+		
+		    \item Ante una falla crítica, la transición a \texttt{ERROR} permite registrar la condición anómala y ejecutar una desinicialización preventiva mediante la capa de bajo nivel.
+		
+		    \item El retorno a \texttt{DISABLE} proporciona una condición controlada para reinicialización, apagado lógico o recuperación posterior.
+		\end{itemize}
     \end{minipage}
     \hfill
-    \begin{minipage}[c]{0.6\textwidth}
-	    \centering
-	    \includegraphics[width=.8\textwidth]{graficos/fsm.pdf}
+    \begin{minipage}[c]{0.44\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graficos/fsm.pdf}
     \end{minipage}
-    \caption{Patrón general de Máquina de Estados Finitos utilizado por los módulos funcionales.}
+    \caption{Patrón general de Máquina de Estados Finitos utilizado por los módulos funcionales. El estado \texttt{ACQUIRE} representa la acción operativa principal y puede especializarse según el módulo implementado.}
     \label{fig:patron_fsm}
 \end{figure}
+
+%
+%La plantilla general define un conjunto de estados base comunes a todos los módulos:
+%
+%\begin{itemize}
+%    \item \texttt{DISABLE}: estado deshabilitado o desinicializado. El módulo no ejecuta acciones operativas y sólo responde a señales de inicialización.
+%
+%    \item \texttt{INIT}: estado de inicialización. En este estado se invoca la operación \texttt{init} de la capa de bajo nivel y se determina si el módulo puede avanzar hacia una prueba funcional.
+%
+%    \item \texttt{TEST}: estado de verificación. Se ejecuta una prueba diagnóstica mediante \texttt{full\_test} para evaluar disponibilidad, comunicación y condiciones mínimas de funcionamiento.
+%
+%    \item \texttt{IDLE}: estado de espera operativa. El módulo se encuentra inicializado, probado y disponible para recibir solicitudes de acción.
+%
+%    \item \texttt{ERROR}: estado de falla. Se alcanza cuando una operación crítica no puede completarse correctamente. En este estado se desinicializa el recurso de bajo nivel y se deja constancia de la condición anómala.
+%\end{itemize}
+%
+%Además de estos estados base, cada módulo puede incorporar estados de acción específicos según su función. Entre los estados más frecuentes se encuentran \texttt{ACQUIRE}, para ejecutar una adquisición o lectura; \texttt{PROCESS}, para procesar información previamente registrada; y \texttt{TRANSMIT}, para enviar información mediante un canal de comunicación. Esta extensión permite adaptar la Máquina de Estados Finitos a sensores, periféricos de adquisición, módulos de procesamiento o módulos de telemetría sin modificar el esquema general de control.
+
+La comunicación con el resto del sistema se realiza mediante mensajes. La Máquina de Estados Finitos recibe señales de control, tales como \texttt{SIG\_INIT}, \texttt{SIG\_DEINIT}, \texttt{SIG\_TEST}, \texttt{SIG\_ACQUIRE} o \texttt{SIG\_TIMEOUT}, y responde cambiando de estado o ejecutando acciones asociadas. Cuando corresponde, también conserva parámetros pendientes de ejecución, por ejemplo parámetros de adquisición recibidos junto con un mensaje o definidos previamente por configuración.
+
+El método \texttt{handle\_message} concentra la lógica de recepción de mensajes y transición entre estados. En términos generales, un módulo deshabilitado sólo acepta una señal de inicialización. Una vez inicializado, puede recibir señales de prueba, desinicialización o acción. Esta restricción evita que un módulo ejecute operaciones fuera de secuencia, como adquirir datos sin haber pasado antes por inicialización y verificación.
+
+La lógica de ejecución propia de cada estado se concentra en el método \texttt{update}. Este método evalúa el estado actual y ejecuta la acción correspondiente al ingresar en dicho estado. Para evitar ejecuciones repetidas no deseadas, la plantilla utiliza una marca de entrada al estado, de modo que las acciones principales de \texttt{INIT}, \texttt{TEST}, \texttt{ACQUIRE}, \texttt{DISABLE} o \texttt{ERROR} se ejecuten una sola vez por transición.
+
+La Máquina de Estados Finitos no devuelve resultados directamente mediante llamadas de retorno, sino que emite mensajes estructurados hacia una cola de estado o diagnóstico. La plantilla distingue dos tipos principales de resultados:
+
+\begin{itemize}
+    \item \texttt{STATE\_RESULT}: informa el resultado de una transición o condición de estado, por ejemplo el éxito o falla de una inicialización.
+
+    \item \texttt{ACTION\_RESULT}: informa el resultado de una acción ejecutada por el módulo, incluyendo el origen, el estado desde el cual se generó, la acción realizada, el resultado, los datos producidos, detalles diagnósticos y, si corresponde, información de error.
+\end{itemize}
+
+Esta forma de reporte permite desacoplar la ejecución interna de cada módulo respecto del procesamiento posterior de resultados. El enrutador de eventos, el sistema de registro, la telemetría o los módulos de supervisión pueden consumir estos mensajes sin depender de la implementación interna del módulo que los generó.
+
+La lógica general de una Máquina de Estados Finitos puede resumirse mediante el siguiente pseudocódigo:
+
+\begin{verbatim}
+handle_message(mensaje):
+    si estado == DISABLE:
+        si mensaje == SIG_INIT:
+            cambiar_estado(INIT)
+        retornar
+
+    si mensaje == SIG_DEINIT:
+        cambiar_estado(DISABLE)
+
+    si mensaje == SIG_TEST:
+        cambiar_estado(TEST)
+
+    si mensaje == SIG_ACQUIRE o mensaje == SIG_TIMEOUT:
+        guardar_parametros_pendientes(mensaje)
+        cambiar_estado(ACQUIRE)
+
+
+update():
+    si se ingreso a un nuevo estado:
+        marcar_entrada_al_estado
+
+    si estado == INIT:
+        ok = ll.init()
+        emitir STATE_RESULT(ok)
+        si ok:
+            cambiar_estado(TEST)
+        si no:
+            cambiar_estado(ERROR)
+
+    si estado == TEST:
+        ok, detalles = ll.full_test()
+        emitir ACTION_RESULT("test", ok, detalles)
+        si ok:
+            cambiar_estado(IDLE)
+        si no:
+            cambiar_estado(ERROR)
+
+    si estado == IDLE:
+        esperar mensajes
+
+    si estado == ACQUIRE:
+        ok, datos = ejecutar_accion_de_adquisicion()
+        emitir ACTION_RESULT("acquire", ok, datos)
+        si ok:
+            cambiar_estado(IDLE)
+        si no:
+            cambiar_estado(ERROR)
+
+    si estado == DISABLE:
+        ll.deinit()
+
+    si estado == ERROR:
+        ll.deinit()
+        registrar condicion de falla
+\end{verbatim}
+
+El patrón de diseño resultante permite que todos los módulos compartan una estructura de control común, aun cuando sus acciones específicas sean diferentes. Un sensor ambiental, una unidad inercial, un anemómetro, un controlador de energía, un módulo acústico o un módem satelital pueden implementar operaciones distintas en la capa de bajo nivel, pero exponer un comportamiento operativo homogéneo hacia el sistema principal.
+
+Esta homogeneidad simplifica la integración con el enrutador de eventos y con el planificador de tareas. El planificador puede generar señales periódicas o condicionadas sin conocer los detalles internos de cada periférico, mientras que el enrutador puede distribuir mensajes y recolectar resultados a partir de una interfaz común. De este modo, la arquitectura facilita la incorporación de nuevos módulos, la ejecución de pruebas con componentes sustitutos y el diagnóstico sistemático durante la operación.
+
+La separación entre la Máquina de Estados Finitos y la capa de bajo nivel también mejora la robustez del sistema. Las excepciones, fallas de transporte o respuestas inválidas se tratan en la capa de bajo nivel y se informan como resultados controlados. La Máquina de Estados Finitos interpreta esos resultados y decide la transición correspondiente, por ejemplo volver a \texttt{IDLE}, repetir una prueba, pasar a \texttt{ERROR} o desinicializar el módulo. Esta organización evita que una falla local se propague sin control al proceso principal y permite mantener una secuencia de operación trazable.
+
 
 La separación entre ambas capas facilita el reemplazo del acceso físico por implementaciones simuladas durante desarrollo e integración. También permite que el comportamiento del módulo sea analizado desde su Máquina de Estados Finitos sin depender de los detalles eléctricos o temporales de cada periférico.
 
