@@ -1458,16 +1458,358 @@ Registro de solicitudes de transmisión generadas por el módulo \texttt{Iridium
 
 En conjunto, la persistencia del sistema permite reconstruir la operación de la boya en varios niveles. Los archivos \texttt{WAV} conservan la señal acústica primaria; los archivos \texttt{JSONL} registran mediciones y eventos de módulos; los productos \texttt{JSON} sintetizan resultados derivados; el reporte de estado resume la condición operativa vigente; y los logs conservan la secuencia detallada de ejecución. Esta organización proporciona trazabilidad entre módulo, instante de adquisición, archivo generado, producto derivado, estado del sistema y eventual mensaje de telemetría.
 
+\subsection{Telemetría satelital}
+\label{subsec:telemetria_satelital_software}
+
+La telemetría satelital se diseña como un mecanismo de transmisión de mensajes compactos, orientados a supervisión remota y envío de productos seleccionados. A diferencia del almacenamiento local, que conserva los datos completos de campaña, el enlace satelital se utiliza para transmitir información resumida y codificada en formato binario. Esta decisión responde a las restricciones propias de un canal de baja tasa: cada mensaje debe contener sólo la información necesaria, con tamaño acotado y estructura definida.
+
+El protocolo de telemetría se implementa en el archivo \texttt{iridium\_protocol.py}. Este componente concentra la definición de tipos de mensaje, formatos binarios, cuantización de variables, mapas de bits, banderas de estado, sentinelas para datos no disponibles, empaquetado de productos acústicos y mecanismos de verificación de integridad. De este modo, la representación de los mensajes queda separada de la adquisición de datos, del almacenamiento local y del transporte físico utilizado para enviarlos.
+
+La codificación binaria utiliza orden de bytes \textit{big-endian}. Cada payload comienza con un byte de tipo de mensaje, que permite identificar la estructura del resto del contenido. Esta convención simplifica la decodificación remota y evita depender de claves textuales, como ocurriría en una representación JSON. La Tabla~\ref{tab:iridium-tipos-mensaje} resume los tipos de mensaje definidos.
+
+\begin{table}[htbp]
+\centering
+\caption{Tipos de mensaje definidos para telemetría satelital.}
+\label{tab:iridium-tipos-mensaje}
+\footnotesize
+\begingroup
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}c l X@{}}
+\toprule
+\textbf{Tipo} & \textbf{Nombre lógico} & \textbf{Contenido} \tabularnewline
+\midrule
+
+\texttt{0x01} &
+\texttt{\detokenize{MSG_SYSTEM_STATUS}} &
+Estado compacto del sistema, incluyendo mapas de bits, banderas globales, información energética, almacenamiento disponible y tiempo de actividad. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{0x02} &
+\texttt{\detokenize{MSG_BOOT}} &
+Mensaje breve asociado al arranque o reinicio del sistema, con el tiempo de actividad codificado en minutos. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{0x03} &
+\texttt{\detokenize{MSG_AUDIO_MONO_DELTA}} &
+Producto acústico monocanal codificado mediante primer valor absoluto y diferencias entre bandas sucesivas. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{0x04} &
+\texttt{\detokenize{MSG_AUDIO_STEREO_DELTA}} &
+Producto acústico estéreo codificado mediante primer valor absoluto y diferencias entre bandas sucesivas para cada canal. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{0x05} &
+\texttt{\detokenize{MSG_AUDIO_MONO_ABS}} &
+Producto acústico monocanal codificado mediante valores absolutos de 16 bits. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{0x06} &
+\texttt{\detokenize{MSG_AUDIO_STEREO_ABS}} &
+Producto acústico estéreo codificado mediante valores absolutos de 16 bits para cada canal. \tabularnewline
+
+\bottomrule
+\end{tabularx}
+\endgroup
+\end{table}
+
+
+El mensaje de estado del sistema posee longitud fija. Su estructura se define mediante el formato binario \texttt{>BBBBHBHH}, que combina campos de 8 y 16 bits. Esta representación permite transmitir en pocos bytes una síntesis del estado operativo de la boya, sin enviar estructuras textuales extensas. La Tabla~\ref{tab:payload-estado-sistema-iridium} resume los campos principales.
+\begin{table}[htbp]
+\centering
+\caption{Campos del payload binario de estado del sistema.}
+\label{tab:payload-estado-sistema-iridium}
+\footnotesize
+\begingroup
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}p{0.28\textwidth} c X@{}}
+\toprule
+\textbf{Campo} & \textbf{Tamaño} & \textbf{Descripción} \tabularnewline
+\midrule
+
+\texttt{\detokenize{message_type}} &
+1 byte &
+Identificador del tipo de mensaje. Para estado del sistema corresponde a \texttt{0x01}. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{\detokenize{fsm_ok_bitmap}} &
+1 byte &
+Mapa de bits que resume la condición de los módulos funcionales esperados. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{\detokenize{ll_ok_bitmap}} &
+1 byte &
+Mapa de bits que resume la condición de las interfaces o capas de acceso asociadas a los módulos esperados. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{\detokenize{status_flags}} &
+1 byte &
+Banderas globales de condición del sistema. Permiten representar advertencias o fallas agregadas. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{\detokenize{battery_voltage_mv}} &
+2 bytes &
+Tensión de batería codificada en milivoltios. El valor \texttt{0xFFFF} se reserva para dato desconocido. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{\detokenize{battery_soc_percent}} &
+1 byte &
+Estado de carga porcentual de batería. El valor \texttt{0xFF} se reserva para dato desconocido. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{\detokenize{storage_free_gib_x10}} &
+2 bytes &
+Espacio libre en almacenamiento, expresado en GiB multiplicado por 10. El valor \texttt{0xFFFF} se reserva para dato desconocido. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{\detokenize{uptime_minutes}} &
+2 bytes &
+Tiempo de actividad del sistema en minutos. El valor \texttt{0xFFFF} se reserva para dato desconocido. \tabularnewline
+
+\bottomrule
+\end{tabularx}
+\endgroup
+\end{table}
+
+
+Los mapas de bits permiten representar la condición de varios módulos mediante un único byte. Cada posición del byte se asocia a un módulo esperado, siguiendo un orden fijo definido por el protocolo. Esta estrategia reduce el tamaño del mensaje y permite detectar rápidamente condiciones anómalas desde una estación receptora, sin transmitir el nombre completo de cada módulo ni su estructura de estado completa.
+
+Las banderas globales condensan condiciones relevantes para supervisión remota. Entre ellas se incluyen almacenamiento no disponible, almacenamiento no escribible, advertencia de espacio, condición crítica de espacio, cuota excedida, advertencia de batería, condición crítica de batería y última adquisición incompleta. Algunas banderas se implican entre sí: por ejemplo, una condición crítica de almacenamiento también activa la advertencia correspondiente. Esta lógica evita ambigüedades en la interpretación remota del estado.
+
+El mensaje de arranque utiliza una estructura mínima, formada por el tipo de mensaje y el tiempo de actividad codificado en minutos. Su propósito es transmitir una señal compacta de reinicio o inicio de ejecución, sin incluir el reporte completo del sistema. Dado que este mensaje contiene menos información que el estado general, su uso resulta adecuado para eventos puntuales en los que interesa registrar que la aplicación inició o volvió a estar operativa.
+
+Los mensajes acústicos se construyen a partir de productos generados previamente por \texttt{AudioProc}. El protocolo no transmite archivos \texttt{WAV}, sino valores compactos derivados del procesamiento acústico. En la implementación actual, el campo principal es \texttt{relative\_band\_power\_db}, que contiene valores de potencia relativa por bandas. Estos valores se cuantizan en décimas de decibel, multiplicando cada valor por 10 y redondeando al entero más cercano.
+
+La estructura general de un mensaje acústico incluye una cabecera de 5 bytes, un bloque de datos de longitud variable y un CRC de 16 bits. La cabecera se define mediante el formato \texttt{>BI}: un byte para el tipo de mensaje y un entero sin signo de 32 bits para la marca temporal en segundos desde época Unix. El CRC se calcula sobre la cabecera y el bloque de datos, y se agrega al final del payload.
+
+\begin{lstlisting}[style=pseudocodigo, caption={Estructura general de un payload acústico para telemetría.}, label={lst:payload_acustico_iridium}]
+payload_audio:
+message_type              # uint8
+timestamp_epoch_seconds   # uint32
+audio_payload             # longitud variable
+crc16_ccitt_false         # uint16
+\end{lstlisting}
+
+El protocolo admite dos estrategias de empaquetado para los valores acústicos: codificación absoluta de 16 bits y codificación diferencial respecto de la banda anterior. La selección se realiza automáticamente a partir de los datos disponibles. Si todos los valores son finitos, se encuentran dentro del rango representable y las diferencias entre bandas consecutivas entran en el intervalo permitido, se utiliza el empaquetado diferencial. En caso contrario, se utiliza el empaquetado absoluto.
+
+En el empaquetado absoluto, cada valor cuantizado se transmite como entero con signo de 16 bits. Esta estrategia es más robusta frente a datos faltantes o no finitos, ya que el protocolo reserva el valor \texttt{-32768} como sentinela para representar una banda no disponible. Los valores válidos se saturan dentro del rango \texttt{-32767} a \texttt{32767}. Al decodificar, el receptor divide el entero por 10 para recuperar el valor en decibel.
+
+En el empaquetado diferencial, el primer valor del canal se transmite como entero con signo de 16 bits. Los valores siguientes se transmiten como diferencias de 8 bits con signo respecto del valor inmediatamente anterior. Esta estrategia reduce el tamaño del payload cuando la variación entre bandas consecutivas es moderada. El valor \texttt{-128} se reserva como sentinela y, por lo tanto, no se admite como diferencia válida. Las diferencias utilizables quedan en el rango \texttt{-127} a \texttt{127}.
+
+La Tabla~\ref{tab:empaquetado-audio-iridium} resume las cuatro combinaciones posibles entre cantidad de canales y estrategia de empaquetado.
+
+\begin{table}[htbp]
+\centering
+\caption{Estrategias de empaquetado de productos acústicos para telemetría.}
+\label{tab:empaquetado-audio-iridium}
+\footnotesize
+\begingroup
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}c l p{0.25\textwidth} X@{}}
+\toprule
+\textbf{Tipo} & \textbf{Canales} & \textbf{Empaquetado} & \textbf{Contenido del bloque de datos} \tabularnewline
+\midrule
+
+\texttt{0x03} &
+Mono &
+\texttt{\detokenize{DELTA_PREVIOUS_INT8}} &
+Primer valor absoluto en 16 bits, seguido por diferencias de 8 bits respecto de la banda anterior. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{0x04} &
+Estéreo &
+\texttt{\detokenize{DELTA_PREVIOUS_INT8}} &
+Secuencia diferencial por canal. Cada canal conserva su primer valor absoluto y sus diferencias sucesivas. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{0x05} &
+Mono &
+\texttt{\detokenize{ABS_INT16}} &
+Un entero de 16 bits por banda. Permite representar valores inválidos mediante sentinela. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{0x06} &
+Estéreo &
+\texttt{\detokenize{ABS_INT16}} &
+Valores absolutos de 16 bits para cada canal y cada banda. Permite representar valores inválidos mediante sentinela. \tabularnewline
+
+\bottomrule
+\end{tabularx}
+\endgroup
+\end{table}
+
+
+La lógica de selección de empaquetado puede resumirse mediante el Listado~\ref{lst:seleccion_empaquetado_audio}. El criterio prioriza el empaquetado diferencial cuando resulta válido, y utiliza el modo absoluto como alternativa segura.
+
+\begin{lstlisting}[style=pseudocodigo, caption={Selección de empaquetado para productos acústicos.}, label={lst:seleccion_empaquetado_audio}]
+seleccionar_empaquetado_audio(relative_band_power_db):
+separar valores por canal
+cuantizar cada valor en decimas_de_dB
+
+si todos los canales pueden codificarse como delta:
+    packing = DELTA_PREVIOUS_INT8
+    message_type = tipo_delta_segun_cantidad_de_canales
+    audio_payload = primer_valor_int16_y_deltas_int8_por_canal
+
+si no:
+    packing = ABS_INT16
+    message_type = tipo_absoluto_segun_cantidad_de_canales
+    audio_payload = valores_int16_por_canal
+
+body = cabecera(message_type, timestamp) + audio_payload
+crc = crc16_ccitt_false(body)
+
+retornar body + crc
+
+\end{lstlisting}
+
+La cantidad de canales admitida por el protocolo acústico es uno o dos. Para productos monocanales, cada banda contiene un único valor. Para productos estéreo, cada banda contiene un par de valores y el protocolo verifica que la cantidad de canales sea consistente a lo largo de todas las bandas. Si la estructura del producto no respeta esta condición, el mensaje se considera inválido y no se genera el payload.
+
+El protocolo también contempla la cantidad esperada de bandas acústicas. Esta cantidad puede validarse contra la configuración utilizada para el procesamiento, evitando transmitir productos incompletos o incompatibles con el receptor. En la configuración actual, las bandas se determinan a partir de una tabla de tercios de octava y de la frecuencia de muestreo utilizada, descartando bandas fuera del rango admitido o por encima del límite impuesto por la frecuencia de Nyquist.
+
+La verificación de integridad se realiza mediante CRC16-CCITT-FALSE. El CRC se calcula sobre el cuerpo del mensaje acústico, es decir, sobre el tipo de mensaje, la marca temporal y el bloque de datos. Durante la decodificación, el receptor recalcula el CRC y compara el valor obtenido con el valor transmitido. Una discrepancia indica corrupción o incompatibilidad del payload y permite descartar el mensaje antes de interpretar los valores acústicos.
+
+El diseño del protocolo permite decodificar cada mensaje a partir del primer byte. Si el tipo corresponde a estado del sistema, se interpreta mediante la estructura fija del reporte compacto. Si corresponde a arranque, se interpreta mediante su estructura mínima. Si corresponde a audio, se identifica la cantidad de canales y el modo de empaquetado, se valida el CRC, se reconstruyen los valores cuantizados y se convierten nuevamente a decibel dividiendo por el factor de escala.
+
+Además del payload binario, el sistema registra solicitudes de transmisión para auditoría y diagnóstico. Estos registros permiten conservar evidencia del instante de generación del mensaje, tipo de producto, tamaño del payload y representación hexadecimal. Esta información es útil durante pruebas de laboratorio, validación del protocolo y análisis posterior de fallas, porque permite verificar qué mensaje se intentó transmitir aunque no se disponga de confirmación remota.
+
+En conjunto, el protocolo de telemetría define una representación compacta, verificable y desacoplada de los datos a transmitir. El estado del sistema se resume mediante campos fijos, mapas de bits y banderas; los productos acústicos se codifican mediante cuantización y empaquetado absoluto o diferencial; y la integridad de los mensajes acústicos se verifica mediante CRC. Esta organización permite utilizar el enlace satelital para supervisión y envío de productos reducidos, preservando los datos completos en el almacenamiento local de la boya.
+
+\subsection{Organización del repositorio y modos de ejecución}
+\label{subsec:repositorio-modos-ejecucion}
+
+El código fuente del sistema se organiza en un repositorio Git que concentra la aplicación principal, los módulos funcionales, los archivos de configuración, las herramientas auxiliares, la documentación técnica, los ensayos automatizados y los directorios utilizados para persistencia de datos y registros de ejecución. Esta organización permite mantener trazabilidad entre implementación, configuración operativa, pruebas y evidencia generada durante los ensayos.
+
+La estructura del repositorio refleja la arquitectura modular del software. El archivo \texttt{main.py} actúa como punto de entrada de la aplicación; el directorio \texttt{modules/} contiene los módulos funcionales del sistema; \texttt{modules/support/} agrupa componentes compartidos; \texttt{configs/} concentra archivos de configuración; y los directorios \texttt{data/} y \texttt{logs/} se utilizan para salidas generadas durante la ejecución. Esta separación facilita la localización de responsabilidades y evita mezclar código fuente, configuración, datos persistidos y registros de diagnóstico.
+
+La Tabla~\ref{tab:organizacion-repo-software} resume las rutas principales del repositorio. No se incluyen todos los archivos del proyecto, sino aquellos que definen la estructura de trabajo utilizada para desarrollar, ejecutar y verificar el sistema embebido.
+
+\begin{table}[htbp]
+\centering
+\caption{Organización principal del repositorio de software.}
+\label{tab:organizacion-repo-software}
+\footnotesize
+\begingroup
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{}p{0.28\textwidth}X@{}}
+\toprule
+\textbf{Ruta o archivo} & \textbf{Función principal} \tabularnewline
+\midrule
+
+\texttt{main.py} &
+Punto de entrada de la aplicación. Inicializa módulos, crea colas, registra el enrutador de eventos, activa el planificador de tareas y administra el cierre ordenado. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{modules/} &
+Implementación de los módulos funcionales del sistema. Cada bloque se organiza, en general, mediante una capa de bajo nivel y una Máquina de Estados Finitos. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{modules/support/} &
+Componentes compartidos entre módulos, tales como clases base, enrutador de eventos, persistencia, reporte de estado, selección de mocks y soporte de telemetría. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{configs/} &
+Archivos de configuración del sistema, incluyendo parámetros generales, intervalos del planificador y selección de módulos simulados. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{data/} &
+Mediciones estructuradas, productos derivados, índices de procesamiento y salidas generadas por los módulos durante la ejecución. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{logs/} &
+Registros de ejecución, reportes de estado, advertencias, errores, solicitudes de transmisión y salidas operativas de la aplicación. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{support/} &
+Archivos auxiliares utilizados por el sistema o por las pruebas, tales como requerimientos Python, tablas de referencia, calibraciones y datos de soporte. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{docs/} &
+Documentación técnica, manuales de periféricos y material de referencia utilizado durante la integración. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{scripts/} &
+Comandos auxiliares para ejecución, detención, pruebas operacionales, reportes de hardware y decodificación de mensajes de telemetría. \tabularnewline
+
+\addlinespace[0.35em]
+
+\texttt{test/} &
+Pruebas automatizadas, ensayos operacionales y reportes generados durante verificaciones con o sin hardware. \tabularnewline
+
+\bottomrule
+\end{tabularx}
+\endgroup
+\end{table}
+
+Los archivos de configuración permiten ajustar el comportamiento del sistema sin modificar el código fuente. El archivo \texttt{\detokenize{configs/config.json}} contiene parámetros generales de adquisición, procesamiento, directorios de salida y habilitación de funciones específicas. El archivo \texttt{\detokenize{configs/scheduler.json}} define los intervalos utilizados por el planificador central. El archivo \texttt{\detokenize{configs/mock_modules.json}} permite seleccionar módulos que deben ejecutarse con implementaciones simuladas de bajo nivel.
+
+La separación entre configuración y código es importante para una plataforma de ensayo e integración. Durante el desarrollo pueden requerirse tiempos de adquisición más cortos, módulos simulados o transmisión satelital deshabilitada. En cambio, durante una prueba de campo pueden utilizarse intervalos operativos, hardware real y rutas de almacenamiento definitivas. Mantener estos parámetros fuera del código reduce el riesgo de introducir cambios funcionales al modificar condiciones de ensayo.
+
+El sistema admite ejecución con hardware real y ejecución con componentes sustitutos. En el primer caso, las capas de bajo nivel acceden a los periféricos integrados en la boya. En el segundo, una o más capas de bajo nivel se reemplazan por implementaciones simuladas, manteniendo el mismo flujo de mensajes, estados y reportes. Esta capacidad permite ensayar la coordinación general del sistema aun cuando no todos los periféricos se encuentren disponibles.
+
+La activación de mocks puede realizarse de manera global o por módulo. La variable de entorno \texttt{\detokenize{USE_LL_MOCKS=1}} activa implementaciones simuladas para todos los módulos de bajo nivel. Para ensayos parciales, también puede utilizarse una variable específica por módulo, por ejemplo \texttt{\detokenize{USE_MOCK_AHT10=1}}, o declarar la selección en \texttt{\detokenize{configs/mock_modules.json}}. Esta última alternativa resulta más adecuada para ensayos repetibles, ya que deja registrada la configuración utilizada.
+
+El Listado~\ref{lst:mock-modules-json} muestra un ejemplo de selección persistente de módulos simulados. En este caso, sólo los módulos indicados se ejecutan con bajo nivel simulado, mientras que el resto puede operar con hardware real si se encuentra disponible.
+
+\begin{lstlisting}[style=pseudocodigo, caption={Ejemplo de selección de módulos simulados en \texttt{configs/mock\_modules.json}.}, label={lst:mock-modules-json}]
+{
+"mock_modules": [
+"Windsonic",
+"Iridium",
+"AIS",
+"XTRA2210"
+]
+}
+\end{lstlisting}
+
+El sistema debe evitar configuraciones ambiguas. Por ejemplo, no resulta conveniente combinar una activación global de mocks con una lista parcial de módulos simulados, porque ambas decisiones representan criterios distintos de ejecución. La validación de estas condiciones permite detectar errores de configuración antes de iniciar la operación y reduce ambigüedades durante el análisis posterior de resultados.
+
+Los modos de ejecución quedan reflejados en los registros generados por el sistema. Cuando un módulo se ejecuta en modo simulado, esa condición debe quedar identificada en logs, mediciones y reportes de estado. Esta distinción es necesaria para diferenciar datos obtenidos con hardware real de datos generados durante ensayos de software, evitando interpretaciones incorrectas en etapas de validación o análisis posterior.
+
+El repositorio incluye scripts auxiliares destinados a facilitar la operación. El script \texttt{\detokenize{scripts/start_main.sh}} permite iniciar la aplicación con limpieza previa de procesos remanentes y redirección de salida. El script \texttt{\detokenize{scripts/stop_main.sh}} permite detener la aplicación de manera ordenada, enviando señales de terminación y verificando que no queden procesos activos. Estos scripts no reemplazan a la arquitectura de control del sistema, pero proporcionan una interfaz práctica para operación y mantenimiento.
+
+Además de los scripts de ejecución, el repositorio contempla pruebas automatizadas y pruebas asociadas a hardware. Las pruebas sin hardware permiten verificar componentes de software, lógica de mensajes, procesamiento y comportamiento de módulos simulados. Las pruebas con hardware permiten ejercitar las capas de bajo nivel y generar reportes de disponibilidad o funcionamiento de periféricos. Esta distinción resulta útil porque no todas las verificaciones requieren disponer de la boya completa.
+
+Los reportes generados por ensayos operacionales se almacenan en \texttt{\detokenize{test/reports/}}. Estos archivos permiten conservar evidencia de pruebas ejecutadas, resultados obtenidos y condiciones de hardware observadas. Junto con los logs de operación y los reportes de estado, estos artefactos contribuyen a documentar el proceso de integración y a identificar fallas reproducibles.
+
+La organización del repositorio también facilita la reproducibilidad del entorno. Los archivos de requerimientos ubicados en \texttt{support/} permiten distinguir dependencias necesarias para ejecución respecto de herramientas utilizadas para desarrollo y pruebas. Esta separación ayuda a reconstruir el entorno de trabajo, ejecutar verificaciones y mantener una base de software controlada durante la evolución del proyecto.
+
+En conjunto, la estructura del repositorio y los modos de ejecución complementan la arquitectura modular del software. La estructura de archivos permite localizar componentes, configuraciones y artefactos de salida; los modos con hardware real o simulado permiten validar el sistema en distintas etapas de integración; y los scripts auxiliares proporcionan soporte operativo para iniciar, detener, probar y diagnosticar la aplicación.
+
 
 \clearpage
-\section{Pruebas y Ensayos}
+\section{PRUEBAS Y ENSAYOS}
 \subsection{Pruebas unitarias y de integración}
 \subsection{Tests de bajo nivel y simulaciones (mocks)}
 \subsection{Ensayos operacionales en laboratorio}
 \subsection{Pruebas de campo y telemetría}
 \subsection{Resultados obtenidos}
 
-\section{Conclusiones y Trabajo Futuro}
+\clearpage
+\section{CONCLUSIONES Y TRABAJO FUTURO}
 \subsection{Conclusiones}
 \subsection{Logros alcanzados}
 \subsection{Dificultades encontradas y lecciones aprendidas}
