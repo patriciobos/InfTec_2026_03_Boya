@@ -1265,7 +1265,7 @@ Esta representación persistente permite distinguir el estado operativo de los r
 \label{subsec:bloques_funcionales_software}
 
 El sistema se organiza en módulos funcionales que representan periféricos, procesos de adquisición, procesamiento o comunicación. Cada módulo se integra al modelo general mediante una Máquina de Estados Finitos y una capa de bajo nivel asociada. De este modo, todos los bloques comparten un patrón común de inicialización, prueba, espera, acción principal, reporte de resultados y manejo de errores, aun cuando cada uno interactúe con dispositivos o recursos de naturaleza diferente.
-
+	
 Desde el punto de vista de la arquitectura, los bloques funcionales no se definen únicamente por el periférico físico al que están asociados, sino por la responsabilidad que cumplen dentro del ciclo de operación de la boya. Algunos módulos actúan como fuentes de medición periódica, otros generan archivos de alto volumen, otros producen información derivada a partir de datos ya adquiridos y otros implementan canales de comunicación o supervisión. Esta distinción permite organizar el sistema según flujos de información y no sólo según dispositivos conectados.
 
 La salida de cada módulo se normaliza mediante mensajes, registros estructurados o archivos persistentes, según la naturaleza de la información generada. Las mediciones breves de sensores se registran como datos estructurados; las adquisiciones acústicas se conservan como archivos \texttt{WAV}; los productos derivados del procesamiento se almacenan como resultados compactos; y la telemetría se construye a partir de un subconjunto seleccionado de estados, diagnósticos y productos. Esta organización permite vincular cada resultado con su módulo de origen, su marca temporal y el estado operativo en el que fue generado.
@@ -1295,7 +1295,7 @@ Aceleraciones, velocidades angulares y datos derivados disponibles para registro
 
 \texttt{AIS} &
 AIS/GPS &
-Recepción y parseo de información de posicionamiento, tiempo y mensajes de navegación disponibles en la interfaz serie. &
+Recepción y parseo de información de posicionamiento y tiempo. &
 Posición, fecha, hora y datos asociados al receptor de navegación. \\
 
 \texttt{Windsonic} &
@@ -1331,8 +1331,135 @@ La separación entre módulos permite que cada bloque evolucione con relativa in
 
 Además, esta organización facilita el uso de componentes sustitutos durante pruebas. Un módulo puede ejecutarse con hardware real o con una implementación simulada de su capa de bajo nivel, sin modificar la Máquina de Estados Finitos ni el proceso principal. Esta capacidad resulta útil para ensayos de integración, pruebas automatizadas y validación de comportamiento cuando no todos los periféricos se encuentran disponibles.
 
+\subsection{Persistencia y productos de datos}
+\label{subsec:persistencia_productos_datos}
+
+La persistencia de datos constituye el mecanismo mediante el cual el software conserva la evidencia de operación de la boya. A diferencia de la descripción física del almacenamiento, presentada en la Sección~\ref{subsec:almacenamiento_local}, esta subsección se concentra en la organización lógica de los archivos generados por los módulos, los formatos utilizados, la relación entre datos primarios y productos derivados, y los criterios de trazabilidad aplicados durante la ejecución.
+
+El sistema produce información de distinta naturaleza. Algunos módulos generan mediciones breves y periódicas, tales como temperatura, humedad, posición, viento, datos inerciales o parámetros eléctricos. Otros generan archivos de mayor volumen, como las adquisiciones acústicas en formato \texttt{WAV}. A partir de estos archivos pueden generarse productos compactos de procesamiento, aptos para almacenamiento estructurado y eventual telemetría. Además, el sistema mantiene registros de ejecución, reportes de estado y solicitudes de transmisión que permiten reconstruir el comportamiento operativo de la plataforma.
+
+La organización lógica distingue tres grupos principales de información:
+
+\begin{itemize}
+\item \textbf{Datos primarios de adquisición.} Incluyen mediciones de sensores y archivos acústicos generados durante la operación. Estos datos representan la salida directa de los módulos de adquisición.
+
+\item \textbf{Productos derivados.} Incluyen resultados obtenidos a partir de datos ya adquiridos, por ejemplo productos compactos del procesamiento acústico. Estos productos no reemplazan al dato primario, sino que lo complementan con una representación reducida o interpretada.
+
+\item \textbf{Información operativa y diagnóstica.} Incluye logs, reportes de estado, errores, advertencias, solicitudes de transmisión y registros auxiliares que permiten analizar la ejecución del software y diagnosticar condiciones anómalas.
+
+\end{itemize}
+
+Las mediciones periódicas se almacenan en formato \texttt{JSONL}, con un objeto JSON por línea. Este formato permite escribir registros de manera incremental, inspeccionar archivos con herramientas simples, recuperar secuencias temporales sin cargar el archivo completo y preservar una estructura legible para análisis posterior. Cada registro incluye una marca temporal en formato ISO y un campo \texttt{data} con las variables propias del módulo que generó la medición.
+
+El Listado~\ref{lst:registro_jsonl_sensor} muestra la estructura general de una medición de baja tasa. El nombre del archivo identifica el módulo de origen, mientras que el contenido conserva la marca temporal y los valores adquiridos. Esta decisión evita repetir información redundante en cada línea y facilita el procesamiento por módulo.
+
+\begin{lstlisting}[style=pseudocodigo, caption={Estructura general de una medición persistida en formato \texttt{JSONL}.}, label={lst:registro_jsonl_sensor}]
+{
+"timestamp": "2026-06-18T11:00:01-03:00",
+"data": {
+"temperature_c": 22.74,
+"humidity_rh": 44.20
+}
+}
+\end{lstlisting}
+
+Las adquisiciones acústicas requieren un tratamiento diferenciado por su volumen y por su importancia como dato primario. El archivo \texttt{WAV} conserva la señal digital adquirida, mientras que el registro estructurado asociado conserva los metadatos necesarios para identificar e interpretar la adquisición. Esta separación permite consultar rápidamente qué archivos fueron generados, con qué duración, frecuencia de muestreo y cantidad de canales, sin necesidad de abrir el archivo acústico completo.
+
+El Listado~\ref{lst:registro_behringer} muestra la estructura general del registro asociado a una adquisición acústica. El campo \texttt{file} identifica el archivo generado y los campos restantes describen parámetros básicos de la adquisición.
+
+\begin{lstlisting}[style=pseudocodigo, caption={Registro estructurado asociado a una adquisición acústica.}, label={lst:registro_behringer}]
+{
+"timestamp": "2026-06-20T00:01:01-03:00",
+"data": {
+"file": "/storage/boya/recordings/recording_20260620_000000.wav",
+"duration_s": 60.0,
+"sample_rate_hz": 192000,
+"channels": 1,
+"size_bytes": 34553900
+}
+}
+\end{lstlisting}
+
+El módulo \texttt{AudioProc} genera productos derivados a partir de los archivos acústicos. Estos productos se almacenan como archivos \texttt{JSON} independientes, mientras que el archivo \texttt{audioProc\_readings.jsonl} mantiene la relación entre el archivo de entrada y la salida generada. De este modo, el sistema conserva trazabilidad entre la adquisición primaria y el producto procesado.
+
+El Listado~\ref{lst:registro_audioproc} muestra la estructura general del índice de procesamiento acústico. Esta relación resulta importante porque permite verificar qué archivos fueron procesados, qué producto se obtuvo y qué salida puede ser utilizada posteriormente para análisis compacto o telemetría.
+
+\begin{lstlisting}[style=pseudocodigo, caption={Relación entre archivo acústico y producto de procesamiento.}, label={lst:registro_audioproc}]
+{
+"timestamp": "2026-06-20T00:01:09-03:00",
+"data": {
+"input_file": "/storage/boya/recordings/recording_20260620_000000.wav",
+"output_file": "data/audio_proc/audioProc_20260620_000000.json"
+}
+}
+\end{lstlisting}
+
+Los productos compactos de procesamiento se almacenan en archivos \texttt{JSON}. En la implementación actual, el producto acústico contiene una marca temporal y un arreglo de valores de potencia relativa por bandas. Esta estructura es adecuada para reducir el volumen de información respecto del archivo \texttt{WAV} original y para construir mensajes de telemetría de tamaño acotado cuando corresponde.
+
+La persistencia de logs y reportes de estado tiene una finalidad distinta de la persistencia de datos científicos. Los archivos de medición y audio describen lo adquirido; los logs y reportes describen cómo se ejecutó el sistema. Esta separación permite analizar fallas, reinicios, errores de comunicación, indisponibilidad de periféricos o resultados anómalos sin mezclar información diagnóstica con los datos primarios de campaña.
+
+El archivo \texttt{system\_status.json} mantiene una síntesis actualizada de la condición operativa de los módulos. Este reporte no reemplaza a los logs ni a los archivos de medición, sino que ofrece una vista compacta del último estado conocido de cada bloque. Su contenido puede ser utilizado por la telemetría satelital para construir mensajes de estado, y también por operadores o herramientas de diagnóstico para evaluar rápidamente la condición del sistema.
+
+La telemetría genera además registros propios de solicitudes de transmisión. Estos registros permiten auditar qué mensajes se construyeron, en qué instante, con qué modo de operación y con qué tamaño de payload. Esta evidencia resulta útil tanto cuando la transmisión se completa como cuando se ejecutan pruebas con transmisión física deshabilitada, ya que permite verificar la lógica de generación de mensajes sin depender exclusivamente del enlace satelital.
+
+La política de almacenamiento aplicada a la adquisición acústica es conservadora. Antes de iniciar una grabación, el sistema verifica la disponibilidad del directorio de destino, la configuración de audio y las condiciones mínimas de espacio libre. La configuración contempla umbrales de advertencia, condición crítica, reserva mínima y margen sobre el tamaño esperado del archivo. Si las condiciones no son adecuadas, el sistema debe rechazar el inicio de la adquisición y registrar el evento, en lugar de borrar automáticamente datos ya existentes para liberar espacio.
+
+Esta decisión prioriza la preservación de datos adquiridos frente a una política agresiva de rotación automática. En una plataforma autónoma, donde la recuperación física puede ocurrir después de un período prolongado, la eliminación automática de archivos científicos podría comprometer información no recuperable. Por ello, la administración de espacio se orienta a prevenir adquisiciones inseguras, emitir advertencias y conservar evidencia suficiente para diagnóstico posterior.
+
+A modo de síntesis, la Tabla~\ref{tab:productos_datos_software} resume los principales productos persistidos por el sistema. La tabla no enumera todos los archivos auxiliares posibles, sino aquellos que resultan más relevantes para la operación, verificación y análisis posterior.
+
+\begin{table}[htbp]
+\centering
+\caption{Productos de datos persistidos por el software embebido.}
+\label{tab:productos_datos_software}
+\footnotesize
+\begingroup
+\renewcommand{\arraystretch}{1.22}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.23\textwidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Producto} & \textbf{Contenido y ubicación} \tabularnewline
+\midrule
+
+Mediciones de sensores &
+Registros temporales generados por módulos como \texttt{AHT10}, \texttt{MPU6050}, \texttt{AIS}, \texttt{Windsonic} y \texttt{XTRA2210}. Cada línea contiene una marca temporal y un objeto de datos con las variables medidas. \emph{Ubicación:} \texttt{data/*\_readings.jsonl}. \tabularnewline
+\addlinespace[0.45em]
+
+Metadatos de adquisición acústica &
+Registro estructurado de cada adquisición ejecutada por el módulo \texttt{Behringer}. Incluye archivo generado, duración, frecuencia de muestreo, cantidad de canales y tamaño del archivo. \emph{Ubicación:} \texttt{data/behringer\_readings.jsonl}. \tabularnewline
+\addlinespace[0.45em]
+
+Archivos acústicos primarios &
+Señales acústicas adquiridas por el subsistema de audio. Constituyen el dato primario de mayor volumen y se conservan localmente para análisis posterior. \emph{Ubicación:} \texttt{/storage/boya/recordings/recording\_*.wav}. \tabularnewline
+\addlinespace[0.45em]
+
+Productos de procesamiento acústico &
+Resultados compactos generados por \texttt{AudioProc} a partir de archivos \texttt{WAV}. Incluyen productos reducidos, tales como potencia relativa por bandas, utilizables para análisis rápido o telemetría. \emph{Ubicación:} \texttt{data/audio\_proc/audioProc\_*.json}. \tabularnewline
+\addlinespace[0.45em]
+
+Índice de procesamiento acústico &
+Registro que vincula cada archivo acústico procesado con el producto generado. Permite mantener trazabilidad entre dato primario y salida derivada. \emph{Ubicación:} \texttt{data/audioProc\_readings.jsonl}. \tabularnewline
+\addlinespace[0.45em]
+
+Reporte de estado del sistema &
+Síntesis actualizada del estado de los módulos, modo de ejecución, última acción reportada, resultado y marcas temporales de actualización. \emph{Ubicación:} \texttt{logs/system\_status.json}. \tabularnewline
+\addlinespace[0.45em]
+
+Registros de ejecución &
+Mensajes de operación, inicialización, diagnóstico, advertencias, errores y eventos generados por el proceso principal, las FSM y las capas de bajo nivel. \emph{Ubicación:} \texttt{logs/*.log}. \tabularnewline
+\addlinespace[0.45em]
+
+Solicitudes de telemetría &
+Registro de solicitudes de transmisión generadas por el módulo \texttt{Iridium}. Permite auditar mensajes construidos aun cuando la transmisión física no sea exitosa o se ejecute en modo de prueba. \emph{Ubicación:} \texttt{logs/iridium\_transmit\_requests.jsonl}. \tabularnewline
+
+\bottomrule
+\end{tabularx}
+\endgroup
+\end{table}
+
+En conjunto, la persistencia del sistema permite reconstruir la operación de la boya en varios niveles. Los archivos \texttt{WAV} conservan la señal acústica primaria; los archivos \texttt{JSONL} registran mediciones y eventos de módulos; los productos \texttt{JSON} sintetizan resultados derivados; el reporte de estado resume la condición operativa vigente; y los logs conservan la secuencia detallada de ejecución. Esta organización proporciona trazabilidad entre módulo, instante de adquisición, archivo generado, producto derivado, estado del sistema y eventual mensaje de telemetría.
 
 
+\clearpage
 \section{Pruebas y Ensayos}
 \subsection{Pruebas unitarias y de integración}
 \subsection{Tests de bajo nivel y simulaciones (mocks)}
