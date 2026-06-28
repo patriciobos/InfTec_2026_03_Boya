@@ -732,143 +732,118 @@ Además de la capacidad nominal, el almacenamiento local debe considerarse como 
 
 En conjunto, el SSD de 1~TB actúa como memoria persistente principal para los datos de campaña de mayor volumen, mientras que la telemetría satelital proporciona una vía de supervisión remota limitada a información compacta. Esta separación entre almacenamiento local de alta capacidad y transmisión remota de baja tasa permite compatibilizar la adquisición acústica de alta demanda con la operación autónoma y energéticamente restringida de la boya.
 
-
 \clearpage
-\section{DISEÑO E IMPLEMENTACIÓN DEL SOFTWARE}
+\section{DISEÑO E IMPLEMENTACIÓN DEL SOFTWARE EMBEBIDO}
 \label{sec:disenio_implementacion}
 
-En esta sección se describe el diseño e implementación del software embebido de control, adquisición, supervisión, almacenamiento y telemetría de la boya instrumental EAMMRA. La descripción se orienta a documentar la arquitectura adoptada, los bloques funcionales que componen el sistema, las capas de software, los mecanismos de comunicación interna, los formatos de datos persistidos y los formatos binarios empleados para telemetría satelital.
+En esta sección se describe el software embebido desarrollado para la boya instrumental EAMMRA. La descripción se concentra en la arquitectura de control, el modelo de ejecución, la organización modular, la comunicación interna, la persistencia de datos, la telemetría satelital y los modos de operación utilizados durante desarrollo, integración y prueba.
 
-El diseño se basa en una arquitectura modular orientada a eventos. Cada subsistema físico o lógico se representa mediante un bloque funcional independiente, con una interfaz de bajo nivel para el acceso directo al hardware o al procesamiento específico, y una Máquina de Estados Finitos encargada de administrar su ciclo operativo. La aplicación principal ejecuta estos bloques como procesos separados, distribuye mensajes mediante un enrutador de eventos y dispara tareas periódicas mediante un planificador de tareas central configurable.
+El sistema se implementa como una aplicación Python ejecutada sobre GNU/Linux en la computadora principal embarcada. Cada periférico o función relevante se representa mediante un módulo funcional independiente, compuesto por una capa de bajo nivel y una Máquina de Estados Finitos. La aplicación principal coordina estos módulos mediante procesos separados, colas de mensajes, un enrutador de eventos y un planificador de tareas central.
 
-La organización adoptada responde a las necesidades propias de una plataforma autónoma embarcada: operación desatendida, desacoplamiento entre módulos, trazabilidad de eventos, registro persistente de mediciones, detección de fallas, capacidad de simulación parcial y preparación de información compacta para transmisión remota. Asimismo, mantiene continuidad conceptual con los trabajos previos de EAMMRA, en los cuales se estableció la conveniencia de describir explícitamente la integración física y lógica de subsistemas, el flujo de datos, los protocolos de comunicación y las responsabilidades funcionales de cada bloque \citep{AS0219_Subsistemas,Cinquini2026_AS0226}.
+Esta organización busca que la operación de la boya pueda describirse, verificarse y diagnosticarse de manera sistemática. En una plataforma autónoma, las lecturas de sensores, las adquisiciones acústicas, los registros persistentes, las transmisiones satelitales y las condiciones de falla deben quedar asociadas a eventos, estados y resultados trazables.
 
 \subsection{Criterios generales de diseño}
-\label{subsec:criterios_generales_de_diseno}
+\label{subsec:criterios_diseno_software}
 
-El sistema fue diseñado a partir de los siguientes criterios generales:
-
-\begin{itemize}
-
- \item \textbf{Modularidad.} Cada periférico o función principal se encapsula en un módulo independiente. Esta decisión permite incorporar, reemplazar o depurar bloques sin modificar la estructura general del sistema.
-
- \item \textbf{Separación entre acceso físico y lógica de control.} Cada bloque se divide en una capa de bajo nivel y una capa de Máquina de Estados Finitos. La primera resuelve la comunicación con el hardware o el procesamiento específico. La segunda administra estados, transiciones, acciones, errores y mensajes.
-
- \item \textbf{Ejecución concurrente.} Las Máquinas de Estados Finitos se ejecutan como procesos separados. De esta manera, una adquisición, una lectura de sensor o una comunicación serie no bloquea directamente el funcionamiento del resto del sistema.
-
- \item \textbf{Comunicación por eventos.} La interacción entre módulos se realiza mediante mensajes. El enrutador de eventos distribuye información entre productores y consumidores,  y así evita dependencias directas innecesarias.
-
- \item \textbf{Planificación centralizada.} Las adquisiciones periódicas y transmisiones se disparan desde un planificador de tareas central. Los módulos no implementan planificadores internos, lo que simplifica el análisis temporal del sistema.
-
- \item \textbf{Persistencia estructurada.} Las mediciones se guardan en archivos \texttt{JSONL}, los resultados procesados en archivos \texttt{JSON}, las señales acústicas en archivos \texttt{WAV} y los eventos de ejecución en logs de texto o archivos estructurados.
-
- \item \textbf{Robustez operativa.} El sistema incorpora mecanismos de reporte de estado, persistencia de condiciones de error, reintentos controlados, protección de almacenamiento y codificación compacta de estados críticos para telemetría.
-
- \item \textbf{Verificabilidad.} La estructura modular permite ejecutar el sistema con hardware real, con módulos simulados o con simulación parcial de periféricos seleccionados. La descripción detallada de las pruebas se desarrolla en la Sección~\ref{sec:pruebas_y_ensayos}.
-
-\end{itemize}
-
-Estos criterios conducen a una arquitectura que prioriza la mantenibilidad y la trazabilidad por encima de una implementación monolítica. En un sistema autónomo que debe operar en condiciones de acceso limitado, resulta particularmente importante que cada adquisición, transmisión, error y condición de estado pueda reconstruirse posteriormente a partir de los archivos persistidos.
-
-\subsection{Arquitectura general del sistema}
-\label{subsec:arquitectura_general_del_sistema}
-
-La arquitectura general del software se organiza alrededor de la computadora principal embarcada, que ejecuta la aplicación de control sobre GNU/Linux, en particular Ubuntu server 22.04 y Python~3. La aplicación principal se inicia desde el archivo \texttt{main.py}. Este proceso instancia las Máquinas de Estados Finitos de los módulos funcionales, crea las colas de mensajes asociadas, registra los módulos en el enrutador de eventos, inicializa el planificador de tareas central y mantiene actualizado el reporte de estado del sistema.
-
-El uso de Máquinas de Estados Finitos responde a la necesidad de hacer explícito el comportamiento del sistema ante condiciones normales y anómalas. Cada módulo puede describirse en términos de estados, eventos, transiciones y acciones, lo que simplifica el análisis de comportamiento, la implementación de pruebas y la documentación técnica. A su vez, el enrutador de eventos permite desacoplar productores y consumidores de información, mientras que el planificador de tareas permite organizar adquisiciones periódicas, transmisiones, verificaciones de estado y acciones de mantenimiento lógico.
-
-
-Desde el punto de vista funcional, el sistema se estructura en las siguientes capas:
+El diseño del software se basó en un conjunto de criterios orientados a la operación autónoma, la mantenibilidad y la verificación progresiva del sistema. Estos criterios se resumen a continuación:
 
 \begin{itemize}
+    \item \textbf{Modularidad.} Cada periférico o función principal se encapsula en un módulo independiente. Esta decisión permite incorporar, reemplazar, depurar o simular bloques específicos sin modificar la estructura general del sistema.
 
- \item \textbf{Capa física.} Comprende la computadora principal, sensores ambientales, sensores inerciales, receptor AIS/GPS, anemómetro, controlador solar, placa de audio USB, módem satelital, almacenamiento local e interfaces eléctricas asociadas.
+    \item \textbf{Separación entre acceso físico y lógica de control.} Cada módulo se divide en una capa de bajo nivel y una Máquina de Estados Finitos. La primera resuelve el acceso al hardware, archivo, transporte o protocolo específico. La segunda administra estados, transiciones, acciones, errores y mensajes.
 
- \item \textbf{Capa de bajo nivel.} Implementa el acceso directo a cada dispositivo o función específica mediante clases contenidas en archivos \texttt{*\_LL.py}. Esta capa resuelve detalles de buses, puertos, comandos, lectura de datos crudos, parseo básico, adquisición de audio, acceso a archivos y transporte AT/SBD.
+    \item \textbf{Ejecución concurrente.} Las Máquinas de Estados Finitos se ejecutan como procesos separados. De esta manera, una lectura de sensor, una adquisición acústica o una comunicación serie no bloquea directamente el funcionamiento del resto del sistema.
 
- \item \textbf{Capa de Máquinas de Estados Finitos.} Implementa la lógica de control de cada módulo mediante archivos \texttt{*\_fsm.py}. Esta capa recibe mensajes, ejecuta acciones, valida resultados, registra mediciones, emite eventos y reporta cambios de estado.
+    \item \textbf{Comunicación por eventos.} La interacción entre módulos se realiza mediante mensajes. El enrutador de eventos distribuye información entre productores y consumidores sin imponer dependencias directas entre módulos funcionales.
 
- \item \textbf{Capa de coordinación.} Incluye el proceso principal, el enrutador de eventos, el planificador de tareas central, el reporte de estado y los mecanismos de recuperación frente a errores.
+    \item \textbf{Planificación centralizada.} Las adquisiciones periódicas, verificaciones y transmisiones se disparan desde un planificador de tareas central. Los módulos no implementan planificadores internos, lo que simplifica el análisis temporal del sistema.
 
- \item \textbf{Capa de persistencia y telemetría.} Incluye los archivos de configuración, mediciones \texttt{JSONL}, archivos \texttt{WAV}, resultados \texttt{JSON}, logs de ejecución, estado del sistema y payloads binarios para transmisión satelital.
+    \item \textbf{Persistencia estructurada.} Las mediciones, productos de procesamiento, archivos acústicos, eventos y logs se almacenan en ubicaciones diferenciadas y con formatos adecuados a su uso posterior.
 
+    \item \textbf{Robustez operativa.} El sistema debe tolerar fallas locales, indisponibilidad transitoria de periféricos, errores de comunicación y reinicios controlados, evitando que una falla aislada comprometa innecesariamente la operación completa.
+
+    \item \textbf{Verificabilidad.} La arquitectura debe permitir pruebas con hardware real, componentes sustitutos o simulación parcial de periféricos, de modo de aislar errores y validar progresivamente el comportamiento del sistema.
 \end{itemize}
 
-La Figura~\ref{fig:arquitectura_capas} resume esta organización.
+Estos criterios conducen a una arquitectura que prioriza la trazabilidad y la mantenibilidad por encima de una implementación monolítica. En una boya autónoma, donde el acceso físico durante el despliegue es limitado, resulta fundamental que cada adquisición, transmisión, error y cambio de estado pueda reconstruirse posteriormente a partir de los datos persistidos.
+
+\subsection{Modelo de ejecución del sistema}
+\label{subsec:modelo_ejecucion}
+
+El modelo de ejecución se organiza alrededor de un proceso principal, implementado en \texttt{main.py}, que cumple funciones de inicialización, coordinación y cierre ordenado. Este proceso no concentra la lógica específica de cada periférico, sino que instancia los módulos funcionales, crea sus colas de comunicación, registra sus interfaces en el enrutador de eventos e inicia el planificador de tareas central.
+
+Cada módulo funcional se ejecuta como un proceso independiente asociado a una Máquina de Estados Finitos. Esta decisión permite desacoplar temporalmente las operaciones de los distintos bloques. Por ejemplo, una adquisición acústica, una consulta a un sensor, una comunicación con el controlador solar o una sesión de telemetría satelital pueden tener duraciones y condiciones de falla diferentes sin bloquear directamente al resto de los módulos.
+
+La comunicación entre el proceso principal y los módulos se realiza mediante colas de mensajes. Cada Máquina de Estados Finitos dispone de una cola de entrada, por la cual recibe señales de control o solicitudes de acción, y de una cola de estado, mediante la cual informa cambios de estado, resultados de acciones, advertencias o condiciones de error. El enrutador de eventos actúa como intermediario entre productores y consumidores de mensajes.
+
+El planificador de tareas central genera activaciones periódicas o condicionadas de acuerdo con la configuración vigente. En lugar de que cada módulo administre sus propios temporizadores, el sistema concentra la planificación temporal en un único componente. Esto permite modificar intervalos de adquisición, pruebas o transmisiones desde archivos de configuración y facilita el análisis del ciclo de operación completo.
+
+Durante el arranque, el proceso principal crea las estructuras de comunicación, instancia los módulos habilitados, inicia sus procesos y emite las señales de inicialización correspondientes. Durante la operación, procesa los reportes generados por los módulos, enruta eventos relevantes, ejecuta tareas planificadas y actualiza información de estado del sistema. Durante el cierre, envía señales de desinicialización, solicita la liberación de recursos y registra el estado final de la ejecución.
+
+El modelo de ejecución puede interpretarse como una arquitectura de coordinación basada en procesos y colas. El proceso principal no ejecuta directamente las operaciones de adquisición, procesamiento o transmisión, sino que administra las condiciones para que cada módulo funcional las realice dentro de su propio ciclo de estados. Para ello, crea las estructuras de comunicación, instancia las Máquinas de Estados Finitos, inicia sus procesos asociados y mantiene los mecanismos centrales de planificación, enrutamiento y supervisión.
+
+Cada módulo funcional posee una cola de entrada y una vía de reporte hacia el sistema principal. La cola de entrada se utiliza para recibir señales de control, tales como inicialización, prueba, adquisición, procesamiento o transmisión. La vía de reporte permite devolver cambios de estado, resultados de acciones, errores y detalles diagnósticos. Esta organización evita llamadas directas entre módulos y permite que el sistema principal trate de manera uniforme eventos provenientes de sensores, adquisición acústica, supervisión energética o telemetría.
+
+El planificador de tareas actúa como generador de activaciones temporales. De acuerdo con la configuración vigente, emite señales hacia los módulos correspondientes para ejecutar acciones periódicas o programadas. El enrutador de eventos, por su parte, concentra la distribución de mensajes y resultados, permitiendo desacoplar la generación de eventos respecto de su procesamiento posterior. Así, una lectura de sensor, un resultado acústico, una condición de error o una respuesta del módem satelital pueden registrarse, persistirse o utilizarse para actualizar el estado global del sistema sin introducir dependencias directas entre módulos.
+
+Este modelo permite distinguir tres niveles de operación. En el nivel superior, el proceso principal coordina la ejecución general, administra procesos, planifica tareas y consolida el estado del sistema. En el nivel intermedio, las Máquinas de Estados Finitos controlan la secuencia válida de operación de cada módulo. En el nivel inferior, las capas de bajo nivel interactúan con dispositivos, archivos, buses, puertos o protocolos específicos. La separación entre estos niveles facilita la prueba parcial, el diagnóstico de fallas y la incorporación de nuevos módulos.
+
+La lógica general del modelo de ejecución puede resumirse en el Listado \ref{lst:modelo_ejecucion} presenta un pseudocódigo simplificado del modelo de ejecución. El proceso principal carga la configuración, instancia las Máquinas de Estados Finitos, registra las colas en el enrutador de eventos, inicia el planificador de tareas y procesa los mensajes de estado generados por los módulos funcionales.
+
+\begin{lstlisting}[
+    style=pseudocodigo,language=Python, caption={Pseudocódigo del modelo de ejecución del sistema embebido.}, label={lst:modelo_ejecucion}]
+    
+def main():
+    config = cargar_configuracion()
+
+    colas_entrada = crear_colas_entrada(config.modulos)
+    cola_estado = crear_cola_estado()
+
+    modulos = instanciar_fsm(config.modulos, colas_entrada, cola_estado)
+
+    router = crear_router()
+    router.registrar_modulos(modulos, colas_entrada, cola_estado)
+
+    scheduler = crear_scheduler(config.tareas, router)
+
+    iniciar_procesos(modulos)
+    scheduler.iniciar()
+
+    emitir_senal_global(SIG_INIT, modulos)
+
+    while sistema_activo():
+        mensajes = leer_mensajes_estado(cola_estado)
+
+        for mensaje in mensajes:
+            router.procesar(mensaje)
+            actualizar_estado_global(mensaje)
+            persistir_evento(mensaje)
+
+        scheduler.ejecutar_tareas_pendientes()
+
+    emitir_senal_global(SIG_DEINIT, modulos)
+    scheduler.detener()
+    esperar_cierre_procesos(modulos)
+    registrar_cierre_ordenado()
+\end{lstlisting}
+
+Este modelo separa tres niveles de responsabilidad. El proceso principal coordina la ejecución global; las Máquinas de Estados Finitos controlan el ciclo operativo de cada módulo; y las capas de bajo nivel interactúan con dispositivos, archivos, transportes o protocolos específicos. La separación entre estos niveles permite localizar fallas, ejecutar pruebas parciales y extender el sistema sin modificar la estructura completa de la aplicación.
+
+\subsection{Arquitectura por capas}
+\label{subsec:arquitectura_capas_software}
+
+La arquitectura de software se organiza en capas para separar responsabilidades y reducir el acoplamiento entre la coordinación global del sistema, la lógica operativa de cada módulo y el acceso directo a hardware o recursos específicos. Esta separación permite que el sistema principal coordine eventos y tareas sin depender de los detalles de implementación de cada periférico, y que cada módulo funcional exponga una interfaz homogénea hacia el resto del sistema.
+
+La Figura~\ref{fig:arquitectura_capas} resume esta organización. En el nivel superior se ubica el sistema principal, encargado de inicializar módulos, administrar procesos, enrutar mensajes, ejecutar tareas planificadas y consolidar información de estado. Debajo se encuentran las Máquinas de Estados Finitos, que representan el comportamiento operativo de cada módulo mediante estados, transiciones y acciones. La capa de bajo nivel encapsula el acceso específico a sensores, interfaces, archivos, buses, puertos, protocolos o servicios externos. Finalmente, en el nivel inferior se ubican los periféricos físicos o recursos concretos utilizados por la boya.
 
 \begin{figure}[htbp]
-	\centering
-	\includegraphics[width=0.750\linewidth]{graficos/layers.pdf}
-	\caption{Arquitectura por capas del software embebido de la boya EAMMRA.}
-	\label{fig:arquitectura_capas}
+    \centering
+    \includegraphics[width=0.82\textwidth]{graficos/layers.pdf}
+    \caption{Arquitectura por capas del software embebido. El sistema principal coordina módulos funcionales mediante mensajes y tareas planificadas; cada módulo implementa su lógica operativa mediante una Máquina de Estados Finitos y delega el acceso específico al hardware o recurso correspondiente en una capa de bajo nivel.}
+    \label{fig:arquitectura_capas}
 \end{figure}
 
-Esta separación permite distinguir con claridad las responsabilidades de cada nivel. La capa física no contiene lógica de control. La capa de bajo nivel no decide cuándo adquirir o transmitir, sino cómo hacerlo. La capa de Máquinas de Estados Finitos no implementa detalles eléctricos o de protocolo más allá de invocar la interfaz correspondiente. Finalmente, la capa de coordinación administra el ciclo temporal general y la comunicación entre módulos sin incorporar detalles propios de cada periférico.
-
-\subsection{Organización del repositorio de software}
-\label{subsec:organizacion_del_repositorio_de_software}
-
-El código fuente del sistema se encuentra organizado en un repositorio Git. La estructura del repositorio distingue archivos de configuración, datos generados, módulos de software, scripts auxiliares, documentación de periféricos, archivos de soporte y pruebas. Esta organización facilita la trazabilidad entre requerimientos, implementación, configuración operativa y evidencia de funcionamiento.
-
-Los archivos y directorios principales son:
-
-\begin{itemize}
-
- \item \texttt{main.py}: punto de entrada de la aplicación. Lanza los procesos asociados a las Máquinas de Estados Finitos, registra sus colas en el enrutador de eventos, inicia el planificador de tareas central, procesa reportes de estado y ejecuta el cierre ordenado.
-
- \item \texttt{modules/}: contiene los módulos funcionales del sistema. Para cada bloque se define, en general, un archivo de bajo nivel \texttt{*\_LL.py} y un archivo de Máquina de Estados Finitos \texttt{*\_fsm.py}.
-
- \item \texttt{modules/support/}: contiene componentes comunes, tales como clases base de Máquinas de Estados Finitos, enrutador de eventos, registro de datos, configuración del sistema, reporte de estado, protección de almacenamiento, selección de mocks y protocolo Iridium.
-
- \item \texttt{configs/config.json}: contiene parámetros generales de adquisición, procesamiento, almacenamiento, directorios de datos y logs, y habilitación de transmisión Iridium.
-
- \item \texttt{configs/scheduler.json}: define los intervalos de ejecución del planificador de tareas central.
-
- \item \texttt{configs/mock\_modules.json}: define la selección persistente de módulos de bajo nivel simulados para ejecuciones repetibles.
-
- \item \texttt{data/}: contiene mediciones, resultados procesados y salidas generadas durante la ejecución.
-
- \item \texttt{logs/}: contiene logs de ejecución, estado del sistema y registros auxiliares de operación.
-
- \item \texttt{support/}: contiene tablas de calibración, bandas de tercio de octava, archivos de requerimientos Python y datos de referencia.
-
- \item \texttt{docs/}: contiene manuales y documentación de hardware.
-
- \item \texttt{scripts/}: contiene comandos auxiliares de operación, ejecución, detención, decodificación y pruebas.
-
-\end{itemize}
-
-La Tabla~\ref{tab:organizacion-repo} resume esta organización.
-
-\begin{table}[htbp]
-\centering
-\caption{Organización principal del repositorio de software.}
-\label{tab:organizacion-repo}
-\footnotesize
-\begin{tabularx}{\textwidth}{lX}
-\toprule
-\textbf{Ruta} & \textbf{Función principal} \\
-\midrule
-\texttt{main.py} & Inicialización, coordinación de procesos, enrutamiento, planificación central, reporte de estado y cierre ordenado. \\
-\texttt{modules/} & Implementación de los módulos funcionales del sistema, separados en capa de bajo nivel y Máquina de Estados Finitos. \\
-\texttt{modules/support/} & Componentes compartidos: clases base, enrutador de eventos, configuración, logs, persistencia, mocks, estado y protocolo Iridium. \\
-\texttt{configs/config.json} & Configuración general de adquisición, procesamiento, almacenamiento, rutas y telemetría. \\
-\texttt{configs/scheduler.json} & Intervalos de activación de los módulos por el planificador de tareas central. \\
-\texttt{configs/mock\_modules.json} & Selección de módulos de bajo nivel simulados para ejecución sin hardware o con hardware parcial. \\
-\texttt{data/} & Mediciones, archivos procesados y salidas operativas generadas por los módulos. \\
-\texttt{logs/} & Logs, estado del sistema y registros auxiliares de ejecución. \\
-\texttt{support/} & Requerimientos, calibraciones, tablas de referencia y datos auxiliares. \\
-\texttt{docs/} & Documentación técnica y manuales de periféricos. \\
-\texttt{scripts/} & Scripts de inicio, parada, decodificación, ejecución y soporte operacional. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\subsection{Arquitectura por capas de cada módulo}
-\label{subsec:arquitectura_por_capas_de_cada_modulo}
-
-Cada bloque funcional del sistema se implementa con una estructura de dos capas: capa de bajo nivel y capa de Máquina de Estados Finitos. La capa de bajo nivel concentra el conocimiento específico del periférico, del protocolo o del algoritmo de procesamiento. La Máquina de Estados Finitos administra el comportamiento operativo del módulo dentro del sistema.
-
+Esta estructura permite que la incorporación de un nuevo periférico no requiera modificar la arquitectura global del sistema. En términos generales, basta con implementar una capa de bajo nivel para el nuevo recurso, definir la Máquina de Estados Finitos que controla su ciclo operativo y registrar el módulo en el sistema principal para que pueda recibir eventos, ejecutar tareas y reportar resultados.
 
 \subsubsection{Capa de bajo nivel}
 \label{subsubsec:capa_bajo_nivel}
@@ -897,50 +872,69 @@ La plantilla general de un módulo de bajo nivel contempla el siguiente contrato
 
 La separación entre \texttt{init} y \texttt{open} es una decisión importante de la arquitectura. La primera operación configura el módulo sin tocar hardware, mientras que la segunda abre efectivamente el recurso físico o lógico. Esta distinción permite inicializar estructuras de software aun cuando un periférico no esté disponible, seleccionar módulos simulados durante pruebas, realizar diagnósticos parciales y controlar explícitamente cuándo se accede al hardware.
 
-La plantilla de bajo nivel mantiene además un conjunto mínimo de variables de estado internas. Entre ellas se incluyen \texttt{is\_initialized}, que indica si el módulo fue configurado correctamente; \texttt{is\_open}, que indica si el recurso operativo está abierto; y \texttt{last\_error}, que conserva la última condición de error relevante para diagnóstico. En módulos basados en buses o puertos, también se registran candidatos de transporte, transporte seleccionado, dirección del dispositivo y condición de transporte forzado o automático.
+La capa de bajo nivel mantiene además un conjunto mínimo de variables de estado internas. Entre ellas se incluyen \texttt{is\_initialized}, que indica si el módulo fue configurado correctamente; \texttt{is\_open}, que indica si el recurso operativo está abierto; y \texttt{last\_error}, que conserva la última condición de error relevante para diagnóstico. En módulos basados en buses o puertos, también se registran candidatos de transporte, transporte seleccionado, dirección del dispositivo y condición de transporte forzado o automático.
 
 Los métodos públicos deben capturar excepciones internas y devolver resultados controlados, evitando propagar fallas no tratadas hacia la capa de control. Para ello, la plantilla distingue errores de módulo, errores de disponibilidad, errores de transporte y errores de protocolo. Esta organización permite diferenciar, por ejemplo, la ausencia de una dependencia de software, la imposibilidad de abrir un puerto, una respuesta inválida del dispositivo o una falla inesperada durante una prueba diagnóstica.
 
-La lógica general de ciclo de vida de un módulo de bajo nivel puede resumirse mediante el siguiente pseudocódigo:
+La lógica general de ciclo de vida de un módulo de bajo nivel se resume en el Listado~\ref{lst:ciclo_vida_ll}.
 
-\begin{verbatim}
+
+\begin{lstlisting}[style=pseudocodigo, caption={Pseudocódigo del ciclo de vida de un módulo de bajo nivel.}, label={lst:ciclo_vida_ll}]
 init(configuracion):
-    validar dependencias
+    validar dependencias de software
     cerrar recursos previos si existen
     cargar parametros de configuracion
     resolver candidatos de transporte
     marcar modulo como inicializado
+    retornar resultado
 
 open():
     verificar que el modulo este inicializado
+
     si el recurso ya esta abierto:
         retornar OK
+
     intentar abrir el transporte configurado
+
     si no hay transporte forzado:
         probar candidatos disponibles
-    marcar recurso como abierto o registrar error
 
-test():
-    recordar si el recurso estaba abierto
-    abrir temporalmente si es necesario
-    ejecutar verificacion minima de presencia
-    cerrar si fue abierto temporalmente
-    retornar resultado
+    si se abre correctamente:
+        marcar recurso como abierto
+        retornar OK
+
+    registrar error
+    retornar ERROR
 
 full_test():
     construir reporte diagnostico
-    verificar inicializacion
-    abrir recurso si es necesario
-    verificar presencia del dispositivo
-    recolectar informacion diagnostica
-    restaurar estado original
+    recordar estado original del recurso
+
+    si el recurso no esta abierto:
+        abrir recurso temporalmente
+
+    verificar presencia o comunicacion con el dispositivo
+    recolectar informacion diagnostica disponible
+
+    restaurar estado original del recurso
+
     retornar resultado y reporte
+
+close():
+    si el recurso esta abierto:
+        cerrar transporte o recurso operativo
+
+    marcar recurso como cerrado
+    retornar resultado
 
 deinit():
     cerrar recurso operativo
     limpiar transporte, candidatos y configuracion temporal
     marcar modulo como no inicializado
-\end{verbatim}
+    retornar resultado
+\end{lstlisting}
+
+
 
 Los métodos internos, identificados por convención con guion bajo inicial, concentran el conocimiento específico del periférico o recurso. Entre ellos se incluyen rutinas para validar dependencias, resolver candidatos de transporte, abrir y cerrar el transporte físico, verificar presencia del dispositivo y recolectar información diagnóstica. Estas funciones son las que cada módulo concreto debe especializar de acuerdo con el hardware o servicio que controla.
 
@@ -953,54 +947,37 @@ La capa de Máquinas de Estados Finitos se implementa en archivos con sufijo \te
 
 Desde el punto de vista de diseño, cada módulo funcional se modela mediante un conjunto de estados discretos y transiciones activadas por mensajes. Esta representación permite describir el comportamiento del sistema de manera verificable, evitar secuencias de operación ambiguas y documentar explícitamente qué acciones son válidas en cada condición. La Máquina de Estados Finitos actúa, por lo tanto, como una capa de control intermedia entre el enrutador de eventos y la capa de bajo nivel.
 
-El patrón común de estados utilizado por los módulos funcionales se resume en la Figura~\ref{fig:patron_fsm}. La secuencia básica contempla una condición deshabilitada, una etapa de inicialización, una etapa de prueba, una condición de espera operativa, una acción principal y un estado de error. En módulos particulares, la acción principal representada por \texttt{ACQUIRE} puede complementarse con otros estados específicos, tales como \texttt{PROCESS} o \texttt{TRANSMIT}.
+El patrón común de estados utilizado por los módulos funcionales se resume en la Figura~\ref{fig:patron_fsm}. La secuencia básica contempla una condición deshabilitada, una etapa de inicialización, una etapa de prueba, una condición de espera operativa, una acción principal y un estado de error. En módulos particulares, la acción principal representada por \texttt{ACQUIRE} puede complementarse con otros estados específicos, tales como \texttt{PROCESS} o \texttt{TRANSMIT}, según la función del periférico o bloque de software.
 
 \begin{figure}[htbp]
     \centering
-    \begin{minipage}[c]{0.53\textwidth}
+    \begin{minipage}[c]{0.43\textwidth}
         \vspace{0pt}
         \footnotesize
-		\begin{itemize}
-		    \setlength\itemsep{0.35em}
-		
-		    \item El módulo permanece en \texttt{DISABLE} hasta recibir una señal explícita de inicialización.
-		
-		    \item La transición \texttt{INIT}--\texttt{TEST} separa la configuración interna del módulo respecto de la verificación efectiva de disponibilidad.
-		
-		    \item El estado \texttt{IDLE} representa la condición operativa normal: el módulo está inicializado, verificado y a la espera de eventos.
-		
-		    \item El estado \texttt{ACQUIRE} representa la acción principal del módulo. Según el caso, puede corresponder a una lectura de sensor, una adquisición acústica, una consulta de estado o una operación equivalente.
-		
-		    \item Ante una falla crítica, la transición a \texttt{ERROR} permite registrar la condición anómala y ejecutar una desinicialización preventiva mediante la capa de bajo nivel.
-		
-		    \item El retorno a \texttt{DISABLE} proporciona una condición controlada para reinicialización, apagado lógico o recuperación posterior.
-		\end{itemize}
+        \begin{itemize}
+            \setlength\itemsep{0.35em}
+
+            \item El módulo permanece en \texttt{DISABLE} hasta recibir una señal explícita de inicialización.
+
+            \item La transición \texttt{INIT}--\texttt{TEST} separa la configuración interna respecto de la verificación efectiva de disponibilidad.
+
+            \item \texttt{IDLE} representa la condición operativa normal: módulo inicializado, verificado y a la espera de eventos.
+
+            \item \texttt{ACQUIRE} representa la acción principal del módulo: lectura, adquisición, consulta de estado u operación equivalente.
+
+            \item Ante una falla crítica, \texttt{ERROR} permite registrar la condición anómala y ejecutar una desinicialización preventiva.
+
+            \item El retorno a \texttt{DISABLE} proporciona una condición controlada para reinicialización, apagado lógico o recuperación posterior.
+        \end{itemize}
     \end{minipage}
     \hfill
-    \begin{minipage}[c]{0.44\textwidth}
+    \begin{minipage}[c]{0.55\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{graficos/fsm.pdf}
+        \includegraphics[width=.82\textwidth]{graficos/fsm.pdf}
     \end{minipage}
     \caption{Patrón general de Máquina de Estados Finitos utilizado por los módulos funcionales. El estado \texttt{ACQUIRE} representa la acción operativa principal y puede especializarse según el módulo implementado.}
     \label{fig:patron_fsm}
 \end{figure}
-
-%
-%La plantilla general define un conjunto de estados base comunes a todos los módulos:
-%
-%\begin{itemize}
-%    \item \texttt{DISABLE}: estado deshabilitado o desinicializado. El módulo no ejecuta acciones operativas y sólo responde a señales de inicialización.
-%
-%    \item \texttt{INIT}: estado de inicialización. En este estado se invoca la operación \texttt{init} de la capa de bajo nivel y se determina si el módulo puede avanzar hacia una prueba funcional.
-%
-%    \item \texttt{TEST}: estado de verificación. Se ejecuta una prueba diagnóstica mediante \texttt{full\_test} para evaluar disponibilidad, comunicación y condiciones mínimas de funcionamiento.
-%
-%    \item \texttt{IDLE}: estado de espera operativa. El módulo se encuentra inicializado, probado y disponible para recibir solicitudes de acción.
-%
-%    \item \texttt{ERROR}: estado de falla. Se alcanza cuando una operación crítica no puede completarse correctamente. En este estado se desinicializa el recurso de bajo nivel y se deja constancia de la condición anómala.
-%\end{itemize}
-%
-%Además de estos estados base, cada módulo puede incorporar estados de acción específicos según su función. Entre los estados más frecuentes se encuentran \texttt{ACQUIRE}, para ejecutar una adquisición o lectura; \texttt{PROCESS}, para procesar información previamente registrada; y \texttt{TRANSMIT}, para enviar información mediante un canal de comunicación. Esta extensión permite adaptar la Máquina de Estados Finitos a sensores, periféricos de adquisición, módulos de procesamiento o módulos de telemetría sin modificar el esquema general de control.
 
 La comunicación con el resto del sistema se realiza mediante mensajes. La Máquina de Estados Finitos recibe señales de control, tales como \texttt{SIG\_INIT}, \texttt{SIG\_DEINIT}, \texttt{SIG\_TEST}, \texttt{SIG\_ACQUIRE} o \texttt{SIG\_TIMEOUT}, y responde cambiando de estado o ejecutando acciones asociadas. Cuando corresponde, también conserva parámetros pendientes de ejecución, por ejemplo parámetros de adquisición recibidos junto con un mensaje o definidos previamente por configuración.
 
@@ -1008,19 +985,10 @@ El método \texttt{handle\_message} concentra la lógica de recepción de mensaj
 
 La lógica de ejecución propia de cada estado se concentra en el método \texttt{update}. Este método evalúa el estado actual y ejecuta la acción correspondiente al ingresar en dicho estado. Para evitar ejecuciones repetidas no deseadas, la plantilla utiliza una marca de entrada al estado, de modo que las acciones principales de \texttt{INIT}, \texttt{TEST}, \texttt{ACQUIRE}, \texttt{DISABLE} o \texttt{ERROR} se ejecuten una sola vez por transición.
 
-La Máquina de Estados Finitos no devuelve resultados directamente mediante llamadas de retorno, sino que emite mensajes estructurados hacia una cola de estado o diagnóstico. La plantilla distingue dos tipos principales de resultados:
+La lógica general del ciclo de operación de una Máquina de Estados Finitos se resume en el Listado~\ref{lst:ciclo_fsm}. Allí se muestra cómo la FSM procesa mensajes de control, ejecuta acciones al ingresar en cada estado y emite resultados estructurados hacia el sistema principal.
 
-\begin{itemize}
-    \item \texttt{STATE\_RESULT}: informa el resultado de una transición o condición de estado, por ejemplo el éxito o falla de una inicialización.
-
-    \item \texttt{ACTION\_RESULT}: informa el resultado de una acción ejecutada por el módulo, incluyendo el origen, el estado desde el cual se generó, la acción realizada, el resultado, los datos producidos, detalles diagnósticos y, si corresponde, información de error.
-\end{itemize}
-
-Esta forma de reporte permite desacoplar la ejecución interna de cada módulo respecto del procesamiento posterior de resultados. El enrutador de eventos, el sistema de registro, la telemetría o los módulos de supervisión pueden consumir estos mensajes sin depender de la implementación interna del módulo que los generó.
-
-La lógica general de una Máquina de Estados Finitos puede resumirse mediante el siguiente pseudocódigo:
-
-\begin{verbatim}
+\vspace{40px}
+\begin{lstlisting}[style=pseudocodigo, caption={Pseudocódigo del ciclo de operación de una Máquina de Estados Finitos.}, label={lst:ciclo_fsm}]
 handle_message(mensaje):
     si estado == DISABLE:
         si mensaje == SIG_INIT:
@@ -1029,42 +997,53 @@ handle_message(mensaje):
 
     si mensaje == SIG_DEINIT:
         cambiar_estado(DISABLE)
+        retornar
 
     si mensaje == SIG_TEST:
         cambiar_estado(TEST)
+        retornar
 
     si mensaje == SIG_ACQUIRE o mensaje == SIG_TIMEOUT:
         guardar_parametros_pendientes(mensaje)
         cambiar_estado(ACQUIRE)
+        retornar
 
 
 update():
-    si se ingreso a un nuevo estado:
-        marcar_entrada_al_estado
+    si no se ingreso a un nuevo estado:
+        retornar
+
+    marcar_entrada_procesada()
 
     si estado == INIT:
-        ok = ll.init()
-        emitir STATE_RESULT(ok)
-        si ok:
+        resultado = ll.init()
+
+        emitir_resultado_estado(resultado)
+
+        si resultado == OK:
             cambiar_estado(TEST)
         si no:
             cambiar_estado(ERROR)
 
     si estado == TEST:
-        ok, detalles = ll.full_test()
-        emitir ACTION_RESULT("test", ok, detalles)
-        si ok:
+        resultado, detalles = ll.full_test()
+
+        emitir_resultado_accion("test", resultado, detalles)
+
+        si resultado == OK:
             cambiar_estado(IDLE)
         si no:
             cambiar_estado(ERROR)
 
     si estado == IDLE:
-        esperar mensajes
+        esperar_eventos()
 
     si estado == ACQUIRE:
-        ok, datos = ejecutar_accion_de_adquisicion()
-        emitir ACTION_RESULT("acquire", ok, datos)
-        si ok:
+        resultado, datos = ejecutar_accion_principal(parametros_pendientes)
+
+        emitir_resultado_accion("acquire", resultado, datos)
+
+        si resultado == OK:
             cambiar_estado(IDLE)
         si no:
             cambiar_estado(ERROR)
@@ -1073,714 +1052,127 @@ update():
         ll.deinit()
 
     si estado == ERROR:
+        registrar_condicion_de_error()
         ll.deinit()
-        registrar condicion de falla
-\end{verbatim}
+\end{lstlisting}
+
 
 El patrón de diseño resultante permite que todos los módulos compartan una estructura de control común, aun cuando sus acciones específicas sean diferentes. Un sensor ambiental, una unidad inercial, un anemómetro, un controlador de energía, un módulo acústico o un módem satelital pueden implementar operaciones distintas en la capa de bajo nivel, pero exponer un comportamiento operativo homogéneo hacia el sistema principal.
 
-Esta homogeneidad simplifica la integración con el enrutador de eventos y con el planificador de tareas. El planificador puede generar señales periódicas o condicionadas sin conocer los detalles internos de cada periférico, mientras que el enrutador puede distribuir mensajes y recolectar resultados a partir de una interfaz común. De este modo, la arquitectura facilita la incorporación de nuevos módulos, la ejecución de pruebas con componentes sustitutos y el diagnóstico sistemático durante la operación.
+La separación entre la Máquina de Estados Finitos y la capa de bajo nivel mejora la robustez del sistema. Las excepciones, fallas de transporte o respuestas inválidas se tratan en la capa de bajo nivel y se informan como resultados controlados. La Máquina de Estados Finitos interpreta esos resultados y decide la transición correspondiente, por ejemplo volver a \texttt{IDLE}, repetir una prueba, pasar a \texttt{ERROR} o desinicializar el módulo. Esta organización evita que una falla local se propague sin control al proceso principal y permite mantener una secuencia de operación trazable.
 
-La separación entre la Máquina de Estados Finitos y la capa de bajo nivel también mejora la robustez del sistema. Las excepciones, fallas de transporte o respuestas inválidas se tratan en la capa de bajo nivel y se informan como resultados controlados. La Máquina de Estados Finitos interpreta esos resultados y decide la transición correspondiente, por ejemplo volver a \texttt{IDLE}, repetir una prueba, pasar a \texttt{ERROR} o desinicializar el módulo. Esta organización evita que una falla local se propague sin control al proceso principal y permite mantener una secuencia de operación trazable.
+\clearpage
+\subsubsection{Mensajes, eventos y resultados}
+\label{subsubsec:mensajes_eventos_resultados}
 
+El intercambio de información entre el sistema principal y los módulos funcionales se realiza mediante mensajes. Cada mensaje posee un identificador, definido por \texttt{MessageID}, y un conjunto opcional de parámetros o datos asociados. Esta estructura permite representar señales de control, solicitudes de acción, resultados de estado, resultados de operación y condiciones de diagnóstico mediante una interfaz común.
 
-La separación entre ambas capas facilita el reemplazo del acceso físico por implementaciones simuladas durante desarrollo e integración. También permite que el comportamiento del módulo sea analizado desde su Máquina de Estados Finitos sin depender de los detalles eléctricos o temporales de cada periférico.
+Las señales de control se utilizan para ordenar transiciones o acciones dentro de las Máquinas de Estados Finitos. Entre las más relevantes se encuentran \texttt{SIG\_INIT}, para iniciar el ciclo de inicialización; \texttt{SIG\_DEINIT}, para deshabilitar y liberar recursos; \texttt{SIG\_TEST}, para solicitar una verificación diagnóstica; \texttt{SIG\_ACQUIRE}, para ejecutar una acción principal de adquisición o consulta; y \texttt{SIG\_TIMEOUT}, utilizada por el planificador para disparar acciones periódicas o programadas.
 
-\subsection{Bloques funcionales del sistema}
-\label{subsec:bloques_funcionales_del_sistema}
-
-El sistema se compone de ocho bloques funcionales principales: \texttt{AHT10}, \texttt{MPU6050}, \texttt{AIS}, \texttt{Windsonic}, \texttt{XTRA2210}, \texttt{Behringer}, \texttt{AudioProc} e \texttt{Iridium}. Los seis primeros se vinculan directamente con sensores, adquisición o supervisión de hardware; \texttt{AudioProc} implementa procesamiento de archivos acústicos ya adquiridos; e \texttt{Iridium} actúa como pasarela de telemetría satelital.
-
-La Figura~\ref{fig:bloques_funcionales} muestra una vista de bloques del sistema, destacando la relación entre los módulos, el proceso principal, el enrutador de eventos, el planificador de tareas y los archivos persistidos.
-
-\begin{figure}[htbp]
-\centering
-\resizebox{\textwidth}{!}{%
-\begin{tikzpicture}[
-    font=\small,
-    core/.style={
-        draw,
-        rounded corners,
-        align=center,
-        minimum width=3.5cm,
-        minimum height=0.9cm,
-        fill=gray!15
-    },
-    mod/.style={
-        draw,
-        rounded corners,
-        align=center,
-        minimum width=2.7cm,
-        minimum height=0.85cm,
-        fill=white
-    },
-    phys/.style={
-        draw,
-        rounded corners,
-        align=center,
-        minimum width=2.8cm,
-        minimum height=0.75cm,
-        fill=gray!8
-    },
-    store/.style={
-        draw,
-        rounded corners,
-        align=center,
-        minimum width=3.1cm,
-        minimum height=0.85cm,
-        fill=gray!5
-    },
-    arrow/.style={-{Latex[length=2.5mm]}, thick}
-]
-
-\node[core] (main) {Proceso principal\\\texttt{main.py}};
-\node[core, below=0.8cm of main] (router) {Enrutador de eventos};
-\node[core, left=1.4cm of router] (sched) {Planificador\\de tareas};
-\node[core, right=1.4cm of router] (status) {Reporte\\de estado};
-
-\node[mod, below left=1.0cm and 5.2cm of router] (aht) {AHT10\\temperatura/humedad};
-\node[mod, right=0.45cm of aht] (mpu) {MPU6050\\inercial};
-\node[mod, right=0.45cm of mpu] (ais) {AIS/GPS\\posición};
-\node[mod, right=0.45cm of ais] (wind) {Windsonic\\viento};
-
-\node[mod, below=0.75cm of aht] (xtra) {XTRA2210\\energía};
-\node[mod, right=0.45cm of xtra] (behr) {Behringer\\audio USB};
-\node[mod, right=0.45cm of behr] (aproc) {AudioProc\\procesamiento};
-\node[mod, right=0.45cm of aproc] (iri) {Iridium\\SBD};
-
-\node[store, below=0.9cm of mpu] (data) {\texttt{data/*.jsonl}\\mediciones};
-\node[store, below=0.9cm of behr] (wav) {\texttt{/storage/...}\\archivos WAV};
-\node[store, below=0.9cm of aproc] (json) {\texttt{data/audio\_proc}\\resultados JSON};
-\node[store, below=0.9cm of iri] (sbd) {payloads\\binarios};
-
-\draw[arrow] (main) -- (router);
-\draw[arrow] (sched) -- (router);
-\draw[arrow] (router) -- (status);
-
-\foreach \m in {aht,mpu,ais,wind,xtra,behr,aproc,iri}
-{
-    \draw[arrow] (router) -- (\m);
-    \draw[arrow] (\m) -- (router);
-}
-
-\draw[arrow] (aht) -- (data);
-\draw[arrow] (mpu) -- (data);
-\draw[arrow] (ais) -- (data);
-\draw[arrow] (wind) -- (data);
-\draw[arrow] (xtra) -- (data);
-\draw[arrow] (behr) -- (wav);
-\draw[arrow] (behr) -- (data);
-\draw[arrow] (wav) -- (aproc);
-\draw[arrow] (aproc) -- (json);
-\draw[arrow] (aproc) -- (data);
-\draw[arrow] (json) -- (iri);
-\draw[arrow] (status) |- (iri);
-\draw[arrow] (iri) -- (sbd);
-
-\end{tikzpicture}
-}
-\caption{Bloques funcionales principales del sistema embebido y flujo general de información.}
-\label{fig:bloques_funcionales}
-\end{figure}
-
-La Tabla~\ref{tab:modulos-funcionales} resume la función, interfaz y salida principal de cada bloque.
-
-\begin{table}[htbp]
-\centering
-\caption{Módulos funcionales del sistema.}
-\label{tab:modulos-funcionales}
-\footnotesize
-\begin{tabularx}{\textwidth}{l l l X}
-\toprule
-\textbf{Módulo} & \textbf{Interfaz} & \textbf{Archivos principales} & \textbf{Función} \\
-\midrule
-\texttt{AHT10} & I2C & \texttt{aht10\_LL.py}, \texttt{aht10\_fsm.py} & Medición de temperatura y humedad relativa. \\
-\texttt{MPU6050} & I2C & \texttt{mpu6050\_LL.py}, \texttt{mpu6050\_fsm.py} & Medición de aceleración y velocidad angular. \\
-\texttt{AIS} & Serie & \texttt{ais\_LL.py}, \texttt{ais\_fsm.py} & Recepción de información AIS/GPS y datos de posición. \\
-\texttt{Windsonic} & Serie & \texttt{windsonic\_LL.py}, \texttt{windsonic\_fsm.py} & Medición de velocidad y dirección de viento. \\
-\texttt{XTRA2210} & Serie/Modbus & \texttt{xtra2210\_LL.py}, \texttt{xtra2210\_fsm.py} & Supervisión del controlador solar y variables energéticas. \\
-\texttt{Behringer} & USB audio & \texttt{behringer\_LL.py}, \texttt{behringer\_fsm.py} & Adquisición de audio y generación de archivos \texttt{WAV}. \\
-\texttt{AudioProc} & Archivo & \texttt{audioProc\_LL.py}, \texttt{audioProc\_fsm.py} & Procesamiento espectral de archivos de audio adquiridos. \\
-\texttt{Iridium} & Serie/AT/SBD & \texttt{iridium\_LL.py}, \texttt{iridium\_fsm.py} & Preparación y transmisión satelital de mensajes binarios. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\subsubsection{AHT10}
-\label{subsubsec:aht10}
-
-El bloque \texttt{AHT10} se encarga de adquirir temperatura y humedad relativa. El sensor se comunica con la computadora principal mediante bus I2C y entrega mediciones digitales de bajo ancho de banda. En la arquitectura del sistema, este bloque aporta información ambiental interna o de entorno inmediato, útil tanto para el registro de condiciones de operación como para la correlación posterior con otros eventos del sistema.
-
-La capa de bajo nivel, implementada en \texttt{aht10\_LL.py}, administra la comunicación I2C, la detección de bus, la inicialización del sensor, el disparo de medición, la lectura de bytes de respuesta y el parseo de la medición cruda. También define rangos plausibles de temperatura y humedad, empleados por la capa superior para validar mediciones.
-
-La Máquina de Estados Finitos, implementada en \texttt{aht10\_fsm.py}, recibe eventos de adquisición desde el planificador de tareas central. Ante una activación, solicita una lectura al bajo nivel, convierte el resultado en un objeto de datos con unidades explícitas y registra la medición en el archivo \texttt{data/aht10\_readings.jsonl}. Además, incorpora una verificación de plausibilidad. Cuando una medición queda fuera del rango esperado o presenta un salto brusco respecto de la última medición válida, el módulo realiza reintentos acotados antes de registrar el resultado con advertencia.
-
-Este comportamiento evita que una lectura espuria aislada detenga innecesariamente el sistema, pero conserva trazabilidad del evento mediante logs y registros persistidos.
-
-\subsubsection{MPU6050}
-\label{subsubsec:mpu6050}
-
-El bloque \texttt{MPU6050} adquiere información inercial a partir de un acelerómetro y giróscopo digital conectado por I2C. En la boya, este bloque permite registrar variables asociadas al movimiento de la plataforma, tales como aceleración y velocidad angular. Estas magnitudes pueden resultar relevantes para interpretar condiciones de operación, movimientos bruscos, eventos de inclinación o estados de mar que afecten la calidad de las mediciones acústicas.
-
-La capa de bajo nivel, \texttt{mpu6050\_LL.py}, contiene las funciones de acceso al dispositivo, lectura de registros y conversión de datos crudos a magnitudes físicas. Los componentes auxiliares asociados, como \texttt{calibration\_mpu6050.py} y \texttt{mpu6050\_fusion.py}, quedan dentro del directorio de soporte y permiten mantener separadas las operaciones de calibración o fusión de datos respecto de la lógica de estado.
-
-La Máquina de Estados Finitos, \texttt{mpu6050\_fsm.py}, coordina inicialización, prueba, adquisición y persistencia. Las mediciones se registran en \texttt{data/mpu6050\_readings.jsonl}, con campos que identifican aceleraciones en unidades de \texttt{g} y velocidades angulares en \texttt{dps}. Al igual que en los demás módulos, el archivo no repite el nombre del módulo dentro de cada línea, ya que este queda definido por el nombre del archivo de salida.
-
-\subsubsection{AIS/GPS}
-\label{subsubsec:ais_gps}
-
-El bloque \texttt{AIS} integra la recepción de información AIS/GPS mediante puerto serie. Su función dentro del sistema es registrar información de posición y eventualmente información asociada a tráfico marítimo, según la configuración y disponibilidad del receptor utilizado. Estos datos son relevantes para ubicar temporal y espacialmente las mediciones, y para disponer de información contextual durante la operación autónoma.
-
-La capa de bajo nivel, \texttt{ais\_LL.py}, administra la apertura del puerto serie, la lectura de tramas y el parseo de mensajes recibidos. La Máquina de Estados Finitos, \texttt{ais\_fsm.py}, decide cuándo iniciar adquisición, cómo registrar el resultado y cómo reportar el estado de operación al proceso principal.
-
-Desde el punto de vista arquitectónico, este bloque mantiene la misma interfaz lógica que el resto de los sensores periódicos: recibe activaciones temporales desde el planificador, ejecuta una lectura acotada, registra el resultado en un archivo \texttt{JSONL} y vuelve al estado de espera. Esta homogeneidad facilita la supervisión del sistema completo y permite incorporar al reporte de estado la condición del módulo sin tratamiento especial.
-
-\subsubsection{Windsonic}
-\label{subsubsec:windsonic}
-
-El bloque \texttt{Windsonic} se utiliza para adquirir información meteorológica de viento. El anemómetro se comunica mediante puerto serie y entrega datos de velocidad y dirección. Estas variables son importantes para el análisis de ruido ambiente submarino, dado que el viento y el estado de superficie pueden influir significativamente en el ruido de fondo medido.
-
-La capa \texttt{windsonic\_LL.py} implementa la comunicación serie con el sensor, la lectura de muestras y la interpretación de las respuestas recibidas. La Máquina de Estados Finitos \texttt{windsonic\_fsm.py} administra la ejecución periódica, la validación del resultado y la persistencia en \texttt{data/windsonic\_readings.jsonl}.
-
-El registro persistido contiene un resumen físico de la adquisición de viento. En lugar de almacenar únicamente un valor instantáneo, el módulo puede registrar velocidad promedio, mínima y máxima, dirección promedio, cantidad de muestras adquiridas y cantidad de muestras válidas. Esta estrategia permite conservar información representativa del intervalo de medición sin incrementar innecesariamente el volumen de datos.
-
-\subsubsection{XTRA2210}
-\label{subsubsec:xtra2210}
-
-El bloque \texttt{XTRA2210} supervisa el controlador solar y las variables energéticas del sistema. Su función es aportar información sobre paneles, batería y carga, de manera que el sistema pueda registrar el estado energético de la boya y preparar mensajes de telemetría de estado.
-
-La comunicación se realiza mediante puerto serie, utilizando Modbus como protocolo de intercambio con el controlador. La capa \texttt{xtra2210\_LL.py} encapsula los detalles de comunicación, consulta de registros y conversión de valores eléctricos. La Máquina de Estados Finitos \texttt{xtra2210\_fsm.py} ejecuta las consultas periódicas y persiste los resultados.
-
-Las mediciones se guardan en \texttt{data/xtra2210\_readings.jsonl}. Los campos registrados se expresan con unidades explícitas, por ejemplo \texttt{pv\_voltage\_v}, \texttt{pv\_current\_a}, \texttt{load\_current\_a}, \texttt{battery\_voltage\_v} y \texttt{battery\_soc\_pct}. Esta información se utiliza además como entrada para el armado del mensaje binario de estado de sistema transmitido por Iridium.
-
-\subsubsection{Behringer}
-\label{subsubsec:behringer}
-
-El bloque \texttt{Behringer} implementa la adquisición acústica mediante una interfaz de audio USB. En la configuración actual, la adquisición se realiza con una frecuencia de muestreo de 192~kHz, 24~bits por muestra, dos canales de salida y duración nominal de 60~s por registro. Estos parámetros se encuentran definidos en \texttt{configs/config.json} y pueden ajustarse en función de la configuración operativa requerida.
-
-La capa \texttt{behringer\_LL.py} administra el acceso a la interfaz de audio, la configuración de adquisición, la captura de muestras y la generación del archivo \texttt{WAV}. La Máquina de Estados Finitos \texttt{behringer\_fsm.py} recibe activaciones desde el planificador de tareas central, solicita al bajo nivel la ejecución de una adquisición y registra el evento resultante en \texttt{data/behringer\_readings.jsonl}.
-
-La adquisición acústica requiere una política de almacenamiento específica, ya que los archivos \texttt{WAV} son considerablemente más grandes que las mediciones de sensores. Para la configuración indicada, el tamaño máximo esperado de cada archivo se estima a partir de:
-
-\begin{equation}
-S_{\mathrm{WAV}} =
-f_s \cdot N_{\mathrm{canales}} \cdot B_{\mathrm{muestra}} \cdot T + 44 ,
-\label{eq:wav_size}
-\end{equation}
-
-donde $f_s$ es la frecuencia de muestreo, $N_{\mathrm{canales}}$ es la cantidad de canales, $B_{\mathrm{muestra}}$ es la cantidad de bytes por muestra, $T$ es la duración de la adquisición y 44~bytes corresponde al encabezado WAV convencional. Sobre esta estimación se aplica un factor de margen configurado mediante \texttt{storage\_guard\_file\_margin\_factor}.
-
-El sistema no borra grabaciones existentes para liberar espacio. Si no se cumplen las condiciones mínimas de almacenamiento, se rechaza el inicio de una nueva adquisición y se conserva el estado previo. Esta política es conservadora y adecuada para operación autónoma, porque evita la pérdida silenciosa de datos ya adquiridos.
-
-\subsubsection{AudioProc}
-\label{subsubsec:audioproc}
-
-El bloque \texttt{AudioProc} procesa los archivos de audio generados por \texttt{Behringer}. A diferencia de los sensores periódicos, este bloque no se agenda directamente desde el planificador de tareas central. Su ejecución se dispara a partir de la disponibilidad de un archivo de audio generado por la adquisición acústica.
-
-La capa \texttt{audioProc\_LL.py} implementa el procesamiento específico de la señal. A partir del archivo \texttt{WAV}, calcula magnitudes espectrales de interés y genera un resultado persistido en formato \texttt{JSON}. La Máquina de Estados Finitos \texttt{audioProc\_fsm.py} administra la recepción del evento, la invocación del procesamiento, el registro del resultado y la notificación al resto del sistema.
-
-Los resultados procesados se almacenan como archivos \texttt{data/audio\_proc/audioProc\_*.json}. El archivo \texttt{data/audioProc\_readings.jsonl} registra, para cada procesamiento, el archivo de entrada y el archivo de salida. Esta separación permite mantener un índice liviano de procesamientos ejecutados y, al mismo tiempo, conservar el resultado completo en archivos independientes.
-
-Uno de los productos utilizados para telemetría es \texttt{relative\_band\_power\_db}. Para transmisión satelital, este arreglo se codifica en forma binaria compacta, sin incluir dentro del payload el eje de frecuencia ni la cantidad de bandas, que se consideran conocidos por configuración del sistema receptor.
-
-\subsubsection{Iridium}
-\label{subsubsec:iridium}
-
-El bloque \texttt{Iridium} funciona como pasarela de telemetría satelital mediante SBD. Su función es preparar y transmitir mensajes binarios compactos que representen el estado del sistema o productos seleccionados del procesamiento acústico.
-
-La arquitectura divide este bloque en dos responsabilidades. La Máquina de Estados Finitos, implementada en \texttt{iridium\_fsm.py}, decide qué transmitir, reúne la información disponible, selecciona el modo de operación y solicita el envío. La capa de bajo nivel, \texttt{iridium\_LL.py}, queda limitada al transporte mediante comandos AT/SBD. La codificación binaria de los mensajes se concentra en \texttt{modules/support/iridium\_protocol.py}. Esta separación evita mezclar transporte físico con semántica de payload.
-
-El planificador de tareas central activa el bloque \texttt{Iridium} cada hora exacta. En las primeras tres horas de un ciclo de cuatro horas se transmite estado de sistema; en la cuarta hora se transmite un mensaje de audio procesado. El modo \texttt{alive} se conserva como alias operativo de legado para el mensaje de estado de sistema.
-
-Para operación de laboratorio o integración sin visibilidad satelital, la configuración puede deshabilitar la transmisión física mediante \texttt{iridium\_transmit\_enabled=false}. En ese caso, la Máquina de Estados Finitos arma el payload y registra el pedido de transmisión, pero no inicia una sesión SBD real.
-
-\subsection{Proceso principal y comunicación interna}
-\label{subsec:proceso_principal_y_comunicacion_interna}
-
-El proceso principal se implementa en \texttt{main.py}. Su responsabilidad es coordinar el sistema completo, sin concentrar la lógica específica de cada periférico. Al inicio de la ejecución, crea una cola de entrada y una cola de estado para cada Máquina de Estados Finitos. Luego instancia cada módulo como un proceso independiente, registra sus colas en el enrutador de eventos e inicia el planificador de tareas central.
-
-La comunicación entre el proceso principal y los módulos se realiza mediante mensajes. Cada mensaje contiene un identificador de evento y, opcionalmente, un conjunto de parámetros. Entre los eventos principales se encuentran:
+Los resultados emitidos por los módulos se normalizan mediante mensajes de salida. La plantilla distingue dos tipos principales:
 
 \begin{itemize}
+    \item \texttt{STATE\_RESULT}: informa el resultado de una transición o condición de estado, por ejemplo el éxito o falla de una inicialización.
 
- \item \texttt{SIG\_INIT}: inicialización del módulo.
- \item \texttt{SIG\_DEINIT}: desinicialización o apagado lógico del módulo.
- \item \texttt{SIG\_TEST}: ejecución de una prueba o diagnóstico.
- \item \texttt{SIG\_TIMEOUT}: activación periódica generada por el planificador de tareas.
- \item \texttt{SIG\_ACQUIRE}: solicitud explícita de adquisición.
- \item \texttt{SIG\_TRANSMIT}: solicitud de transmisión, utilizada principalmente por Iridium.
- \item \texttt{STATE\_CHANGED}: notificación de cambio de estado.
- \item \texttt{ACTION\_RESULT}: notificación del resultado de una acción ejecutada.
-
+    \item \texttt{ACTION\_RESULT}: informa el resultado de una acción ejecutada por el módulo, incluyendo el origen, el estado desde el cual se generó, la acción realizada, el resultado, los datos producidos, detalles diagnósticos y, si corresponde, información de error.
 \end{itemize}
 
-La Figura~\ref{fig:comunicacion_interna} muestra el esquema de comunicación interna.
+El mensaje \texttt{ACTION\_RESULT} utiliza una estructura de datos común, con campos tales como \texttt{origin}, \texttt{state}, \texttt{action}, \texttt{result}, \texttt{data}, \texttt{details} y \texttt{error}. Esta convención permite que el sistema principal, el enrutador de eventos, los mecanismos de persistencia, los reportes de estado y la telemetría puedan procesar resultados de distintos módulos sin depender de detalles internos de implementación.
 
-\begin{figure}[htbp]
-\centering
-\resizebox{0.98\textwidth}{!}{%
-\begin{tikzpicture}[
-    font=\small,
-    proc/.style={draw, rounded corners, align=center, minimum width=3.0cm, minimum height=0.9cm, fill=gray!10},
-    queue/.style={draw, align=center, minimum width=2.2cm, minimum height=0.7cm, fill=white},
-    arrow/.style={-{Latex[length=2.5mm]}, thick}
-]
-
-\node[proc] (main) {Proceso principal\\\texttt{main.py}};
-\node[proc, below=0.8cm of main] (router) {Enrutador\\de eventos};
-\node[proc, left=1.7cm of router] (sched) {Planificador\\de tareas};
-\node[proc, right=1.7cm of router] (status) {Reporte\\de estado};
-
-\node[queue, below left=1.0cm and 3.8cm of router] (qin1) {cola de\\entrada};
-\node[proc, below=0.55cm of qin1] (fsm1) {FSM\\módulo 1};
-\node[queue, below=0.55cm of fsm1] (qs1) {cola de\\estado};
-
-\node[queue, right=1.2cm of qin1] (qin2) {cola de\\entrada};
-\node[proc, below=0.55cm of qin2] (fsm2) {FSM\\módulo 2};
-\node[queue, below=0.55cm of fsm2] (qs2) {cola de\\estado};
-
-\node[queue, right=1.2cm of qin2] (qin3) {cola de\\entrada};
-\node[proc, below=0.55cm of qin3] (fsm3) {FSM\\módulo N};
-\node[queue, below=0.55cm of fsm3] (qs3) {cola de\\estado};
-
-\draw[arrow] (sched) -- node[above, font=\footnotesize]{SIG\_TIMEOUT / SIG\_TRANSMIT} (router);
-\draw[arrow] (main) -- (router);
-\draw[arrow] (router) -- (status);
-
-\draw[arrow] (router) -- (qin1);
-\draw[arrow] (router) -- (qin2);
-\draw[arrow] (router) -- (qin3);
-
-\draw[arrow] (qin1) -- (fsm1);
-\draw[arrow] (qin2) -- (fsm2);
-\draw[arrow] (qin3) -- (fsm3);
-
-\draw[arrow] (fsm1) -- (qs1);
-\draw[arrow] (fsm2) -- (qs2);
-\draw[arrow] (fsm3) -- (qs3);
-
-\draw[arrow] (qs1.west) |- ([xshift=-0.6cm]main.west) -- (main.west);
-\draw[arrow] (qs2) |- (main);
-\draw[arrow] (qs3.east) |- ([xshift=0.6cm]main.east) -- (main.east);
-
-\node[align=center, font=\footnotesize] at ([yshift=-0.7cm]qs2.south) {Los módulos reportan cambios de estado y resultados de acción;\\
-el proceso principal actualiza el estado global y reenvía eventos relevantes.};
-
-\end{tikzpicture}
-}
-\caption{Modelo de comunicación interna basado en colas, mensajes y enrutador de eventos.}
-\label{fig:comunicacion_interna}
-\end{figure}
-
-El enrutador de eventos desacopla a los módulos. Un módulo no necesita conocer directamente la cola de otro módulo, sino que emite un resultado hacia el proceso principal y el enrutador decide si corresponde distribuir información. Esta estrategia reduce dependencias cruzadas y permite modificar la relación entre módulos sin alterar su implementación interna.
-
-\subsection{Planificador de tareas central}
-\label{subsec:planificador_de_tareas_central}
-
-El planificador de tareas central es el único componente encargado de disparar acciones periódicas. Los módulos no implementan temporizadores internos para adquisiciones regulares. Esta decisión simplifica el análisis temporal, evita condiciones de carrera entre planificadores distribuidos y permite ajustar los intervalos de operación desde un archivo de configuración.
-
-Los intervalos se definen en \texttt{configs/scheduler.json}. La configuración nominal se presenta en la Tabla~\ref{tab:planificador}.
-
-\begin{table}[htbp]
-\centering
-\caption{Configuración nominal del planificador de tareas central.}
-\label{tab:planificador}
-\footnotesize
-\begin{tabular}{l c l}
-\toprule
-\textbf{Módulo} & \textbf{Intervalo} & \textbf{Criterio de activación} \\
-\midrule
-\texttt{AHT10} & 600~s & Cada 10 minutos. \\
-\texttt{AIS} & 600~s & Cada 10 minutos. \\
-\texttt{MPU6050} & 600~s & Cada 10 minutos. \\
-\texttt{Windsonic} & 600~s & Cada 10 minutos. \\
-\texttt{XTRA2210} & 600~s & Cada 10 minutos. \\
-\texttt{Behringer} & 14400~s & Cada 4 horas. \\
-\texttt{Iridium} & 3600~s & Cada 1 hora. \\
-\texttt{AudioProc} & \texttt{null} & No se agenda directamente; se dispara por disponibilidad de archivo. \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Las activaciones se alinean a intervalos regulares de hora local UTC-3, ancladas a medianoche. Para los sensores con intervalo de 600~s, las adquisiciones se ejecutan en minutos regulares, por ejemplo \texttt{:00}, \texttt{:10}, \texttt{:20}. La adquisición acústica se agenda cada cuatro horas, mientras que Iridium se agenda cada hora exacta.
-
-El planificador avanza el próximo disparo desde el \emph{slot} programado y no desde la hora real de ejecución. Esta decisión evita la acumulación de deriva temporal cuando una iteración del lazo principal se demora. Si una activación ocurre tarde, la siguiente se calcula respecto del calendario nominal y no respecto del instante demorado.
-
-En el caso de Iridium, el planificador aplica un ciclo de cuatro horas. En tres activaciones sucesivas se transmite estado de sistema. En la cuarta activación se solicita la transmisión de un producto de audio procesado. De esta manera se asegura una telemetría frecuente de estado y, al mismo tiempo, una transmisión periódica de información acústica resumida.
-
-\subsection{Persistencia y formatos de datos}
-\label{subsec:persistencia_y_formatos_de_datos}
-
-La persistencia del sistema se diseñó para priorizar trazabilidad, legibilidad y separación entre productos de distinta naturaleza. Las mediciones de sensores y eventos de adquisición se guardan en archivos \texttt{JSONL}, donde cada línea corresponde a un objeto JSON compacto. Los archivos de audio se guardan como \texttt{WAV}. Los resultados completos de procesamiento acústico se guardan como \texttt{JSON}. Los logs de ejecución se guardan en el directorio \texttt{logs/}.
-
-\subsubsection{Formato general de mediciones JSONL}
-\label{subsubsec:formato_jsonl}
-
-Cada archivo \texttt{data/*\_readings.jsonl} contiene una secuencia de registros independientes. Cada línea tiene la estructura general:
+La estructura general de un resultado de acción puede representarse de la siguiente forma:
 
 \begin{verbatim}
-{"timestamp":"2026-06-09T21:42:07-03:00","data":{}}
+ACTION_RESULT:
+    origin: nombre del modulo que genera el resultado
+    state: estado FSM desde el cual se emitio el mensaje
+    action: accion ejecutada
+    result: codigo de resultado
+    data: datos producidos por la accion
+    details: informacion diagnostica complementaria
+    error: descripcion opcional de error
 \end{verbatim}
 
-El campo \texttt{timestamp} usa hora UTC-3, sin decimales en los segundos, con formato \texttt{YYYY-MM-DDTHH:MM:SS-03:00}. El campo \texttt{data} contiene las variables medidas o los metadatos del evento, con unidades explícitas en el nombre cuando corresponde. Los registros reales no incluyen el campo \texttt{source}. Los registros provenientes de módulos simulados pueden incluir \texttt{source} con el valor \texttt{hardware mock} o \texttt{firmware mock}.
-
-La Tabla~\ref{tab:jsonl-reglas} resume las reglas de formato.
-
-\begin{table}[htbp]
-\centering
-\caption{Reglas generales para archivos de mediciones \texttt{JSONL}.}
-\label{tab:jsonl-reglas}
-\footnotesize
-\begin{tabularx}{\textwidth}{lX}
-\toprule
-\textbf{Elemento} & \textbf{Regla} \\
-\midrule
-Archivo & Cada módulo registra en \texttt{data/<modulo>\_readings.jsonl}. \\
-Registro & Cada línea es un objeto JSON compacto independiente. \\
-Tiempo & \texttt{timestamp} en UTC-3, sin decimales en segundos. \\
-Datos & \texttt{data} contiene variables y metadatos del evento. \\
-Unidades & Las unidades se incorporan al nombre del campo, por ejemplo \texttt{\_c}, \texttt{\_rh}, \texttt{\_deg}, \texttt{\_mps}, \texttt{\_v}, \texttt{\_a}, \texttt{\_w}, \texttt{\_s}. \\
-Módulo & El nombre del módulo no se repite dentro del registro; queda implícito en el nombre del archivo. \\
-Fuente & Los registros reales no llevan \texttt{source}; los simulados pueden indicar \texttt{hardware mock} o \texttt{firmware mock}. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-La Tabla~\ref{tab:salidas-modulos} resume las salidas persistidas por módulo.
-
-\begin{table}[htbp]
-\centering
-\caption{Salidas persistidas por módulo.}
-\label{tab:salidas-modulos}
-\footnotesize
-\begin{tabularx}{\textwidth}{l l X}
-\toprule
-\textbf{Módulo} & \textbf{Archivo principal} & \textbf{Contenido} \\
-\midrule
-\texttt{AHT10} & \texttt{data/aht10\_readings.jsonl} & Temperatura y humedad relativa. \\
-\texttt{MPU6050} & \texttt{data/mpu6050\_readings.jsonl} & Aceleración y velocidad angular. \\
-\texttt{AIS} & \texttt{data/ais\_readings.jsonl} & Datos de posición y mensajes recibidos según disponibilidad del receptor. \\
-\texttt{Windsonic} & \texttt{data/windsonic\_readings.jsonl} & Velocidad y dirección de viento, con resumen de muestras. \\
-\texttt{XTRA2210} & \texttt{data/xtra2210\_readings.jsonl} & Variables de panel, batería, carga y estado energético. \\
-\texttt{Behringer} & \texttt{data/behringer\_readings.jsonl} & Evento de adquisición, archivo generado, duración, frecuencia de muestreo, canales y tamaño. \\
-\texttt{AudioProc} & \texttt{data/audioProc\_readings.jsonl} & Archivo de entrada, archivo de salida y resultado resumido del procesamiento. \\
-\texttt{Iridium} & \texttt{logs/iridium\_transmit\_requests.jsonl} & Pedidos de transmisión, especialmente cuando la transmisión física está deshabilitada. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\subsubsection{Archivos de configuración}
-\label{subsubsec:archivos_configuracion}
-
-El sistema utiliza archivos de configuración externos para separar parámetros operativos del código fuente. Esta decisión permite modificar intervalos, rutas, parámetros de adquisición y habilitación de telemetría sin alterar la implementación.
-
-El archivo \texttt{configs/config.json} contiene, entre otros, los parámetros indicados en la Tabla~\ref{tab:config-parametros}.
-
-\begin{table}[htbp]
-\centering
-\caption{Parámetros principales de \texttt{configs/config.json}.}
-\label{tab:config-parametros}
-\footnotesize
-\begin{tabularx}{\textwidth}{l l X}
-\toprule
-\textbf{Parámetro} & \textbf{Valor nominal} & \textbf{Descripción} \\
-\midrule
-\texttt{fs[Hz]} & \texttt{192000} & Frecuencia de muestreo para adquisición acústica. \\
-\texttt{duration[s]} & \texttt{60} & Duración nominal de cada archivo de audio. \\
-\texttt{nperseg} & \texttt{2097152} & Tamaño de segmento para procesamiento espectral. \\
-\texttt{noverlap} & \texttt{1048576} & Solapamiento usado en el procesamiento. \\
-\texttt{window} & \texttt{hann} & Ventana utilizada en el procesamiento espectral. \\
-\texttt{daq} & \texttt{UMC204HD} & Identificación de la interfaz de adquisición. \\
-\texttt{recordings\_dir} & \texttt{/storage/boya/recordings} & Directorio persistente para archivos \texttt{WAV}. \\
-\texttt{bits\_per\_sample} & \texttt{24} & Resolución nominal de audio. \\
-\texttt{behringer\_output\_channels} & \texttt{2} & Cantidad de canales adquiridos. \\
-\texttt{storage\_guard\_enabled} & \texttt{true} & Habilita la política de protección de almacenamiento. \\
-\texttt{data\_dir} & \texttt{data} & Directorio de mediciones y resultados. \\
-\texttt{logs\_dir} & \texttt{logs} & Directorio de logs de ejecución. \\
-\texttt{iridium\_transmit\_enabled} & \texttt{false} & Habilita o deshabilita la transmisión física por Iridium. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-El archivo \texttt{configs/scheduler.json} contiene exclusivamente los intervalos del planificador de tareas central. Si este archivo existe, tiene prioridad sobre configuraciones legadas equivalentes que pudieran existir dentro de \texttt{configs/config.json}.
-
-\subsection{Política de almacenamiento}
-\label{subsec:politica_de_almacenamiento}
-
-La adquisición acústica genera los archivos de mayor tamaño del sistema. Por este motivo, el módulo \texttt{Behringer} utiliza una política de almacenamiento conservadora antes de iniciar cada grabación. Esta política se implementa mediante un componente de protección de almacenamiento y tiene como finalidad evitar que una nueva adquisición comprometa el espacio mínimo requerido por el sistema o produzca fallas por falta de capacidad.
-
-La política nominal se resume en la Tabla~\ref{tab:storage-guard}.
-
-\begin{table}[htbp]
-\centering
-\caption{Política de protección de almacenamiento para grabaciones acústicas.}
-\label{tab:storage-guard}
-\footnotesize
-\begin{tabularx}{\textwidth}{l l X}
-\toprule
-\textbf{Parámetro} & \textbf{Valor nominal} & \textbf{Función} \\
-\midrule
-\texttt{recordings\_dir} & \texttt{/storage/boya/recordings} & Directorio operativo de grabaciones. \\
-\texttt{storage\_guard\_enabled} & \texttt{true} & Habilita verificación previa al inicio de grabación. \\
-\texttt{storage\_guard\_max\_recordings\_dir\_bytes} & \texttt{923417968640} & Límite máximo de uso del directorio de grabaciones. \\
-\texttt{storage\_guard\_min\_free\_warning\_bytes} & \texttt{107374182400} & Umbral de advertencia de espacio libre. \\
-\texttt{storage\_guard\_min\_free\_critical\_bytes} & \texttt{53687091200} & Umbral crítico de espacio libre. \\
-\texttt{storage\_guard\_hard\_reserve\_bytes} & \texttt{10737418240} & Reserva dura posterior a la grabación estimada. \\
-\texttt{storage\_guard\_file\_margin\_factor} & \texttt{1.1} & Margen aplicado al tamaño estimado del próximo archivo. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Antes de iniciar una nueva grabación, el sistema verifica que el directorio exista o pueda crearse, que esté bajo \texttt{/storage}, que sea escribible, que la configuración de audio sea válida y que el espacio disponible posterior a la grabación estimada no caiga por debajo de la reserva dura. Si alguna condición de admisión no se cumple, la adquisición no se inicia. Durante una grabación, si el espacio libre baja de un umbral crítico se registra una advertencia. Si el archivo supera el tamaño máximo calculado, la grabación se cierra ordenadamente, se conserva el archivo parcial y el resultado se marca como incompleto.
-
-\subsection{Telemetría satelital y formatos binarios}
-\label{subsec:telemetria_satelital_y_formatos_binarios}
-
-La telemetría satelital se implementa mediante el bloque \texttt{Iridium}. Debido a las restricciones propias de los mensajes SBD, el sistema transmite información compacta en formato binario. Se definen dos familias principales de mensajes:
-
-\begin{itemize}
-
- \item \textbf{Estado de sistema}: mensaje \texttt{MSG\_SYSTEM\_STATUS}, de longitud fija, destinado a informar estado de módulos, batería, almacenamiento y tiempo desde arranque.
-
- \item \textbf{Audio procesado}: mensaje binario de longitud variable, destinado a transmitir potencias relativas por banda a partir del resultado de \texttt{AudioProc}.
-
-\end{itemize}
-
-La codificación se implementa en \texttt{modules/support/iridium\_protocol.py}. La capa de transporte del módem queda separada de la construcción semántica del payload, lo que permite probar y decodificar mensajes binarios sin requerir comunicación satelital real.
-
-\subsubsection{Mensaje binario de estado de sistema}
-\label{subsubsec:msg_system_status}
-
-El mensaje \texttt{MSG\_SYSTEM\_STATUS} utiliza un layout fijo de 11~bytes en orden big-endian. El primer byte identifica el tipo de mensaje y, al mismo tiempo, la versión del layout. El formato se resume en la Tabla~\ref{tab:system-status-payload}.
-
-\begin{table}[htbp]
-\centering
-\caption{Formato binario del payload \texttt{MSG\_SYSTEM\_STATUS}.}
-\label{tab:system-status-payload}
-\footnotesize
-\begin{tabularx}{\textwidth}{l l c X}
-\toprule
-\textbf{Campo} & \textbf{Tipo} & \textbf{Bytes} & \textbf{Descripción} \\
-\midrule
-\texttt{message\_type} & \texttt{uint8} & 1 & Valor \texttt{0x01}; identifica \texttt{MSG\_SYSTEM\_STATUS} y versión del layout. \\
-\texttt{fsm\_ok\_bitmap} & \texttt{uint8} & 1 & Un bit por Máquina de Estados Finitos esperada; \texttt{1 = OK}. \\
-\texttt{ll\_ok\_bitmap} & \texttt{uint8} & 1 & Un bit por módulo de bajo nivel esperado; \texttt{1 = OK}. \\
-\texttt{status\_flags} & \texttt{uint8} & 1 & Flags globales de almacenamiento, batería y adquisición. \\
-\texttt{battery\_voltage\_mv} & \texttt{uint16} & 2 & Tensión de batería en mV; \texttt{65535} indica valor desconocido. \\
-\texttt{battery\_soc\_percent} & \texttt{uint8} & 1 & Estado de carga, 0--100~\%; \texttt{255} indica valor desconocido. \\
-\texttt{storage\_free\_gib\_x10} & \texttt{uint16} & 2 & Espacio libre en GiB multiplicado por 10; \texttt{65535} indica valor desconocido o saturado. \\
-\texttt{uptime\_minutes} & \texttt{uint16} & 2 & Minutos desde arranque; \texttt{65535} indica valor desconocido o saturado. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-El orden de bits utilizado para \texttt{fsm\_ok\_bitmap} y \texttt{ll\_ok\_bitmap} se indica en la Tabla~\ref{tab:bitmap-modulos}. El mismo orden se mantiene para ambos campos.
-
-\begin{table}[htbp]
-\centering
-\caption{Orden de bits para mapas de estado de módulos.}
-\label{tab:bitmap-modulos}
-\footnotesize
-\begin{tabular}{c l}
-\toprule
-\textbf{Bit} & \textbf{Módulo} \\
-\midrule
-0 & \texttt{AHT10} \\
-1 & \texttt{AIS} \\
-2 & \texttt{AudioProc} \\
-3 & \texttt{Behringer} \\
-4 & \texttt{Iridium} \\
-5 & \texttt{MPU6050} \\
-6 & \texttt{Windsonic} \\
-7 & \texttt{XTRA2210} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Los flags globales se codifican en el campo \texttt{status\_flags}. Su asignación se detalla en la Tabla~\ref{tab:status-flags}.
-
-\begin{table}[htbp]
-\centering
-\caption{Flags globales del payload \texttt{MSG\_SYSTEM\_STATUS}.}
-\label{tab:status-flags}
-\footnotesize
-\begin{tabularx}{\textwidth}{c l l X}
-\toprule
-\textbf{Bit} & \textbf{Máscara} & \textbf{Flag} & \textbf{Descripción} \\
-\midrule
-0 & \texttt{0x01} & \texttt{STORAGE\_UNAVAILABLE} & El almacenamiento requerido no está disponible. \\
-1 & \texttt{0x02} & \texttt{STORAGE\_NOT\_WRITABLE} & El almacenamiento existe, pero no es escribible. \\
-2 & \texttt{0x04} & \texttt{STORAGE\_WARNING} & Advertencia por espacio de almacenamiento. \\
-3 & \texttt{0x08} & \texttt{STORAGE\_CRITICAL} & Condición crítica de almacenamiento. \\
-4 & \texttt{0x10} & \texttt{STORAGE\_QUOTA\_EXCEEDED} & Se excedió la cuota configurada para grabaciones. \\
-5 & \texttt{0x20} & \texttt{BATTERY\_WARNING} & Advertencia por estado de batería. \\
-6 & \texttt{0x40} & \texttt{BATTERY\_CRITICAL} & Condición crítica de batería. \\
-7 & \texttt{0x80} & \texttt{LAST\_ACQUISITION\_INCOMPLETE} & La última adquisición acústica quedó incompleta. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Las condiciones críticas implican las advertencias correspondientes. Es decir, \texttt{STORAGE\_CRITICAL} implica \texttt{STORAGE\_WARNING}, y \texttt{BATTERY\_CRITICAL} implica \texttt{BATTERY\_WARNING}. La ausencia de medición de batería se codifica mediante valores centinela y no activa, por sí sola, una advertencia o alarma crítica.
-
-\subsubsection{Mensaje binario de audio procesado}
-\label{subsubsec:msg_audio_proc}
-
-El mensaje de audio procesado transmite una representación compacta de \texttt{relative\_band\_power\_db}. El payload incluye un encabezado con tipo de mensaje y marca temporal UTC, los datos cuantizados y un CRC16-CCITT-FALSE final.
-
-La estructura general es:
-
-\begin{equation}
-\mathrm{Payload}_{audio} =
-\mathrm{message\_type}
-\parallel
-\mathrm{timestamp\_utc}
-\parallel
-\mathrm{audio\_payload}
-\parallel
-\mathrm{crc16}.
-\label{eq:payload_audio}
-\end{equation}
-
-donde \texttt{message\_type} ocupa 1~byte, \texttt{timestamp\_utc} ocupa 4~bytes como \texttt{uint32} con segundos desde época Unix en UTC, \texttt{audio\_payload} tiene longitud variable y \texttt{crc16} ocupa 2~bytes en big-endian.
-
-Los tipos de mensaje de audio se indican en la Tabla~\ref{tab:audio-message-types}.
-
-\begin{table}[htbp]
-\centering
-\caption{Tipos de mensaje para payloads binarios de audio procesado.}
-\label{tab:audio-message-types}
-\footnotesize
-\begin{tabular}{c l l}
-\toprule
-\textbf{Tipo} & \textbf{Canalidad} & \textbf{Packing} \\
-\midrule
-\texttt{0x03} & Mono & \texttt{DELTA\_PREVIOUS\_INT8} \\
-\texttt{0x04} & Estéreo & \texttt{DELTA\_PREVIOUS\_INT8} \\
-\texttt{0x05} & Mono & \texttt{ABS\_INT16} \\
-\texttt{0x06} & Estéreo & \texttt{ABS\_INT16} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Los valores de potencia relativa por banda se cuantizan en décimas de dB mediante:
-
-\begin{equation}
-q = \operatorname{rint}(10 \cdot P_{\mathrm{dB}}),
-\label{eq:quantization_db}
-\end{equation}
-
-donde $P_{\mathrm{dB}}$ es el valor de potencia relativa en dB y $q$ es el valor entero transmitido o usado para el cálculo de diferencias.
-
-El empaquetado preferido es \texttt{DELTA\_PREVIOUS\_INT8}. En este modo, para cada canal se transmite el primer valor como \texttt{int16} big-endian y luego las diferencias respecto del valor anterior como \texttt{int8}. El valor \texttt{-128} queda reservado y no se usa como delta válido. Si algún canal presenta valores inválidos, valores fuera del rango \texttt{int16} o diferencias fuera del intervalo \texttt{[-127,127]}, el mensaje completo se codifica en modo \texttt{ABS\_INT16}.
-
-En modo \texttt{ABS\_INT16}, cada banda se transmite como \texttt{int16} big-endian. Los valores \texttt{None}, \texttt{NaN} e infinitos se codifican con el centinela \texttt{-32768}. Los valores finitos fuera de rango se saturan al intervalo \texttt{[-32767,32767]}.
-
-La Tabla~\ref{tab:audio-payload-size} resume el tamaño del campo de datos de audio para $N$ bandas.
-
-\begin{table}[htbp]
-\centering
-\caption{Tamaño del campo \texttt{audio\_payload} para $N$ bandas.}
-\label{tab:audio-payload-size}
-\footnotesize
-\begin{tabularx}{\textwidth}{l l X}
-\toprule
-\textbf{Canalidad} & \textbf{Packing} & \textbf{Tamaño del campo de datos} \\
-\midrule
-Mono & \texttt{DELTA\_PREVIOUS\_INT8} & $2 + (N - 1)$ bytes. \\
-Estéreo & \texttt{DELTA\_PREVIOUS\_INT8} & $2 \cdot [2 + (N - 1)]$ bytes. \\
-Mono & \texttt{ABS\_INT16} & $2N$ bytes. \\
-Estéreo & \texttt{ABS\_INT16} & $4N$ bytes. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-El payload de audio se considera válido sólo si tiene exactamente tantas filas como bandas de frecuencia esperadas por canal. Para la configuración nominal de 192~kHz, la cantidad esperada actual es de 49 bandas por canal. Esta validación evita transmitir mensajes incompletos o incompatibles con el decodificador en tierra.
-
-\subsection{Flujo de datos}
-\label{subsec:flujo_de_datos}
-
-El flujo de datos del sistema puede dividirse en cuatro trayectorias principales:
-
-\begin{itemize}
-
- \item \textbf{Sensores de baja tasa.} Los módulos \texttt{AHT10}, \texttt{MPU6050}, \texttt{AIS}, \texttt{Windsonic} y \texttt{XTRA2210} adquieren mediciones periódicas y las registran en archivos \texttt{JSONL}.
-
- \item \textbf{Adquisición acústica.} El módulo \texttt{Behringer} adquiere señales de audio y genera archivos \texttt{WAV} en el directorio de grabaciones.
-
- \item \textbf{Procesamiento acústico.} El módulo \texttt{AudioProc} toma archivos \texttt{WAV} como entrada, genera resultados \texttt{JSON} y registra un índice de procesamientos ejecutados.
-
- \item \textbf{Telemetría satelital.} El módulo \texttt{Iridium} toma información de estado del sistema, batería, almacenamiento y resultados de audio procesado, y construye payloads binarios para transmisión SBD.
-
-\end{itemize}
-
-La Figura~\ref{fig:flujo_datos} resume estas trayectorias.
-
-\begin{figure}[htbp]
-\centering
-\resizebox{\textwidth}{!}{%
-\begin{tikzpicture}[
-    font=\small,
-    src/.style={draw, rounded corners, align=center, minimum width=3.0cm, minimum height=0.8cm, fill=gray!8},
-    proc/.style={draw, rounded corners, align=center, minimum width=3.0cm, minimum height=0.8cm, fill=white},
-    data/.style={draw, rounded corners, align=center, minimum width=3.2cm, minimum height=0.8cm, fill=gray!5},
-    arrow/.style={-{Latex[length=2.5mm]}, thick}
-]
-
-\node[src] (sens) {Sensores\\baja tasa};
-\node[data, right=1.2cm of sens] (jsonl) {\texttt{data/*\_readings.jsonl}};
-\node[proc, right=1.2cm of jsonl] (status) {\texttt{system\_status.json}\\estado global};
-
-\node[src, below=1.0cm of sens] (audio) {Behringer\\audio USB};
-\node[data, right=1.2cm of audio] (wav) {Archivos\\\texttt{WAV}};
-\node[proc, right=1.2cm of wav] (ap) {AudioProc};
-\node[data, right=1.2cm of ap] (apjson) {\texttt{audioProc\_*.json}};
-
-\node[proc, below=1.0cm of status] (ir) {Iridium\\codificación binaria};
-\node[data, right=1.2cm of ir] (payload) {Payload SBD\\estado/audio};
-
-\draw[arrow] (sens) -- (jsonl);
-\draw[arrow] (jsonl) -- (status);
-
-\draw[arrow] (audio) -- (wav);
-\draw[arrow] (audio) -- (jsonl);
-\draw[arrow] (wav) -- (ap);
-\draw[arrow] (ap) -- (apjson);
-\draw[arrow] (ap) -- (jsonl);
-
-\draw[arrow] (status) -- (ir);
-\draw[arrow] (apjson) |- (ir);
-\draw[arrow] (ir) -- (payload);
-
-\end{tikzpicture}
-}
-\caption{Flujo principal de datos desde adquisición hasta persistencia y telemetría.}
-\label{fig:flujo_datos}
-\end{figure}
-
-Este diseño mantiene separadas las rutas de adquisición de baja tasa, audio crudo, procesamiento y telemetría. La separación reduce acoplamientos y facilita la inspección posterior de cada etapa. Por ejemplo, un archivo \texttt{WAV} puede conservarse aunque falle el procesamiento posterior; un resultado \texttt{JSON} puede decodificarse y analizarse aunque no haya sido transmitido; y un pedido de transmisión puede registrarse aunque la transmisión física esté deshabilitada.
-
-\subsection{Mecanismos de robustez y diagnóstico}
-\label{subsec:mecanismos_de_robustez_y_diagnostico}
-
-El sistema incorpora mecanismos de robustez distribuidos en distintos niveles de la arquitectura.
-
-En primer lugar, cada módulo reporta cambios de estado y resultados de acción. El proceso principal centraliza estos reportes y actualiza un archivo de estado global. Esta información sirve como base para diagnóstico local y para el armado del mensaje \texttt{MSG\_SYSTEM\_STATUS}.
-
-En segundo lugar, el proceso principal dispone de un mecanismo de recuperación frente a errores. Cuando un módulo informa el estado \texttt{ERROR}, se puede enviar una nueva señal de inicialización para intentar recuperar su operación. Los reintentos son acotados. Si el módulo no se recupera después de la cantidad máxima definida, se lo marca como falla persistente y se conserva la condición para diagnóstico.
-
-En tercer lugar, los módulos de adquisición implementan validaciones específicas. El bloque \texttt{AHT10}, por ejemplo, verifica rangos plausibles y saltos bruscos entre mediciones sucesivas. El bloque \texttt{Behringer} verifica condiciones de almacenamiento antes de iniciar una adquisición. El bloque \texttt{Iridium} puede operar con transmisión física deshabilitada, registrando pedidos y payloads sin intentar abrir sesión satelital.
-
-En cuarto lugar, la arquitectura permite utilizar módulos de bajo nivel simulados. Esta capacidad no reemplaza las pruebas con hardware real, pero permite ejecutar la lógica de control, revisar el flujo de eventos, generar registros reproducibles y verificar la interacción entre capas durante etapas tempranas de integración. La sección de pruebas desarrolla en detalle la metodología de verificación y los ensayos ejecutados.
-
-\subsection{Síntesis de la implementación}
-\label{subsec:sintesis_de_la_implementacion}
-
-La implementación resultante organiza el sistema embebido de la boya EAMMRA como una aplicación modular, concurrente y orientada a eventos. La computadora principal ejecuta un proceso coordinador que inicia ocho bloques funcionales, cada uno representado por una Máquina de Estados Finitos y una capa de bajo nivel. Los módulos se comunican mediante mensajes y colas, mientras que el planificador de tareas central define el ritmo de adquisición y transmisión.
-
-El diseño separa claramente adquisición de sensores, adquisición acústica, procesamiento, almacenamiento, diagnóstico y telemetría. Las mediciones de baja tasa se registran en formato \texttt{JSONL}; las señales acústicas se almacenan como \texttt{WAV}; los productos procesados se guardan como \texttt{JSON}; y la información seleccionada para telemetría se codifica en payloads binarios compactos. Esta combinación de formatos permite conservar datos completos localmente y transmitir remotamente sólo información resumida o crítica.
-
-La arquitectura conserva la trazabilidad entre hardware, software, configuración, eventos y archivos generados. Al mismo tiempo, proporciona mecanismos de robustez adecuados para una plataforma autónoma: reporte de estado, reintentos acotados, validación de mediciones, protección de almacenamiento, simulación de bajo nivel y separación entre codificación de mensajes y transporte satelital. En conjunto, estas decisiones constituyen la base de diseño e implementación sobre la cual se desarrollan las pruebas, ensayos y validaciones de la sección siguiente.
-```
+Los códigos de resultado se representan mediante \texttt{ResultCode}. Esta abstracción evita que cada módulo defina criterios incompatibles de éxito o falla, y permite que el proceso principal trate de forma homogénea resultados provenientes de sensores, adquisición acústica, procesamiento, energía o telemetría.
+
+La adopción de mensajes estructurados permite desacoplar la ejecución interna de cada módulo respecto del procesamiento posterior de resultados. Un módulo sólo necesita emitir un resultado con el formato acordado; luego, otros componentes pueden registrar el evento, actualizar el estado global, generar un producto de datos, activar una transmisión o disparar una acción posterior. Esta organización es la base para el enrutamiento de eventos y para la integración con el planificador de tareas.
+
+\subsection{Coordinación central}
+\label{subsec:coordinacion_central}
+
+La coordinación central del sistema se implementa en el proceso principal de la aplicación. Su función es administrar la ejecución global sin incorporar la lógica específica de cada periférico. Para ello, el proceso principal instancia los módulos funcionales, crea sus colas de comunicación, registra las interfaces disponibles, inicializa el enrutador de eventos, activa el planificador de tareas y mantiene actualizado el estado global del sistema.
+
+Esta capa de coordinación cumple un rol distinto al de las Máquinas de Estados Finitos. Mientras cada FSM controla el ciclo operativo de un módulo particular, la coordinación central organiza la interacción entre módulos, el disparo temporal de acciones, la recepción de resultados, la actualización de reportes y el cierre ordenado de la aplicación. Esta separación evita que los módulos tengan dependencias directas entre sí y permite mantener un único punto de control para la ejecución general de la boya.
+
+La lógica general de coordinación se resume en el Listado~\ref{lst:coordinacion_central}. El proceso principal carga la configuración, crea las estructuras de comunicación, inicia los procesos asociados a los módulos, ejecuta el planificador de tareas, procesa los mensajes de estado y finalmente realiza el cierre ordenado del sistema.
+
+\begin{lstlisting}[style=pseudocodigo, caption={Pseudocódigo de la coordinación central del sistema.}, label={lst:coordinacion_central}]
+main():
+    configuracion = cargar_configuracion()
+
+    modulos = instanciar_modulos(configuracion)
+    colas_entrada = crear_colas_de_entrada(modulos)
+    cola_estado = crear_cola_de_estado()
+
+    router = crear_enrutador_de_eventos()
+    router.registrar_modulos(modulos, colas_entrada, cola_estado)
+
+    scheduler = crear_planificador(configuracion.tareas, router)
+
+    iniciar_procesos(modulos)
+    scheduler.iniciar()
+
+    enviar_senal_global(SIG_INIT, modulos)
+
+    mientras sistema_activo():
+        mensajes = leer_mensajes(cola_estado)
+
+        para cada mensaje en mensajes:
+            router.procesar(mensaje)
+            actualizar_estado_global(mensaje)
+            persistir_evento(mensaje)
+
+        scheduler.ejecutar_tareas_pendientes()
+
+    enviar_senal_global(SIG_DEINIT, modulos)
+
+    scheduler.detener()
+    esperar_cierre_de_procesos(modulos)
+    registrar_cierre_ordenado()
+\end{lstlisting}
+
+\subsubsection{Enrutador de eventos}
+\label{subsubsec:enrutador_eventos}
+
+El enrutador de eventos actúa como intermediario entre los módulos funcionales y el proceso principal. Cada módulo dispone de una cola de entrada, utilizada para recibir señales de control o solicitudes de acción, y de una cola de estado, utilizada para informar cambios de estado, resultados de acciones, advertencias o errores. El enrutador administra estas colas y distribuye los mensajes según su destino lógico.
+
+La función principal del enrutador es desacoplar productores y consumidores de información. Un módulo no necesita conocer directamente la instancia, cola o implementación interna de otro módulo; sólo emite un mensaje con un identificador y un conjunto de datos asociados. A partir de esa información, el proceso principal puede registrar el evento, actualizar el estado del sistema, reenviar una señal a otro módulo o conservar el resultado para procesamiento posterior.
+
+Esta organización resulta especialmente útil en un sistema con módulos de naturaleza heterogénea. Una lectura de sensor, una adquisición acústica, un resultado de procesamiento o una respuesta de telemetría pueden generar eventos con tiempos, tamaños y frecuencias diferentes. El enrutador permite manejar estos eventos mediante una interfaz común, sin imponer una relación directa entre el módulo que produce la información y el componente que la consume.
+
+Desde el punto de vista operativo, el enrutador también contribuye a la trazabilidad. Los mensajes emitidos por las FSM incluyen origen, estado, acción, resultado y, cuando corresponde, datos o detalles diagnósticos. Esta información permite reconstruir la secuencia de operación del sistema, identificar qué módulo produjo cada resultado y relacionar eventos de adquisición, procesamiento, almacenamiento o transmisión.
+
+\subsubsection{Planificador de tareas}
+\label{subsubsec:planificador_tareas}
+
+El planificador de tareas central define cuándo deben ejecutarse las acciones periódicas o programadas del sistema. A diferencia de una arquitectura en la que cada módulo administra sus propios temporizadores, en EAMMRA la planificación temporal se concentra en un único componente. Esta decisión simplifica la configuración del ciclo operativo y permite analizar con mayor claridad la secuencia temporal de adquisiciones, verificaciones, procesamiento y transmisiones.
+
+El planificador utiliza la configuración vigente para generar señales hacia los módulos funcionales. En términos generales, una tarea planificada produce mensajes como \texttt{SIG\_TIMEOUT}, \texttt{SIG\_ACQUIRE} o \texttt{SIG\_TRANSMIT}, que luego son entregados a la FSM correspondiente mediante el enrutador de eventos. De esta manera, el planificador no ejecuta directamente la lectura de sensores ni la transmisión satelital, sino que solicita a cada módulo que realice su acción a través de su propia Máquina de Estados Finitos.
+
+La centralización de la planificación permite modificar intervalos de operación sin alterar la implementación de los módulos. Por ejemplo, pueden ajustarse las frecuencias de lectura de sensores, la periodicidad de generación de reportes, los intervalos de adquisición acústica o las ventanas de transmisión mediante archivos de configuración. Esta capacidad resulta importante durante ensayos de laboratorio, integración progresiva y operación en campo, donde los ciclos de trabajo pueden requerir valores diferentes.
+
+El planificador también permite separar conceptualmente el tiempo del sistema respecto de la lógica funcional de cada periférico. Los módulos permanecen en estado \texttt{IDLE} hasta recibir una señal; cuando la reciben, ejecutan la acción correspondiente y reportan el resultado. Esta lógica evita que cada módulo implemente bucles temporales propios y reduce el riesgo de comportamientos difíciles de coordinar o diagnosticar.
+
+\subsubsection{Reporte de estado del sistema}
+\label{subsubsec:reporte_estado_sistema}
+
+El reporte de estado del sistema consolida información generada por los módulos funcionales y por la capa de coordinación. Su finalidad es disponer de una representación persistente y actualizada de la condición general de la boya durante la ejecución. Este reporte puede incluir estado de módulos, resultados recientes de acciones, tiempos de actualización, errores activos, información energética, disponibilidad de almacenamiento y datos necesarios para telemetría.
+
+La actualización del estado global se realiza a partir de los mensajes emitidos por las Máquinas de Estados Finitos. Cuando un módulo informa un cambio de estado o un resultado de acción, el proceso principal interpreta el mensaje y actualiza la representación correspondiente. De esta manera, el reporte de estado no depende de consultas directas a los módulos, sino de los eventos que éstos generan durante la operación normal.
+
+El reporte de estado cumple varias funciones. En primer lugar, permite monitorear la ejecución durante ensayos o despliegues. En segundo lugar, proporciona información compacta para la generación de mensajes de telemetría. En tercer lugar, deja evidencia persistente para diagnóstico posterior, especialmente ante reinicios, fallas parciales o interrupciones de energía.
+
+Esta representación persistente permite distinguir el estado operativo vigente de los registros históricos completos. Los logs y archivos de datos conservan la secuencia detallada de eventos y mediciones, mientras que el reporte de estado ofrece una síntesis actualizada de la condición del sistema. Ambos niveles son complementarios: uno facilita el diagnóstico detallado y el otro permite supervisión rápida y telemetría compacta.
+
 
 
 \section{Pruebas y Ensayos}
