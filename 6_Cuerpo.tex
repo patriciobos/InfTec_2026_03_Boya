@@ -1887,18 +1887,19 @@ La configuración del planificador contempló adquisiciones cada 600 s para los 
 \small
 \caption{Resumen del ensayo de integración de larga duración en laboratorio.}
 \label{tab:ensayo_larga_duracion}
+
 \begin{tabularx}{\textwidth}{p{0.18\textwidth} p{0.18\textwidth} p{0.16\textwidth} X}
 \toprule
 \textbf{Módulo} & \textbf{Periodicidad} & \textbf{Registros} & \textbf{Resultado observado} \\
 \midrule
-AIS & 600 s & 711 & Operación sostenida durante todo el intervalo principal. \\
-XTRA2210 & 600 s & 711 & Operación sostenida; tensión y corriente de panel nulas, consistente con el ensayo sin aporte solar. \\
-Windsonic & 600 s & 675 & Operación sostenida, con registros inválidos aislados en el archivo JSONL. \
-Behringer & 14400 s & 30 & Grabaciones acústicas programadas durante el ensayo. \\
-AudioProc & por evento & 30 & Productos derivados generados a partir de las grabaciones disponibles. \
-Iridium & 3600 s & 121 & Solicitudes periódicas de telemetría, incluyendo eventos omitidos por transmisión deshabilitada y eventos posteriores con transmisión habilitada. \\
-AHT10 & 600 s & 189 & Operación hasta la desconexión inducida del adaptador USBI2C; luego el módulo pasó a condición de falla segura. \\
-MPU6050 & 600 s & 189 & Operación hasta la desconexión inducida del adaptador USBI2C; luego el módulo pasó a condición de falla segura. \\--
+AIS         & 600 s  & 711 & Operación sostenida durante todo el intervalo principal. \\
+XTRA2210    & 600 s  & 711 & Operación sostenida; tensión y corriente de panel nulas, consistente con el ensayo sin aporte solar. \\
+Windsonic   & 600 s  & 675 & Operación sostenida, con registros inválidos aislados en el archivo JSONL. \\
+Behringer   & 14400 s & 30 & Grabaciones acústicas programadas durante el ensayo. \\
+AudioProc   & por evento & 30 & Productos derivados generados a partir de las grabaciones disponibles. \\
+Iridium     & 3600 s & 121 & Solicitudes periódicas de telemetría, incluyendo eventos omitidos por transmisión deshabilitada y eventos posteriores con transmisión habilitada. \\
+AHT10       & 600 s  & 189 & Operación hasta la desconexión inducida del adaptador USB--I2C; luego el módulo pasó a condición de falla segura. \\
+MPU6050     & 600 s  & 189 & Operación hasta la desconexión inducida del adaptador USB--I2C; luego el módulo pasó a condición de falla segura. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1921,20 +1922,21 @@ Durante el ensayo de integración se evaluó también la generación de mensajes
 
 Los registros con marca \texttt{skipped} son relevantes porque documentan un modo de ensayo seguro, en el cual el sistema genera el evento de transmisión, construye el mensaje y registra sus metadatos, pero no activa efectivamente el enlace satelital. Este modo permite verificar la integración del planificador, la FSM de Iridium y el empaquetado de mensajes sin consumir sesiones satelitales ni depender de la disponibilidad del módem.
 
-\begin{table}[H]
+\begin{table}[htpb]
 \centering
 \small
 \caption{Resumen de solicitudes Iridium durante el ensayo de integración.}
 \label{tab:resumen_iridium_larga_duracion}
+
 \begin{tabularx}{\textwidth}{p{0.26\textwidth} p{0.18\textwidth} X}
 \toprule
-\textbf{Condición} & \textbf{Cantidad} & \textbf{Interpretación} \
+\textbf{Condición} & \textbf{Cantidad} & \textbf{Interpretación} \\
 \midrule
-Solicitudes omitidas & 61 & Eventos generados con transmisión satelital deshabilitada; registrados con \texttt{skipped\_reason = iridium\_transmit_\disabled}. \
-Solicitudes no omitidas & 60 & Eventos de transmisión registrados luego de habilitar la telemetría. \
-Mensajes de estado & 64 & Mensajes compactos de estado del sistema. \
-Mensajes de audio procesado & 29 & Mensajes derivados de productos de AudioProc. \
-Mensajes \textit{alive} legacy & 28 & Mensajes de compatibilidad operativa previos al formato compacto consolidado. \
+Solicitudes omitidas & 61 & Eventos generados con transmisión satelital deshabilitada; registrados con \texttt{skipped\_reason = iridium\_transmit\_disabled}. \\
+Solicitudes no omitidas & 60 & Eventos de transmisión registrados luego de habilitar la telemetría. \\
+Mensajes de estado & 64 & Mensajes compactos de estado del sistema. \\
+Mensajes de audio procesado & 29 & Mensajes derivados de productos de AudioProc. \\
+Mensajes \textit{alive} legacy & 28 & Mensajes de compatibilidad operativa previos al formato compacto consolidado. \\
 \bottomrule
 \end{tabularx}
 \end{table}
