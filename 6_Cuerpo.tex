@@ -393,7 +393,7 @@ El AMEC MANDO 301 se integra a la boya EAMMRA como equipo AIS AtoN, del inglés 
 
 El MANDO 301 corresponde a un AIS AtoN tipo~1. Esta clase de equipo se caracteriza por operar como transmisor AIS, sin recepción de mensajes AIS de otras estaciones, y por utilizar acceso FATDMA, con ranuras temporales preasignadas para la emisión. En el caso de EAMMRA, el equipo no se utiliza para relevar tráfico marítimo circundante, sino para señalizar electrónicamente la presencia de la boya y proporcionar una referencia espacio-temporal para los registros adquiridos \citep{AMECMando301Brochure}.
 
-En la Figura~\ref{fig:amec-mando-301} se muestra el equipo AMEC MANDO 301 junto con sus características principales de integración. El dispositivo combina una interfaz de radiofrecuencia VHF para la transmisión AIS, una antena GPS externa para posicionamiento, alimentación en corriente continua y puertos serie RS-232 para configuración y comunicación. Esta combinación permite integrar el equipo tanto al subsistema de balizamiento como al sistema embebido de adquisición y supervisión.
+En la Figura~\ref{fig:amec-mando-301} se muestra el equipo AMEC MANDO 301 junto con sus características principales de integración. El dispositivo combina una interfaz de radiofrecuencia VHF para la transmisión AIS, una antena GPS externa para posicionamiento, alimentación en corriente continua y puertos serie RS232 para configuración y comunicación. Esta combinación permite integrar el equipo tanto al subsistema de balizamiento como al sistema embebido de adquisición y supervisión.
 
 \vspace{10px}
 \begin{figure}[htbp]
@@ -411,7 +411,7 @@ En la Figura~\ref{fig:amec-mando-301} se muestra el equipo AMEC MANDO 301 junto 
 \item \textbf{Modo AIS:} transmisión FATDMA, sin recepción AIS.
 \item \textbf{Función AIS principal:} balizamiento electrónico de ayudas a la navegación.
 \item \textbf{Posicionamiento:} receptor GPS con soporte SBAS y antena GPS externa.
-\item \textbf{Interfaz de datos:} RS-232 a 115200~bit/s, 8N1.
+\item \textbf{Interfaz de datos:} RS232 a 115200~bit/s, 8N1.
 \item \textbf{Interfaz RF:} antena VHF externa para transmisión AIS.
 \item \textbf{Potencia de transmisión:} 2, 5 o 12,5~W, programable.
 \item \textbf{Rol en EAMMRA:} identificación, posicionamiento y balizamiento electrónico.
@@ -457,12 +457,12 @@ La integración del WindSonic en EAMMRA y el desarrollo de las rutinas de config
 
 El sistema embebido se comunica con el instrumento mediante una conexión serie configurada a 9600~bit/s, 8N1. El modo de operación empleado es de tipo solicitado, o \textit{polled}, por lo que se debe requerir explícitamente cada medición. El mensaje de respuesta incluye la dirección del viento, la velocidad, las unidades de medida, un código de estado del instrumento y un campo de verificación de integridad. Esta modalidad permite integrar la adquisición meteorológica dentro del ciclo general de operación de la boya, sin depender de una transmisión continua no sincronizada con el resto de las tareas del sistema.
 
-La conexión eléctrica se realiza mediante el conector circular de 9 vías provisto por el fabricante. Para la opción~1, el cableado combina dos conductores de alimentación y tres conductores de comunicación: transmisión, recepción y referencia de señal. Como se muestra en la Figura~\ref{fig:windsonic-rs232}, la línea TXD del WindSonic se conecta con la entrada RXD del puerto serie o del conversor RS-232 a USB, mientras que la línea RXD del instrumento se conecta con la salida TXD de la interfaz de la computadora. La referencia común de señal es necesaria para interpretar correctamente los niveles eléctricos de la comunicación serie. El blindaje del cable se conecta del lado de la computadora o del chasis, y no del lado del anemómetro, con el objetivo de reducir la susceptibilidad frente a interferencias eléctricas sin introducir lazos de masa.
+La conexión eléctrica se realiza mediante el conector circular de 9 vías provisto por el fabricante. Para la opción~1, el cableado combina dos conductores de alimentación y tres conductores de comunicación: transmisión, recepción y referencia de señal. Como se muestra en la Figura~\ref{fig:windsonic-rs232}, la línea TXD del WindSonic se conecta con la entrada RXD del puerto serie o del conversor RS232 a USB, mientras que la línea RXD del instrumento se conecta con la salida TXD de la interfaz de la computadora. La referencia común de señal es necesaria para interpretar correctamente los niveles eléctricos de la comunicación serie. El blindaje del cable se conecta del lado de la computadora o del chasis, y no del lado del anemómetro, con el objetivo de reducir la susceptibilidad frente a interferencias eléctricas sin introducir lazos de masa.
 
 \begin{figure}[htbp]
  \centering
  \includegraphics[width=0.7\linewidth]{graficos/windsonic_RS232.png}
- \captionof{figure}{Esquema de conexión RS-232 del anemómetro WindSonic, opción~1.}
+ \captionof{figure}{Esquema de conexión RS232 del anemómetro WindSonic, opción~1.}
  \label{fig:windsonic-rs232}
 \end{figure}
 
@@ -667,7 +667,7 @@ El módem satelital Iridium se incorpora como periférico de telemetría remota 
 
 
 
-Desde el punto de vista eléctrico, la integración del módem requiere considerar dos aspectos principales: la interfaz serie de control y la alimentación durante los ciclos de transmisión. El transceptor 9603/9603N utiliza una interfaz serie de tipo DCE hacia la aplicación anfitriona y transfiere comandos, respuestas y datos SBD mediante comandos AT. Si el sistema anfitrión emplea niveles RS-232 convencionales, debe incorporarse la adaptación de niveles correspondiente. 
+Desde el punto de vista eléctrico, la integración del módem requiere considerar dos aspectos principales: la interfaz serie de control y la alimentación durante los ciclos de transmisión. El transceptor 9603/9603N utiliza una interfaz serie de tipo DCE hacia la aplicación anfitriona y transfiere comandos, respuestas y datos SBD mediante comandos AT. Si el sistema anfitrión emplea niveles RS232 convencionales, debe incorporarse la adaptación de niveles correspondiente. 
 
 La antena satelital constituye un elemento crítico del enlace. Debe estar ubicada con una vista despejada del cielo y con mínima obstrucción por la estructura de la boya, el mástil u otros periféricos instalados. El tramo de RF entre el módem y la antena debe mantener la impedancia adecuada, minimizar pérdidas y utilizar conectores y cable coaxial compatibles con operación en ambiente marítimo. En términos de diseño físico, la instalación debe proteger conectores, evitar esfuerzos mecánicos sobre el cableado y asegurar una puesta a masa coherente con el resto de la electrónica embarcada.
 
@@ -1380,7 +1380,7 @@ El Listado~\ref{lst:registro_behringer} muestra la estructura general del regist
 }
 \end{lstlisting}
 
-El módulo \texttt{AudioProc} genera productos derivados a partir de los archivos acústicos. Estos productos se almacenan como archivos \texttt{JSON} independientes, mientras que el archivo \texttt{audioProc\_readings.jsonl} mantiene la relación entre el archivo de entrada y la salida generada. De este modo, el sistema conserva trazabilidad entre la adquisición primaria y el producto procesado.
+El módulo funcional \texttt{AudioProc} genera productos derivados a partir de los registros acústicos como potencias de ruido en bandas de tercios de octava. Estos productos se almacenan como archivos \texttt{JSON} independientes, mientras que el archivo \texttt{audioProc\_readings.jsonl} mantiene la relación entre el archivo de entrada y la salida generada. De este modo, el sistema conserva trazabilidad entre la adquisición primaria y el producto procesado.
 
 El Listado~\ref{lst:registro_audioproc} muestra la estructura general del índice de procesamiento acústico. Esta relación resulta importante porque permite verificar qué archivos fueron procesados, qué producto se obtuvo y qué salida puede ser utilizada posteriormente para análisis compacto o telemetría.
 
@@ -1764,13 +1764,13 @@ Pruebas automatizadas, ensayos operacionales y reportes generados durante verifi
 \endgroup
 \end{table}
 
-Los archivos de configuración permiten ajustar el comportamiento del sistema sin modificar el código fuente. El archivo \texttt{\detokenize{configs/config.json}} contiene parámetros generales de adquisición, procesamiento, directorios de salida y habilitación de funciones específicas. El archivo \texttt{\detokenize{configs/scheduler.json}} define los intervalos utilizados por el planificador central. El archivo \texttt{\detokenize{configs/mock_modules.json}} permite seleccionar módulos que deben ejecutarse con implementaciones simuladas de bajo nivel.
+Los archivos de configuración permiten ajustar el comportamiento del sistema sin modificar el código fuente. El archivo \texttt{\detokenize{configs/config.json}} contiene parámetros generales de adquisición, procesamiento, directorios de salida y habilitación de funciones específicas. El archivo  define los intervalos utilizados por el planificador central y permite seleccionar módulos que deben ejecutarse con implementaciones simuladas de bajo nivel.
 
 La separación entre configuración y código es importante para una plataforma de ensayo e integración. Durante el desarrollo pueden requerirse tiempos de adquisición más cortos, módulos simulados o transmisión satelital deshabilitada. En cambio, durante una prueba de campo pueden utilizarse intervalos operativos, hardware real y rutas de almacenamiento definitivas. Mantener estos parámetros fuera del código reduce el riesgo de introducir cambios funcionales al modificar condiciones de ensayo.
 
 El sistema admite ejecución con hardware real y ejecución con componentes sustitutos. En el primer caso, las capas de bajo nivel acceden a los periféricos integrados en la boya. En el segundo, una o más capas de bajo nivel se reemplazan por implementaciones simuladas, manteniendo el mismo flujo de mensajes, estados y reportes. Esta capacidad permite ensayar la coordinación general del sistema aun cuando no todos los periféricos se encuentren disponibles.
 
-La activación de mocks puede realizarse de manera global o por módulo. La variable de entorno \texttt{\detokenize{USE_LL_MOCKS=1}} activa implementaciones simuladas para todos los módulos de bajo nivel. Para ensayos parciales, también puede utilizarse una variable específica por módulo, por ejemplo \texttt{\detokenize{USE_MOCK_AHT10=1}}, o declarar la selección en \texttt{\detokenize{configs/mock_modules.json}}. Esta última alternativa resulta más adecuada para ensayos repetibles, ya que deja registrada la configuración utilizada.
+La activación de mocks puede realizarse de manera global o por módulo. La variable de entorno \texttt{\detokenize{USE_LL_MOCKS=1}} activa implementaciones simuladas para todos los módulos de bajo nivel. Para ensayos parciales, también puede utilizarse una variable específica por módulo, como \texttt{\detokenize{USE_MOCK_AHT10=1}}, o declarar la selección en \texttt{\detokenize{configs/mock_modules.json}}. Esta última alternativa resulta más adecuada para ensayos repetibles, ya que deja registrada la configuración utilizada.
 
 El Listado~\ref{lst:mock-modules-json} muestra un ejemplo de selección persistente de módulos simulados. En este caso, sólo los módulos indicados se ejecutan con bajo nivel simulado, mientras que el resto puede operar con hardware real si se encuentra disponible.
 
@@ -1781,15 +1781,14 @@ El Listado~\ref{lst:mock-modules-json} muestra un ejemplo de selección persiste
 "Iridium",
 "AIS",
 "XTRA2210"
-]
-}
+]}
 \end{lstlisting}
 
 El sistema debe evitar configuraciones ambiguas. Por ejemplo, no resulta conveniente combinar una activación global de mocks con una lista parcial de módulos simulados, porque ambas decisiones representan criterios distintos de ejecución. La validación de estas condiciones permite detectar errores de configuración antes de iniciar la operación y reduce ambigüedades durante el análisis posterior de resultados.
 
 Los modos de ejecución quedan reflejados en los registros generados por el sistema. Cuando un módulo se ejecuta en modo simulado, esa condición debe quedar identificada en logs, mediciones y reportes de estado. Esta distinción es necesaria para diferenciar datos obtenidos con hardware real de datos generados durante ensayos de software, evitando interpretaciones incorrectas en etapas de validación o análisis posterior.
 
-El repositorio incluye scripts auxiliares destinados a facilitar la operación. El script \texttt{\detokenize{scripts/start_main.sh}} permite iniciar la aplicación con limpieza previa de procesos remanentes y redirección de salida. El script \texttt{\detokenize{scripts/stop_main.sh}} permite detener la aplicación de manera ordenada, enviando señales de terminación y verificando que no queden procesos activos. Estos scripts no reemplazan a la arquitectura de control del sistema, pero proporcionan una interfaz práctica para operación y mantenimiento.
+El repositorio incluye scripts auxiliares destinados a facilitar la operación. El script que permite iniciar la aplicación es \texttt{\detokenize{scripts/start_main.sh}}. El script procura realizar una limpieza previa de procesos remanentes. El script \texttt{\detokenize{scripts/stop_main.sh}} permite detener la aplicación de manera ordenada, enviando señales de terminación y verificando que no queden procesos activos. Estos scripts no reemplazan a la arquitectura de control del sistema, pero proporcionan una interfaz práctica para operación y mantenimiento.
 
 Además de los scripts de ejecución, el repositorio contempla pruebas automatizadas y pruebas asociadas a hardware. Las pruebas sin hardware permiten verificar componentes de software, lógica de mensajes, procesamiento y comportamiento de módulos simulados. Las pruebas con hardware permiten ejercitar las capas de bajo nivel y generar reportes de disponibilidad o funcionamiento de periféricos. Esta distinción resulta útil porque no todas las verificaciones requieren disponer de la boya completa.
 
