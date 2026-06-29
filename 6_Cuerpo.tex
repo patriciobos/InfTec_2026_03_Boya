@@ -10,7 +10,7 @@ La línea de trabajo EAMMRA se origina en la necesidad de disponer de una estaci
 
 Una primera etapa estuvo vinculada con la caracterización ambiental de la Zona de Adiestramiento en Inmersión de Sumergibles (ZAIS), donde se reunió información acústica, oceanográfica y de tráfico marítimo con el propósito de evaluar la factibilidad de instalar una Estación Autónoma Marítima para el Monitoreo de Ruido Ambiente \citep{AS0215_ZAIS}.
 
-Sobre esa base, la ingeniería conceptual de EAMMRA estableció los objetivos generales del sistema, los requerimientos de alto nivel y6 el escenario de operación \citep{AS0316_EAMMRAConceptual}. En ese marco se adoptó la distinción entre ruido ambiente propiamente dicho, \(NL_\mathrm{a}\), ruido propio del sistema de medición, \(NL_\mathrm{p}\), y ruido radiado por fuentes identificables. Esta separación resulta central para el diseño de la estación, ya que la calidad de una medición hidroacústica no depende únicamente del hidrófono y de la cadena de adquisición, sino también de la plataforma, del montaje, del fondeo, del acondicionamiento electrónico, del procesamiento y de la información contextual asociada a cada registro.
+Sobre esa base, la ingeniería conceptual de EAMMRA estableció los objetivos generales del sistema, los requerimientos de alto nivel y el escenario de operación \citep{AS0316_EAMMRAConceptual}. En ese marco se adoptó la distinción entre ruido ambiente propiamente dicho, \(NL_\mathrm{a}\), ruido propio del sistema de medición, \(NL_\mathrm{p}\), y ruido radiado por fuentes identificables. Esta separación resulta central para el diseño de la estación, ya que la calidad de una medición hidroacústica no depende únicamente del hidrófono y de la cadena de adquisición, sino también de la plataforma, del montaje, del fondeo, del acondicionamiento electrónico, del procesamiento y de la información contextual asociada a cada registro.
 
 En paralelo, se realizaron ensayos experimentales destinados a verificar componentes críticos de la cadena acústica. Las mediciones efectuadas en la dársena de la Base Naval Mar del Plata permitieron contrastar hidrófonos de banda ancha, evaluar el funcionamiento de amplificadores de carga, registrar ruido ambiente subacuático y analizar la respuesta frente a señales acústicas controladas \citep{AS0415_HidrofonosMDP}. Estos antecedentes aportaron criterios prácticos para la selección de sensores, el acondicionamiento de señal, la estimación espectral y la definición de procedimientos de adquisición.
 
@@ -44,7 +44,7 @@ La Figura~\ref{fig:boya_eammra} muestra la configuración general de la platafor
 		\vspace{0.2cm}
 		\small{\\Boya EAMMRA sobre su base de apoyo.}
 	\end{minipage}
-	 \caption{Boya instrumental EAMMRA. A la izquierda se muestra un diagrama esqumático de la plataforma con sus dimensiones principales; a la derecha, una fotografía de la boya montada sobre su base de apoyo.}
+	 \caption{Boya instrumental EAMMRA. A la izquierda se muestra un diagrama esquemático de la plataforma con sus dimensiones principales; a la derecha, una fotografía de la boya montada sobre su base de apoyo.}
 	\label{fig:boya_eammra}
 \end{figure}
 
@@ -132,7 +132,8 @@ El repositorio del proyecto incluye además archivos de configuración y documen
 \subsection{Herramientas de desarrollo y verificación}
 \label{subsec:herramientas_desarrollo}
 
-El desarrollo del software se gestiona mediante un repositorio Git alojado en GitHub, donde se integran el código fuente, los archivos de configuración, la documentación técnica, los scripts auxiliares y los ensayos automatizados del sistema \citep{BoyaRepo}. El uso de control de versiones permite registrar la evolución del proyecto, identificar cambios entre etapas de desarrollo, recuperar versiones previas y mantener trazabilidad entre modificaciones de código, pruebas y documentación asociada.
+El desarrollo del software se gestiona mediante un repositorio Git alojado en GitHub, donde se integran el código fuente, los archivos de configuración, la documentación técnica, los 
+ auxiliares y los ensayos automatizados del sistema \citep{BoyaRepo}. El uso de control de versiones permite registrar la evolución del proyecto, identificar cambios entre etapas de desarrollo, recuperar versiones previas y mantener trazabilidad entre modificaciones de código, pruebas y documentación asociada.
 
 El repositorio constituye además el punto de referencia para reproducir el entorno de trabajo y ejecutar las verificaciones disponibles. En este sentido, no cumple solamente una función de almacenamiento, sino que organiza la base técnica utilizada para el desarrollo, mantenimiento e integración del sistema embebido. La documentación complementaria del repositorio se utiliza para concentrar instrucciones operativas, criterios de instalación y notas de uso que no forman parte del cuerpo principal de este informe \citep{BoyaRepoDocs}.
 
@@ -208,7 +209,7 @@ La plataforma de hardware de la boya EAMMRA se organiza alrededor de una computa
 
 La Figura~\ref{fig:diagrama_bloques_hardware} presenta el diagrama de bloques del sistema integrado. En el centro se ubica el sistema principal, implementado sobre la computadora Kaise KBOX-S J6412. A esta unidad se conectan los periféricos mediante interfaces serie RS232 y RS485, y USB. El esquema permite distinguir los subsistemas principales de la boya y las interfaces físicas utilizadas para su integración.
 
-El subsistema de sensores agrupa los dispositivos orientados a la adquisición de variables ambientales, inerciales, meteorológicas y de posicionamiento. Incluye el AIS/GPS AMEC Mando-301 y el anemómetro GILL WindSonic, comunicados mediante RS232, junto con el sensor ambiental AHT10 y la unidad inercial MPU6050, integrados a través de un puente USB/I2C CH431A. El subsistema de audio está compuesto por la interfaz Behringer UMC204HD, los preamplificadores DAS-1 y DAS-2 y los hidrófonos B\&K 8105, conectados mediante interfaces analógicas BNC y BNC/XLR. El subsistema de energía comprende el panel solar, el regulador EPEVER XTRA2210 y la batería TRV de 12~V y 110~Ah, con supervisión mediante RS485. Finalmente, el subsistema de telemetría incorpora el módem Iridium Edge para transmisión remota de mensajes mediante enlace satelital con interfaz RS232.
+El subsistema de sensores agrupa los dispositivos orientados a la adquisición de variables ambientales, inerciales, meteorológicas y de posicionamiento. Incluye el AIS/GPS AMEC Mando-301 y el anemómetro GILL WindSonic, comunicados mediante RS232, junto con el sensor ambiental AHT10 y la unidad inercial MPU6050, integrados a través de un puente USB/I2C CH431A. El subsistema de audio está compuesto por la interfaz Behringer UMC202HD, los preamplificadores DAS-1 y DAS-2 y los hidrófonos B\&K 8105, conectados mediante interfaces analógicas BNC y BNC/XLR. El subsistema de energía comprende el panel solar, el regulador EPEVER XTRA2210 y la batería TRV de 12~V y 110~Ah, con supervisión mediante RS485. Finalmente, el subsistema de telemetría incorpora el módem Iridium Edge para transmisión remota de mensajes mediante enlace satelital con interfaz RS232.
 
 \begin{figure}[!htbp]
     \centering
@@ -1801,11 +1802,153 @@ En conjunto, la estructura del repositorio y los modos de ejecución complementa
 
 \clearpage
 \section{PRUEBAS Y ENSAYOS}
-\subsection{Pruebas unitarias y de integración}
-\subsection{Tests de bajo nivel y simulaciones (mocks)}
-\subsection{Ensayos operacionales en laboratorio}
-\subsection{Pruebas de campo y telemetría}
-\subsection{Resultados obtenidos}
+\label{sec:pruebas_ensayos}
+
+\subsection{Estrategia general de verificación}
+
+La verificación del sistema embebido se organizó en tres niveles complementarios. En primer lugar, se ejecutaron ensayos unitarios y de contrato sobre componentes de software independientes, con el objetivo de verificar funciones de codificación, validación de formatos, almacenamiento, enrutamiento de mensajes y lógica auxiliar. En segundo lugar, se realizaron pruebas funcionales sobre módulos completos, tanto con implementaciones \textit{mock} como con hardware real, a fin de evaluar el comportamiento de las capas de bajo nivel y de las Máquinas de Estados Finitos. Finalmente, se efectuaron pruebas de integración en laboratorio, orientadas a verificar la operación conjunta del planificador de tareas, el enrutador de eventos, los módulos de adquisición, el almacenamiento local, el procesamiento acústico y la telemetría satelital.
+
+Esta organización permite distinguir entre errores de implementación local, fallas de integración entre módulos y problemas asociados a la operación física de los periféricos. Asimismo, facilita la repetibilidad de los ensayos, ya que una parte significativa de la suite puede ejecutarse sin hardware conectado mediante el uso de módulos simulados, mientras que las pruebas marcadas como \texttt{hardware} quedan reservadas para campañas de verificación con periféricos reales.
+
+\subsection{Ensayos unitarios y funcionales automatizados}
+
+El repositorio de código incluye una carpeta \texttt{test/} destinada a la verificación automatizada del software. La suite contempla pruebas unitarias de funciones auxiliares, pruebas de contrato de formatos binarios, pruebas funcionales de bajo nivel, pruebas de las Máquinas de Estados Finitos y pruebas de integración parcial entre componentes del proceso principal.
+
+Las pruebas unitarias verifican, entre otros aspectos, el empaquetado y desempaquetado de mensajes Iridium, la codificación de estado del sistema, la validación de sumas de verificación, la evaluación de condiciones de almacenamiento, el registro de datos en formato JSONL, la construcción de tramas Modbus para el controlador XTRA2210 y el enrutamiento de mensajes entre módulos. Estas pruebas no dependen de hardware físico y permiten validar de manera repetible los contratos internos del software.
+
+Las pruebas funcionales con \textit{mocks} verifican que los módulos puedan inicializarse, ejecutar sus rutinas de autodiagnóstico, procesar mensajes y retornar a estados operativos sin requerir periféricos conectados. En particular, se evalúa que las FSM acepten señales de recuperación desde el proceso principal, que ignoren mensajes operativos cuando se encuentran en estado de error, que el mecanismo de selección de \textit{low-levels} simulados sea consistente y que los registros generados queden correctamente identificados como provenientes de hardware simulado.
+
+Las pruebas con hardware real se encuentran separadas mediante la marca \texttt{hardware}. Esta separación evita que la suite local dependa de la disponibilidad física de sensores, puertos serie, interfaz de audio o módem satelital. Cuando se habilitan mediante la variable correspondiente, estas pruebas verifican la presencia de dispositivos, la apertura de interfaces, la ejecución de adquisiciones reales y la generación de registros persistentes.
+
+\begin{table}[htpb]
+\centering
+\small
+\caption{Resumen de niveles de prueba automatizada del software embebido.}
+\label{tab:resumen_pruebas_automatizadas}
+\begin{tabularx}{\textwidth}{p{0.22\textwidth} p{0.25\textwidth} X}
+\toprule
+\textbf{Nivel de prueba} & \textbf{Archivos representativos} & \textbf{Aspectos verificados} \\
+\midrule
+Unitarias y de contrato &
+\texttt{test\_iridium\_protocol.py}, \texttt{test\_storage\_guard.py}, \texttt{test\_xtra2210\_write.py} &
+Codificación binaria, CRC, banderas de estado, sentinelas, validación de almacenamiento, construcción de tramas Modbus y restricciones de escritura segura. \\
+\addlinespace
+Componentes comunes &
+\texttt{test\_router.py}, \texttt{test\_data\_logger.py}, \texttt{test\_central\_scheduler.py}, \texttt{test\_base\_fsm.py} &
+Despacho de mensajes, persistencia JSONL, marcas temporales, alineación de eventos periódicos, ciclo de transmisión Iridium y comportamiento base de las FSM. \\
+\addlinespace
+Pruebas funcionales con \textit{mocks} &
+\texttt{test\_fsm\_mocks.py}, \texttt{test\_ll\_functional.py} &
+Inicialización, autodiagnóstico, transición de estados, recuperación, aislamiento de fallas y ejecución repetible sin hardware conectado. \\
+\addlinespace
+Pruebas con hardware real &
+\texttt{test\_ais\_LL.py}, \texttt{test\_behringer\_LL.py}, \texttt{test\_hardware\_fsm\_logging.py}, \texttt{test\_run\_ll\_scripts.py} &
+Detección de periféricos, apertura de interfaces, adquisición real, generación de registros y reporte consolidado de scripts de bajo nivel. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Cobertura y métricas de los ensayos automatizados}
+
+El análisis de cobertura se planteó en dos perfiles. El perfil general de cobertura considera el proceso principal y los módulos de software, pero excluye los archivos \texttt{*\_LL.py} que dependen directamente de hardware físico. Este criterio permite obtener una métrica representativa del comportamiento lógico del sistema sin penalizar la suite local por rutas de código que requieren periféricos conectados. El segundo perfil, definido para ensayos con hardware, permite incluir una porción mayor de los módulos de bajo nivel durante campañas instrumentadas.
+
+Las métricas utilizadas para evaluar la suite fueron: cantidad de pruebas ejecutadas, cantidad de pruebas aprobadas, pruebas omitidas, pruebas fallidas, cobertura de líneas, cobertura de ramas y cobertura por módulo. Para el informe final, estas métricas deben reportarse junto con el comando utilizado, el perfil de cobertura aplicado y la condición de ejecución, indicando explícitamente si la corrida se realizó con hardware real, con \textit{mocks}, o en modo mixto.
+
+\begin{table}[htpb]
+\centering
+\small
+\caption{Métricas a reportar para la suite automatizada.}
+\label{tab:metricas_tests_automatizados}
+\begin{tabularx}{\textwidth}{p{0.28\textwidth} p{0.20\textwidth} X}
+\toprule
+\textbf{Métrica} & \textbf{Valor} & \textbf{Observación} \\
+\midrule
+Pruebas ejecutadas & \textit{completar} & Total informado por \texttt{pytest}. \\
+Pruebas aprobadas & \textit{completar} & Debe distinguirse de las pruebas omitidas por falta de hardware. \\
+Pruebas omitidas & \textit{completar} & En particular, pruebas marcadas como \texttt{hardware} cuando no se habilita \texttt{RUN\_HARDWARE\_TESTS}. \\
+Pruebas fallidas & \textit{completar} & Deben consignarse sólo si existieron fallas no esperadas. \\
+Cobertura de líneas & \textit{completar} & Resultado global del perfil de cobertura utilizado. \\
+Cobertura de ramas & \textit{completar} & Métrica relevante por el uso de FSM, validaciones y manejo de errores. \\
+Módulos de menor cobertura & \textit{completar} & Útil para identificar código pendiente de ensayo o dependiente de hardware. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Pruebas de integración en laboratorio}
+
+Una vez verificados los componentes individuales, se realizó un ensayo de integración de larga duración en laboratorio. El objetivo fue evaluar el comportamiento del sistema completo durante una operación sostenida, incluyendo la ejecución del proceso principal, el planificador de tareas, el enrutador de eventos, las FSM de adquisición, el almacenamiento local, el procesamiento acústico y la generación de mensajes para telemetría satelital.
+
+El ensayo principal se realizó sin el conjunto panel solar--batería como fuente autónoma de energía. En esta condición, el sistema permaneció alimentado en laboratorio y ejecutó la configuración operativa prevista para los módulos de adquisición y telemetría. El intervalo identificado se extendió desde el 18/06/2026 a las 11:00:00 hasta el 23/06/2026 a las 09:40:06, con una duración aproximada de 118,7 h, equivalente a 4 días, 22 h y 40 min.
+
+La configuración del planificador contempló adquisiciones cada 600 s para los módulos AHT10, AIS, MPU6050, Windsonic y XTRA2210; adquisiciones acústicas cada 14400 s para el módulo Behringer; generación de eventos Iridium cada 3600 s; y procesamiento acústico asociado a la disponibilidad de grabaciones, sin agenda periódica independiente para AudioProc.
+
+\begin{table}[htpb]
+\centering
+\small
+\caption{Resumen del ensayo de integración de larga duración en laboratorio.}
+\label{tab:ensayo_larga_duracion}
+\begin{tabularx}{\textwidth}{p{0.18\textwidth} p{0.18\textwidth} p{0.16\textwidth} X}
+\toprule
+\textbf{Módulo} & \textbf{Periodicidad} & \textbf{Registros} & \textbf{Resultado observado} \\
+\midrule
+AIS & 600 s & 711 & Operación sostenida durante todo el intervalo principal. \\
+XTRA2210 & 600 s & 711 & Operación sostenida; tensión y corriente de panel nulas, consistente con el ensayo sin aporte solar. \\
+Windsonic & 600 s & 675 & Operación sostenida, con registros inválidos aislados en el archivo JSONL. \
+Behringer & 14400 s & 30 & Grabaciones acústicas programadas durante el ensayo. \\
+AudioProc & por evento & 30 & Productos derivados generados a partir de las grabaciones disponibles. \
+Iridium & 3600 s & 121 & Solicitudes periódicas de telemetría, incluyendo eventos omitidos por transmisión deshabilitada y eventos posteriores con transmisión habilitada. \\
+AHT10 & 600 s & 189 & Operación hasta la desconexión inducida del adaptador USBI2C; luego el módulo pasó a condición de falla segura. \\
+MPU6050 & 600 s & 189 & Operación hasta la desconexión inducida del adaptador USBI2C; luego el módulo pasó a condición de falla segura. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Los registros del controlador XTRA2210 muestran tensión y corriente fotovoltaica nulas durante el intervalo principal, lo cual confirma que el ensayo no evaluó aún el comportamiento energético con panel solar. Por lo tanto, el resultado debe interpretarse como una validación de integración funcional y continuidad de ejecución del sistema embebido, no como una validación de autonomía energética.
+
+\subsection{Evaluación frente a fallas inducidas}
+
+Durante el ensayo de integración se produjo una falla inducida por desconexión del adaptador USB--I2C CH341, utilizado por los módulos AHT10 y MPU6050. Esta condición permitió evaluar el comportamiento del sistema frente a la pérdida de un bus compartido por dos periféricos.
+
+Hasta el 19/06/2026 a las 19:00:00 ambos módulos generaron registros válidos. Luego de la desconexión, las rutinas de bajo nivel dejaron de obtener datos válidos y las FSM correspondientes pasaron a estado de error. El proceso principal ejecutó intentos de recuperación mediante señales de reinicialización y, al agotarse la cantidad prevista de reintentos, marcó los módulos como fallados de forma no recuperable.
+
+El resultado observado fue consistente con una falla segura. La pérdida de AHT10 y MPU6050 no detuvo el proceso principal ni interrumpió la operación de los demás módulos. Durante el resto del ensayo continuaron registrándose datos de AIS, Windsonic y XTRA2210, así como grabaciones acústicas, productos de AudioProc y solicitudes de telemetría Iridium. Este comportamiento verifica el aislamiento de fallas por módulo y la capacidad del sistema para continuar operando ante la pérdida parcial de periféricos.
+
+Desde el punto de vista de la arquitectura, este ensayo valida la decisión de encapsular cada subsistema en una FSM independiente, supervisada por el proceso principal. La falla de un módulo queda confinada a su propio estado operativo, mientras que el planificador y el enrutador continúan atendiendo los módulos restantes. Esta característica es relevante para una boya instrumental, donde pueden producirse fallas parciales de sensores, conectores, buses o periféricos sin que ello deba comprometer la adquisición de los demás subsistemas.
+
+\subsection{Ensayos de telemetría satelital}
+
+Durante el ensayo de integración se evaluó también la generación de mensajes para telemetría Iridium. Los registros locales muestran 121 solicitudes de transmisión durante el intervalo principal del 18/06/2026 al 23/06/2026. De ellas, 61 quedaron registradas como omitidas por la condición \texttt{iridium\_transmit\_disabled}, mientras que 60 correspondieron a solicitudes posteriores sin esa marca de omisión.
+
+Los registros con marca \texttt{skipped} son relevantes porque documentan un modo de ensayo seguro, en el cual el sistema genera el evento de transmisión, construye el mensaje y registra sus metadatos, pero no activa efectivamente el enlace satelital. Este modo permite verificar la integración del planificador, la FSM de Iridium y el empaquetado de mensajes sin consumir sesiones satelitales ni depender de la disponibilidad del módem.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Resumen de solicitudes Iridium durante el ensayo de integración.}
+\label{tab:resumen_iridium_larga_duracion}
+\begin{tabularx}{\textwidth}{p{0.26\textwidth} p{0.18\textwidth} X}
+\toprule
+\textbf{Condición} & \textbf{Cantidad} & \textbf{Interpretación} \
+\midrule
+Solicitudes omitidas & 61 & Eventos generados con transmisión satelital deshabilitada; registrados con \texttt{skipped\_reason = iridium\_transmit_\disabled}. \
+Solicitudes no omitidas & 60 & Eventos de transmisión registrados luego de habilitar la telemetría. \
+Mensajes de estado & 64 & Mensajes compactos de estado del sistema. \
+Mensajes de audio procesado & 29 & Mensajes derivados de productos de AudioProc. \
+Mensajes \textit{alive} legacy & 28 & Mensajes de compatibilidad operativa previos al formato compacto consolidado. \
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Además de los eventos periódicos del planificador, se realizaron transmisiones manuales de prueba el 19/06/2026. En esa instancia se generaron cuatro mensajes en modo \textit{dry-run}, sin envío efectivo, y dos mensajes con envío habilitado: un mensaje de estado del sistema de 11 bytes y un mensaje de audio procesado de 107 bytes. En ambos casos el registro local indicó escritura satisfactoria del payload en el módem y finalización correcta de la operación de envío.
+
+Los adjuntos de transmisión satelital recibidos correctamente durante los ensayos constituyen evidencia externa de recepción y deben incorporarse como respaldo documental de esta validación. En conjunto, los registros locales y los mensajes recibidos permiten verificar la cadena completa de telemetría: generación del evento, armado del payload binario, interacción con el módem Iridium, sesión SBD y recepción remota.
+
+\subsection{Ensayo con panel solar y batería}
+
+El ensayo de integración descrito anteriormente permitió evaluar la continuidad funcional del sistema, pero no la autonomía energética con aporte fotovoltaico. El ensayo posterior con panel solar y batería se incorporará como una prueba complementaria orientada a verificar el comportamiento del sistema bajo una configuración representativa de operación autónoma.
+
+Para ese ensayo se analizarán la tensión y corriente del panel solar, la tensión de batería, el estado de carga informado por el controlador, la corriente de carga, la corriente de consumo de la carga y la continuidad de operación de los módulos principales. La comparación entre ambos ensayos permitirá separar los resultados asociados a estabilidad de software e integración funcional de aquellos vinculados con disponibilidad energética y recuperación de carga.
+
 
 \clearpage
 \section{CONCLUSIONES Y TRABAJO FUTURO}
