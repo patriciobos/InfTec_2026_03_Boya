@@ -1,0 +1,105 @@
+{
+  "last_updated": "2026-06-29T14:30:03-03:00",
+  "modules": {
+    "Behringer": {
+      "state": "IDLE",
+      "mode": "hardware",
+      "last_action": null,
+      "last_result": null,
+      "last_details": {},
+      "updated_at": "2026-06-29T14:10:36-03:00"
+    },
+    "AudioProc": {
+      "state": "IDLE",
+      "mode": "hardware",
+      "last_action": null,
+      "last_result": null,
+      "last_details": {},
+      "updated_at": "2026-06-29T14:10:51-03:00"
+    },
+    "Windsonic": {
+      "state": "ERROR",
+      "mode": "hardware",
+      "last_action": "recover",
+      "last_result": "error",
+      "last_details": {
+        "origin": "Windsonic",
+        "state": "ERROR",
+        "action": "recover",
+        "result": "error",
+        "error": "Module failed irrecoverably",
+        "recovery_attempts": 3
+      },
+      "updated_at": "2026-06-29T14:10:51-03:00"
+    },
+    "Iridium": {
+      "state": "ERROR",
+      "mode": "hardware",
+      "last_action": "recover",
+      "last_result": "error",
+      "last_details": {
+        "origin": "Iridium",
+        "state": "ERROR",
+        "action": "recover",
+        "result": "error",
+        "error": "Module failed irrecoverably",
+        "recovery_attempts": 3
+      },
+      "updated_at": "2026-06-29T14:10:51-03:00"
+    },
+    "AHT10": {
+      "state": "IDLE",
+      "mode": "hardware",
+      "last_action": null,
+      "last_result": null,
+      "last_details": {},
+      "updated_at": "2026-06-29T14:30:03-03:00"
+    },
+    "AIS": {
+      "state": "ERROR",
+      "mode": "hardware",
+      "last_action": "recover",
+      "last_result": "error",
+      "last_details": {
+        "origin": "AIS",
+        "state": "ERROR",
+        "action": "recover",
+        "result": "error",
+        "error": "Module failed irrecoverably",
+        "recovery_attempts": 3
+      },
+      "updated_at": "2026-06-29T14:13:08-03:00"
+    },
+    "MPU6050": {
+      "state": "ERROR",
+      "mode": "hardware",
+      "last_action": "recover",
+      "last_result": "error",
+      "last_details": {
+        "origin": "MPU6050",
+        "state": "ERROR",
+        "action": "recover",
+        "result": "error",
+        "error": "Module failed irrecoverably",
+        "recovery_attempts": 3
+      },
+      "updated_at": "2026-06-29T14:20:17-03:00"
+    },
+    "XTRA2210": {
+      "state": "ERROR",
+      "mode": "hardware",
+      "last_action": "recover",
+      "last_result": "error",
+      "last_details": {
+        "origin": "XTRA2210",
+        "state": "ERROR",
+        "action": "recover",
+        "result": "error",
+        "error": "Module failed irrecoverably",
+        "recovery_attempts": 3
+      },
+      "updated_at": "2026-06-29T14:10:43-03:00"
+    }
+  },
+  "summary": {}
+}
