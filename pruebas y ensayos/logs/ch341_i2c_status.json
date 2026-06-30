@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-29T14:10:32-03:00",
+  "level": "OK",
+  "message": "CH341 I2C disponible: i2c-1	i2c       	CH341 I2C USB bus 001 device 003	I2C adapter",
+  "usb_detected": true,
+  "i2c_bus_detected": true,
+  "usb_line": "Bus 001 Device 003: ID 1a86:5512 QinHeng Electronics CH341 in EPP/MEM/I2C mode, EPP/I2C adapter",
+  "i2c_line": "i2c-1	i2c       	CH341 I2C USB bus 001 device 003	I2C adapter",
+  "modules": "i2c_ch341,ch341_core"
+}

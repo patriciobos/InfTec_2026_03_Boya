@@ -1,0 +1,111 @@
+s........s.F..s                                                          [100%]
+=================================== FAILURES ===================================
+_____________ test_hardware_fsm_acquire_logs_real_reading[MPU6050] _____________
+
+module_name = 'MPU6050'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fcf352fd730>
+
+    @pytest.mark.hardware
+    @pytest.mark.timeout(180)
+    @pytest.mark.parametrize("module_name", _enabled_modules())
+    def test_hardware_fsm_acquire_logs_real_reading(module_name, monkeypatch):
+        if os.getenv("RUN_HARDWARE_TESTS", "0").strip().lower() not in (
+            "1",
+            "true",
+            "yes",
+            "on",
+        ):
+            pytest.skip("hardware test disabled; set RUN_HARDWARE_TESTS=1 to run")
+    
+        monkeypatch.delenv("USE_LL_MOCKS", raising=False)
+        for name in MODULES:
+            monkeypatch.delenv(f"USE_MOCK_{name.upper()}", raising=False)
+    
+        import modules.support.ll_factory as ll_factory
+    
+        importlib.reload(ll_factory)
+    
+        module_path, class_name, acquire_message = MODULES[module_name]
+        module = importlib.import_module(module_path)
+        importlib.reload(module)
+        fsm = getattr(module, class_name)()
+    
+        readings_file = get_data_path() / f"{module_name.lower()}_readings.jsonl"
+        before = _line_count(readings_file)
+    
+        fsm.handle_message(Message(MessageID.SIG_INIT))
+        _drive_until(fsm, {State.IDLE, State.ERROR}, timeout_s=45.0)
+        if fsm.state == State.ERROR:
+            last_error = getattr(fsm.ll, "last_error", None)
+            if _is_missing_hardware_error(last_error):
+                pytest.skip(
+                    f"Hardware unavailable for {module_name}: {last_error or 'unknown error'}"
+                )
+>       assert fsm.state == State.IDLE
+E       assert <State.ERROR: 8> == <State.IDLE: 4>
+E        +  where <State.ERROR: 8> = <modules.mpu6050_fsm.MPU6050HandlerFSM object at 0x7fcf52863c50>.state
+E        +  and   <State.IDLE: 4> = State.IDLE
+
+test/test_hardware_fsm_logging.py:149: AssertionError
+------------------------------ Captured log call -------------------------------
+INFO     MPU6050:base_fsm.py:175 State change: DISABLE -> INIT
+INFO     mpu6050_LL:mpu6050_LL.py:261 Initializing module
+INFO     mpu6050_LL:mpu6050_LL.py:336 Closing I2C bus
+INFO     mpu6050_LL:mpu6050_LL.py:344 I2C bus closed
+INFO     mpu6050_LL:mpu6050_LL.py:274 Module initialized: address=0x68 bus_num=None bus_forced=False bus_candidates=[1, 0, 10, 11, 12, 2, 3, 4, 5, 6, 7, 8, 9]
+INFO     MPU6050:base_fsm.py:175 State change: INIT -> TEST
+INFO     mpu6050_LL:mpu6050_LL.py:423 Running full test
+INFO     mpu6050_LL:mpu6050_LL.py:290 Opening I2C bus
+INFO     mpu6050_LL:mpu6050_LL.py:316 Trying I2C bus 1 for MPU6050@0x68
+INFO     mpu6050_LL:mpu6050_LL.py:316 Trying I2C bus 0 for MPU6050@0x68
+INFO     mpu6050_LL:mpu6050_LL.py:320 Opened I2C bus 0
+INFO     mpu6050_LL:mpu6050_LL.py:336 Closing I2C bus
+INFO     mpu6050_LL:mpu6050_LL.py:344 I2C bus closed
+INFO     mpu6050_LL:mpu6050_LL.py:290 Opening I2C bus
+INFO     mpu6050_LL:mpu6050_LL.py:316 Trying I2C bus 0 for MPU6050@0x68
+INFO     mpu6050_LL:mpu6050_LL.py:320 Opened I2C bus 0
+INFO     mpu6050_LL:mpu6050_LL.py:336 Closing I2C bus
+INFO     mpu6050_LL:mpu6050_LL.py:344 I2C bus closed
+INFO     MPU6050:base_fsm.py:175 State change: TEST -> ERROR
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.3-final-0 ________________
+
+Name                                  Stmts   Miss Branch BrPart  Cover   Missing
+---------------------------------------------------------------------------------
+main.py                                 122     87     42      0    21%   26-31, 50-80, 83, 86-88, 92, 96-102, 105-108, 112, 115-138, 143-146, 149-182
+modules/aht10_LL.py                     421    201     84     14    48%   33, 92, 122-126, 134-136, 139-140, 146, 153, 178-180, 185-188, 192-198, 203, 221, 226-249, 255-256, 263-270, 289-290, 297-300, 311-313, 316-318, 325-359, 363-387, 402-403, 414-415, 424-434, 455, 461, 480-481, 487, 493-498, 502-513, 529-533, 549-587, 590, 608-634, 638-678
+modules/aht10_fsm.py                    107     61     46      8    37%   24-60, 64, 78, 80, 84, 87->89, 91-97, 100->105, 119-173
+modules/ais_LL.py                       617    234    170     44    60%   42-68, 75, 78->81, 87-88, 137-138, 142-143, 165, 186-187, 193, 197, 205-209, 220-221, 226-227, 258, 281-282, 289-290, 303-304, 307, 312->342, 317->342, 339-340, 343, 346, 369, 390-391, 398-399, 412-413, 416, 421->407, 426->407, 448-450, 453, 490, 495->498, 518-522, 536-538, 541-542, 547->546, 554-571, 583-587, 596-604, 610-628, 638-647, 666-668, 675-678, 682, 710-713, 720->798, 772-791, 807-813, 822-831, 868-873, 877-884, 897, 900, 905, 910->exit, 920-922, 934->exit, 940-941, 945-946, 950-951, 965->exit, 982->988, 985-986, 989->exit, 996-1008, 1024-1025, 1038, 1044-1045, 1052-1053, 1055->1041, 1062-1104
+modules/ais_fsm.py                      103     25     50     17    67%   21, 35, 37, 55, 58, 62-66, 76, 79->81, 84, 86, 87->exit, 92->97, 112, 119, 121->123, 127, 136-138, 143-149
+modules/audioProc_LL.py                 522    480    126      0     6%   30-40, 61-74, 77, 80, 83, 95-115, 119-133, 137-141, 145-163, 167-185, 191-211, 225-293, 310-499, 515-621, 624-633, 636-644, 647-664, 680-700, 709-823
+modules/audioProc_fsm.py                167    149     72      0     8%   16-21, 25-30, 35-40, 43-44, 50-67, 70-85, 88-106, 109-114, 117-137, 140-212
+modules/behringer_LL.py                 668    247    150     49    60%   168, 176-182, 187-193, 243-244, 263-265, 276, 284-286, 289, 331-345, 354->359, 356-357, 361-362, 368-372, 391-393, 407, 443->448, 446-447, 449->455, 452-453, 479-484, 501-504, 515, 517, 519, 521, 523, 525, 556-560, 567-569, 571-572, 594-603, 611, 616-617, 629-639, 656-659, 667, 681-684, 693->697, 695, 698, 700, 704-707, 722-726, 732-738, 743->755, 752-753, 759, 774-775, 807-812, 823-825, 827-829, 843, 845-855, 857->864, 859-863, 865-871, 880-881, 886-896, 900-904, 907-911, 914-918, 946-949, 952, 957-971, 978->994, 985-992, 994->935, 1002-1006, 1024, 1033-1043, 1058-1061, 1071-1072, 1075-1085, 1089-1112
+modules/behringer_fsm.py                128     33     56     18    69%   16, 25, 28-29, 47, 49-55, 59, 74, 79, 83, 92-97, 100->102, 105, 107, 111-113, 138-139, 147-148, 162->172, 173, 176->178, 181-189
+modules/iridium_LL.py                   554    554    130      0     0%   19-977
+modules/iridium_fsm.py                  333    298    116      0     8%   51-55, 58-59, 65-76, 79-86, 89-99, 102-136, 144-178, 191-195, 198, 201-232, 235-252, 255-261, 264-268, 271-304, 307-312, 315-332, 335-348, 351-384, 387, 390-402, 410-420, 428-455, 458-578
+modules/mpu6050_LL.py                   719    403    164     23    40%   28, 126, 130, 136, 147, 151->153, 171-177, 184, 208->211, 213, 235-238, 247-248, 252->257, 282-286, 294-296, 299-300, 303, 310, 326-332, 346-351, 355-368, 372-419, 457-460, 467-469, 477, 479->489, 484-487, 500-551, 554-560, 561->565, 570-586, 596-600, 606, 614-615, 618-619, 622-624, 627-631, 634-638, 641-643, 646-650, 653-654, 657-661, 664-665, 668-674, 678-681, 684-687, 694-697, 700-703, 710-714, 725-728, 739-748, 751-760, 763-765, 768-770, 773, 776, 779, 782, 785-788, 791-795, 806, 809-811, 814-816, 819, 822, 825, 831, 834, 840, 843-844, 847-868, 876-907, 910-912, 915-917, 920-923, 934-945, 948, 951, 954-971, 985-1010, 1017-1050
+modules/mpu6050_fsm.py                   78     37     34      8    46%   20, 34, 36, 39-41, 52, 55->57, 59-65, 68->73, 87-112
+modules/support/base_fsm.py             154     92     34      3    35%   93, 96, 102-122, 129-165, 172->exit, 184, 205-290
+modules/support/data_logger.py           52     12     18      6    71%   17, 24, 33, 36-38, 55, 58, 66-67, 70-71
+modules/support/i2c_common.py            17      2      6      2    83%   17->20, 23-24, 25->20
+modules/support/iridium_protocol.py     404    319    182      0    15%   75-86, 90-95, 99-105, 109-112, 116-119, 123-127, 131-139, 143-149, 153-154, 158-163, 181-200, 204-205, 226-243, 257-276, 297, 301-303, 313-327, 331-350, 354-360, 364-370, 374-377, 381-392, 396-403, 407-414, 418-426, 430-443, 447-455, 459-467, 471-480, 492-500, 509-518, 522-573, 585-601, 605, 609-627, 631-632, 636-646
+modules/support/ll_factory.py            55     18     16      7    62%   59, 67-77, 88, 93, 95, 97, 99, 104, 108, 114, 118-123, 131
+modules/support/ll_mocks.py             237    182     30      0    21%   16-24, 27, 30, 33, 42-50, 53-60, 63-66, 69-72, 75-80, 83-88, 91-94, 99-101, 104-125, 128-134, 139-143, 146-166, 169, 172-178, 183-189, 192-193, 196-214, 217, 220-227, 232, 235, 250-254, 265-271, 276, 279-284, 287-291, 294-298, 303, 306, 319-324, 329, 332-336, 347, 350-354
+modules/support/log_utils.py             36      9     12      4    69%   17, 31, 36-39, 53-55
+modules/support/router.py                95     65     30      0    24%   36-41, 44, 74-75, 78-79, 82-86, 89-119, 122-123, 126-143, 146, 153-168
+modules/support/status_report.py         26     16      2      0    36%   13-20, 23-40, 43-44
+modules/support/storage_guard.py        126     21     30     12    78%   57, 72, 95, 107, 113-114, 132-133, 136->138, 139-141, 143->152, 149-150, 163, 165, 175, 200, 203, 206-208
+modules/support/system_config.py        105     33     30      8    62%   39-42, 59-62, 85, 87, 91, 97-104, 107, 118, 124-135, 139, 145->147, 154->156
+modules/windsonic_LL.py                 399    399     90      0     0%   21-673
+modules/windsonic_fsm.py                115    102     54      0     8%   9-15, 19-42, 47-52, 55-56, 62-73, 76-81, 84-102, 105-162
+modules/xtra2210_LL.py                  780    368    276     53    50%   156, 164, 167, 184-188, 196, 241-253, 256, 264, 268, 273, 275, 278-281, 283, 286, 294-313, 316-320, 359->361, 397, 414, 420, 430-467, 476-517, 521-525, 529-547, 551-556, 560, 571, 577, 584, 586, 611->610, 625-633, 650-651, 657, 672-682, 698-746, 749-765, 773-794, 798, 801, 814, 820, 831, 838, 851, 870, 872, 874, 876, 892, 894, 896, 898, 900, 919, 923->934, 926, 935-939, 945-947, 949-950, 954-956, 963-973, 981->985, 983-984, 990-997, 1000-1011, 1014-1024, 1027-1053, 1064-1068, 1074-1080, 1093-1094, 1097-1098, 1109-1110, 1112->1114, 1115-1116, 1159-1164, 1172-1227
+modules/xtra2210_fsm.py                  86     16     34     12    73%   20, 34, 36, 60, 63->65, 68, 70, 71->exit, 76->81, 96, 102->104, 109-111, 116-122
+---------------------------------------------------------------------------------
+TOTAL                                  7226   4463   2084    288    35%
+
+1 file skipped due to complete coverage.
+=========================== short test summary info ============================
+SKIPPED [1] test/test_ais_LL.py:39: No AIS/GPS device present on detected serial port
+SKIPPED [1] test/test_hardware_fsm_logging.py:146: Hardware unavailable for AHT10: Basic probe failed after scanning all candidate I2C buses
+SKIPPED [1] test/test_run_ll_scripts.py:311: Skipping LL scripts due to missing hardware: aht10_LL, iridium_LL, mpu6050_LL, windsonic_LL. Summary: /home/boya/boya/test/reports/ll_scripts_summary.log. Details: /home/boya/boya/test/reports/ll_scripts_report.json
+1 failed, 11 passed, 3 skipped, 115 deselected in 148.31s (0:02:28)
