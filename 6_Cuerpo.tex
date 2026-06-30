@@ -1859,9 +1859,16 @@ Módulos de menor cobertura & 63--68~\% & Principalmente FSM con rutas dependien
 
 Una vez verificados los componentes individuales, se realizó un primer ensayo de integración de larga duración en laboratorio. El objetivo fue evaluar el comportamiento del sistema durante una operación sostenida, incluyendo la ejecución del proceso principal, el planificador de tareas, el enrutador de eventos, las FSM de adquisición, el almacenamiento local, el procesamiento acústico y la generación de mensajes para telemetría satelital.
 
-Este primer ensayo se realizó sin el subsistema de energía autónoma completo. En esta condición, el sistema permaneció alimentado en laboratorio y ejecutó la configuración operativa prevista para los módulos de adquisición y telemetría. El intervalo identificado se extendió desde el 18/06/2026 a las 11:00:00 hasta el 23/06/2026 a las 09:40:06, con una duración aproximada de 118,7 h, equivalente a 4 días, 22 h y 40 min.
+Este primer ensayo se realizó sin el subsistema de energía autónoma completo. En esta condición, el sistema permaneció alimentado en laboratorio y ejecutó la configuración operativa prevista para los módulos de adquisición y telemetría. La Figura~\ref{fig:collage_ensayo_laboratorio} muestra la configuración física utilizada durante esta etapa de integración. El intervalo identificado se extendió desde el 18/06/2026 a las 11:00:00 hasta el 23/06/2026 a las 09:40:06, con una duración aproximada de 118,7 h, equivalente a 4 días, 22 h y 40 min.
 
 La configuración del planificador contempló adquisiciones cada 600 s para los módulos AHT10, AIS, MPU6050, Windsonic y XTRA2210; adquisiciones acústicas cada 14400 s para el módulo Behringer; generación de eventos Iridium cada 3600 s; y procesamiento acústico asociado a la disponibilidad de grabaciones, sin agenda periódica independiente para AudioProc. La Tabla~\ref{tab:ensayo_larga_duracion} resume los registros obtenidos y el resultado observado por módulo durante este primer ensayo.
+
+\begin{figure}[htpb]
+\centering
+\includegraphics[width=0.78\textwidth]{graficos/collage_ensayo_laboratorio.jpg}
+\caption{Configuración física del primer ensayo de integración en laboratorio, con el bastidor de electrónica, computadora principal, interfaz de audio, cableado de periféricos y batería utilizada durante la prueba.}
+\label{fig:collage_ensayo_laboratorio}
+\end{figure}
 
 \begin{table}[htpb]
 \centering
@@ -1901,19 +1908,19 @@ La interpretación debe mantenerse acotada: este ensayo verifica aislamiento fun
 
 El segundo ensayo de integración incorporó el subsistema panel solar--batería junto con el controlador de carga, sensores, adquisición acústica, procesamiento y telemetría. El intervalo reconstruido a partir de los registros de operación se extendió desde el 25/06/2026 a las 09:50:01 hasta el 29/06/2026 a las 15:40:29, con una duración aproximada de 101,8 h, equivalente a 4 días, 5 h y 50 min.
 
-Durante este intervalo, el controlador XTRA2210 registró tensión fotovoltaica máxima de 22,29~V, corriente fotovoltaica máxima de 1,24~A, tensión de batería entre 11,22~V y 14,88~V, y estado de carga informado entre 0~\% y 100~\%. A diferencia del ensayo anterior, este resultado permite verificar la interacción entre operación sostenida del software y disponibilidad energética variable. La carga promedio registrada en el controlador fue aproximadamente 0,93~A, valor consistente con una condición de integración en laboratorio con periféricos activos. La Figura~\ref{fig:ensayo_panel_antenas} documenta la configuración física utilizada durante el ensayo, mientras que la Figura~\ref{fig:ensayo2_panel_bateria} muestra la evolución temporal de variables ambientales, energéticas y meteorológicas. La Tabla~\ref{tab:ensayo_integracion_completo} presenta el resumen de registros por módulo.
+Durante este intervalo, el controlador XTRA2210 registró tensión fotovoltaica máxima de 22,29~V, corriente fotovoltaica máxima de 1,24~A y tensión de batería entre 11,22~V y 14,88~V. A diferencia del ensayo anterior, este resultado permite verificar la interacción entre operación sostenida del software y disponibilidad energética variable. La carga promedio registrada en el controlador fue aproximadamente 0,93~A, valor consistente con una condición de integración en laboratorio con periféricos activos. La Figura~\ref{fig:ensayo_panel_antenas} documenta la configuración física utilizada durante el ensayo, mientras que la Figura~\ref{fig:ensayo2_panel_bateria} muestra la evolución temporal de variables energéticas. La Tabla~\ref{tab:ensayo_integracion_completo} presenta el resumen de registros por módulo.
 
 \begin{figure}[htpb]
 \centering
-\includegraphics[width=\textwidth]{graficos/ensayo_panel_antenas.jpg}
+\includegraphics[width=.9\textwidth]{graficos/ensayo_panel_antenas.jpg}
 \caption{Configuración física del segundo ensayo de integración: panel solar, bastidor con electrónica y batería, y conjunto de antenas y sensores.}
 \label{fig:ensayo_panel_antenas}
 \end{figure}
 
 \begin{figure}[htpb]
 \centering
-\includegraphics[width=\textwidth]{graficos/ensayo2.pdf}
-\caption{Evolución temporal de variables del controladir de carga XTRA2210 durante el segundo ensayo de integración con subsistema panel solar--batería.}
+\includegraphics[width=\textwidth]{graficos/ensayo2_xtra2210.pdf}
+\caption{Evolución temporal de variables del controlador de carga XTRA2210 durante el segundo ensayo de integración con subsistema panel solar--batería.}
 \label{fig:ensayo2_panel_bateria}
 \end{figure}
 
@@ -1974,11 +1981,11 @@ En conjunto, los registros locales y los mensajes recibidos permiten verificar l
 
 \subsection{Síntesis de resultados}
 
-Los ensayos automatizados sin hardware aportan evidencia de que los contratos internos de software, el enrutamiento de mensajes, la persistencia estructurada, la lógica de FSM y los formatos de telemetría se ejecutan de manera reproducible en el perfil local considerado. La corrida final válida aprobó 115 pruebas, deseleccionó 15 pruebas dependientes de otro perfil de ejecución y alcanzó una cobertura global de líneas del 75~\%.
+Los resultados obtenidos permiten sostener tres conclusiones técnicas principales. En primer lugar, la base de software cuenta con una verificación automatizada reproducible para el perfil sin hardware: la corrida final válida aprobó 115 pruebas, deseleccionó 15 pruebas dependientes de otro perfil de ejecución, no registró fallas y alcanzó una cobertura global de líneas del 75~\%. Esta evidencia respalda los contratos internos de software, el enrutamiento de mensajes, la persistencia estructurada, la lógica de FSM y los formatos de telemetría.
 
-Los ensayos de integración muestran continuidad funcional en laboratorio durante dos períodos diferenciados. El primero, sin subsistema energético autónomo completo, permitió evaluar operación sostenida, generación de registros, procesamiento acústico, solicitudes de telemetría y aislamiento frente a una falla inducida del bus USB--I2C. El segundo, con panel solar--batería, permitió verificar la integración funcional del subsistema energético con los módulos principales y registrar variaciones de tensión, corriente y estado de carga.
+En segundo lugar, los ensayos de integración muestran continuidad funcional en laboratorio durante dos períodos diferenciados. El primero, sin subsistema energético autónomo completo, permitió evaluar operación sostenida durante 118,7~h, generación de registros, procesamiento acústico, solicitudes de telemetría y aislamiento frente a una falla inducida del bus USB--I2C. El segundo, con panel solar--batería, permitió verificar durante 101,8~h la integración funcional del subsistema energético con los módulos principales y registrar variaciones de tensión fotovoltaica, tensión de batería, corriente y estado de carga.
 
-La evidencia de telemetría incorpora tanto solicitudes locales como recepción remota de payloads Iridium SBD. La interpretación técnica es que el sistema alcanzó una validación de integración funcional en laboratorio, con trazabilidad de datos locales y comunicación satelital compacta. Queda fuera del alcance de esta sección, por el momento, una validación formal de autonomía energética en campo.
+En tercer lugar, la evidencia de telemetría incorpora tanto solicitudes locales como recepción remota de payloads Iridium SBD. Los registros locales y los mensajes recibidos permiten verificar la cadena funcional desde la generación del evento y armado del payload hasta la recepción remota y decodificación posterior. En conjunto, estos resultados validan la integración funcional del sistema en laboratorio, con trazabilidad de datos locales y comunicación satelital compacta. No constituyen todavía una validación formal de autonomía energética en campo, que queda como etapa posterior.
 
 
 \clearpage
@@ -1989,11 +1996,13 @@ La evidencia de telemetría incorpora tanto solicitudes locales como recepción 
 
 El sistema desarrollado constituye una base funcional para la operación embebida de la boya instrumental EAMMRA. La arquitectura implementada permitió integrar adquisición multisensor, supervisión energética, adquisición y procesamiento acústico, almacenamiento local y telemetría satelital mediante una organización modular basada en capas de bajo nivel, Máquinas de Estados Finitos, un enrutador de eventos y un planificador de tareas central.
 
-Los ensayos realizados muestran que el sistema puede ejecutar ciclos de adquisición, registrar datos estructurados, generar productos derivados y transmitir información compacta mediante Iridium SBD. La verificación automatizada aporta una base reproducible para el mantenimiento del software, mientras que los ensayos de integración en laboratorio permitieron observar la operación conjunta de los módulos, la persistencia de registros, la continuidad de ejecución y la respuesta frente a una falla inducida del bus USB--I2C.
+La verificación automatizada y los ensayos de integración respaldan esa arquitectura con evidencia reproducible y registros de operación. La corrida final del perfil sin hardware aprobó 115 pruebas y alcanzó una cobertura global de líneas del 75~\%, mientras que los ensayos de laboratorio mostraron operación sostenida del sistema, persistencia de datos, generación de productos acústicos, solicitudes de telemetría y continuidad de módulos no afectados frente a una falla inducida del bus USB--I2C.
 
-El ensayo con panel solar--batería permitió verificar la interacción inicial entre el subsistema energético y el software de supervisión, incluyendo el registro de variables de panel, batería, carga y consumo. No obstante, estos resultados deben interpretarse dentro del alcance de laboratorio. Queda pendiente una validación energética específica en condiciones representativas de despliegue, con duración suficiente para caracterizar autonomía, margen de carga y comportamiento frente a condiciones ambientales variables.
+El ensayo con panel solar--batería permitió verificar la interacción inicial entre el subsistema energético y el software de supervisión, incluyendo el registro de variables de panel, batería, carga y consumo durante la operación integrada. La cadena de telemetría Iridium SBD también fue verificada mediante registros locales y recepción remota de mensajes compactos de estado y productos de AudioProc. Por lo tanto, el resultado alcanzado corresponde a una validación funcional de integración en laboratorio, con trazabilidad local y comunicación satelital compacta.
 
-En conjunto, el desarrollo alcanzado deja una plataforma verificable y extensible para continuar la maduración del sistema. Las principales líneas de mejora no se relacionan con la reformulación de la arquitectura general, sino con el refinamiento de políticas de operación autónoma, robustez de telemetría, administración energética, configuración remota y consolidación de la integración mecánica a la plataforma física de la boya.
+Estos resultados no equivalen aún a una validación completa de autonomía energética en despliegue marítimo. Queda pendiente una evaluación específica en condiciones representativas de campo, con duración suficiente para caracterizar autonomía, margen de carga, perfiles de consumo, recuperación energética y comportamiento frente a condiciones ambientales variables.
+
+En conjunto, el desarrollo alcanzado deja una plataforma verificable y extensible para continuar la maduración del sistema. Las principales líneas de mejora no requieren reformular la arquitectura general, sino refinar políticas de operación autónoma, robustez de telemetría, administración energética, configuración remota y consolidación de la integración mecánica a la plataforma física de la boya.
 
 \subsection{Logros alcanzados}
 
@@ -2003,7 +2012,7 @@ Se consolidó un esquema de persistencia basado en archivos estructurados, regis
 
 También se obtuvo una base de verificación automatizada para el software. La corrida vigente del perfil sin hardware finalizó con 115 pruebas aprobadas, 15 pruebas no seleccionadas y 0 fallas dentro del perfil ejecutado, con una cobertura global de líneas del 75~%. Esta base permite repetir pruebas de regresión sobre componentes de software sin depender de la disponibilidad inmediata de periféricos físicos.
 
-Otro logro relevante fue la validación de la cadena de telemetría Iridium SBD mediante registros locales y adjuntos recibidos. Los mensajes de estado del sistema y los productos derivados de AudioProc demostraron la capacidad de generar, codificar, transmitir y decodificar información compacta compatible con las restricciones del enlace satelital.
+Otro logro relevante fue la verificación de la cadena de telemetría Iridium SBD mediante registros locales y adjuntos recibidos. Los mensajes de estado del sistema y los productos derivados de AudioProc demostraron la capacidad de generar, codificar, transmitir y decodificar información compacta compatible con las restricciones del enlace satelital.
 
 Finalmente, se verificó la integración funcional del subsistema panel solar--batería con el sistema embebido durante un ensayo de laboratorio. Si bien este resultado no equivale a una validación completa de autonomía, permitió observar la relación entre aporte solar, estado de batería, consumo de carga y continuidad de operación del software.
 

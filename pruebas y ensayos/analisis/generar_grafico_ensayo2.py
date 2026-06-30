@@ -93,13 +93,13 @@ PANELS = [
             ("pv_current_a", "Panel", COLORS["pv_current"]),
         ],
     },
-    {
-        "title": "XTRA2210 - estado de carga",
-        "file": "xtra2210_readings.jsonl",
-        "ylabel": "%",
-        "ylim": (0.0, 100.0),
-        "series": [("battery_soc_pct", "SoC", COLORS["battery_soc"])],
-    },
+    # {
+    #     "title": "XTRA2210 - estado de carga",
+    #     "file": "xtra2210_readings.jsonl",
+    #     "ylabel": "%",
+    #     "ylim": (0.0, 100.0),
+    #     "series": [("battery_soc_pct", "SoC", COLORS["battery_soc"])],
+    # },
     #{
     #    "title": "WindSonic - velocidad de viento",
     #    "file": "windsonic_readings.jsonl",
