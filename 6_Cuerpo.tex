@@ -209,7 +209,7 @@ La plataforma de hardware de la boya EAMMRA se organiza alrededor de una computa
 
 La Figura~\ref{fig:diagrama_bloques_hardware} presenta el diagrama de bloques del sistema integrado. En el centro se ubica el sistema principal, implementado sobre la computadora Kaise KBOX-S J6412. A esta unidad se conectan los periféricos mediante interfaces serie RS232 y RS485, y USB. El esquema permite distinguir los subsistemas principales de la boya y las interfaces físicas utilizadas para su integración.
 
-El subsistema de sensores agrupa los dispositivos orientados a la adquisición de variables ambientales, inerciales, meteorológicas y de posicionamiento. Incluye el AIS/GPS AMEC Mando-301 y el anemómetro GILL WindSonic, comunicados mediante RS232, junto con el sensor ambiental AHT10 y la unidad inercial MPU6050, integrados a través de un puente USB/I2C CH431A. El subsistema de audio está compuesto por la interfaz Behringer UMC202HD, los preamplificadores DAS-1 y DAS-2 y los hidrófonos B\&K 8105, conectados mediante interfaces analógicas BNC y BNC/XLR. El subsistema de energía comprende el panel solar, el regulador EPEVER XTRA2210 y la batería TRV de 12~V y 110~Ah, con supervisión mediante RS485. Finalmente, el subsistema de telemetría incorpora el módem Iridium Edge para transmisión remota de mensajes mediante enlace satelital con interfaz RS232.
+El subsistema de sensores agrupa los dispositivos orientados a la adquisición de variables ambientales, inerciales, meteorológicas y de posicionamiento. Incluye el AIS/GPS AMEC Mando-301 y el anemómetro GILL WindSonic, comunicados mediante RS232, junto con el sensor ambiental AHT10 y la unidad inercial MPU6050, integrados a través de un puente USB/I2C CH413A. El subsistema de audio está compuesto por la interfaz Behringer UMC202HD, los preamplificadores DAS-1 y DAS-2 y los hidrófonos B\&K 8105, conectados mediante interfaces analógicas BNC y BNC/XLR. El subsistema de energía comprende el panel solar, el regulador EPEVER XTRA2210 y la batería TRV de 12~V y 110~Ah, con supervisión mediante RS485. Finalmente, el subsistema de telemetría incorpora el módem Iridium Edge para transmisión remota de mensajes mediante enlace satelital con interfaz RS232.
 
 \begin{figure}[!htbp]
     \centering
@@ -235,7 +235,7 @@ El detalle de cada periférico se desarrolla en las subsecciones siguientes. En 
 %
 %\item \textbf{Unidad inercial MPU6050:} módulo de acelerómetro y giróscopo triaxial, utilizado para registrar variables asociadas al movimiento de la boya.
 %
-%\item \textbf{Adaptador USB--I2C basado en CH431A:} interfaz física utilizada para integrar los sensores AHT10 y MPU6050 a la computadora principal.
+%\item \textbf{Adaptador USB--I2C basado en CH413A:} interfaz física utilizada para integrar los sensores AHT10 y MPU6050 a la computadora principal.
 %
 %\item \textbf{Equipo AIS/GPS AMEC MANDO 301:} dispositivo de balizamiento electrónico, posicionamiento y referencia temporal.
 %
@@ -361,7 +361,7 @@ El MPU6050 no constituye, por sí solo, un sistema de navegación ni una referen
 
 \subsection{Integración física de sensores I2C mediante adaptador USB.}
 
-Los sensores AHT10 y MPU6050 se integran a la computadora principal Kaise mediante un adaptador USB--I2C basado en CH431A. En la Figura~\ref{fig:ch431a} se muestra el adaptador utilizado como interfaz física entre el puerto USB de la computadora embarcada y el bus I2C compartido por ambos sensores. 
+Los sensores AHT10 y MPU6050 se integran a la computadora principal Kaise mediante un adaptador USB--I2C basado en CH413A. En la Figura~\ref{fig:ch431a} se muestra el adaptador utilizado como interfaz física entre el puerto USB de la computadora embarcada y el bus I2C compartido por ambos sensores. 
 
 A partir de las hojas de datos del AHT10 y del MPU6050 se verifican las condiciones eléctricas de alimentación, niveles lógicos e interfaz digital requeridas para integrar ambos dispositivos en un mismo subconjunto de adquisición \citep{AHT10Datasheet,MPU6050Datasheet}.
 
@@ -374,7 +374,7 @@ El conjunto de sensores se alojó en un encapsulado \textit{ad-hoc} fabricado me
 \begin{minipage}[b]{0.47\textwidth}
     \centering
     \includegraphics[width=0.70\linewidth]{graficos/ch431a.jpg}
-    \captionof{figure}{Adaptador USB--I2C basado en CH431A utilizado para conectar los sensores AHT10 y MPU6050 a la computadora principal.}
+    \captionof{figure}{Adaptador USB--I2C basado en CH413A utilizado para conectar los sensores AHT10 y MPU6050 a la computadora principal.}
     \label{fig:ch431a}
 \end{minipage}
 \hfill
@@ -1176,7 +1176,7 @@ El planificador no calcula las ejecuciones periódicas simplemente a partir del 
     "AHT10": 600,
     "AIS": 600,
     "MPU6050": 600,
-    "Windsonic": 600,
+    "WindSonic": 600,
     "XTRA2210": 600,
     "Behringer": 14400,
     "Iridium": 3600,
@@ -1204,7 +1204,7 @@ El Listado~\ref{lst:system_status_json} presenta un ejemplo de \texttt{system\_s
 {
   "last_updated": "2026-06-26T11:10:07-03:00",
   "modules": {
-    "Windsonic": {
+    "WindSonic": {
       "state": "IDLE",
       "mode": "hardware",
       "last_action": null,
@@ -1274,7 +1274,7 @@ AIS/GPS &
 Recepción y parseo de información de posicionamiento y tiempo. &
 Posición, fecha, hora y datos asociados al receptor de navegación. \\
 
-\texttt{Windsonic} &
+\texttt{WindSonic} &
 Anemómetro &
 Adquisición de variables meteorológicas externas mediante protocolo serie. &
 Velocidad y dirección del viento, junto con información de estado del sensor. \\
@@ -1397,7 +1397,7 @@ A modo de síntesis, la Tabla~\ref{tab:productos_datos_software} resume los prin
 \midrule
 
 Mediciones de sensores &
-Registros temporales generados por módulos como \texttt{AHT10}, \texttt{MPU6050}, \texttt{AIS}, \texttt{Windsonic} y \texttt{XTRA2210}. Cada línea contiene una marca temporal y un objeto de datos con las variables medidas. \emph{Ubicación:} \texttt{data/*\_readings.jsonl}. \tabularnewline
+Registros temporales generados por módulos como \texttt{AHT10}, \texttt{MPU6050}, \texttt{AIS}, \texttt{WindSonic} y \texttt{XTRA2210}. Cada línea contiene una marca temporal y un objeto de datos con las variables medidas. \emph{Ubicación:} \texttt{data/*\_readings.jsonl}. \tabularnewline
 \addlinespace[0.45em]
 
 Metadatos de adquisición acústica &
@@ -1753,7 +1753,7 @@ El Listado~\ref{lst:mock-modules-json} muestra un ejemplo de selección persiste
 \begin{lstlisting}[style=pseudocodigo, caption={Ejemplo de selección de módulos simulados en \texttt{configs/mock\_modules.json}.}, label={lst:mock-modules-json}]
 {
 "mock_modules": [
-"Windsonic",
+"WindSonic",
 "Iridium",
 "AIS",
 "XTRA2210"
@@ -1861,7 +1861,7 @@ Una vez verificados los componentes individuales, se realizó un primer ensayo d
 
 Este primer ensayo se realizó sin el subsistema de energía autónoma completo. En esta condición, el sistema permaneció alimentado en laboratorio y ejecutó la configuración operativa prevista para los módulos de adquisición y telemetría. La Figura~\ref{fig:collage_ensayo_laboratorio} muestra la configuración física utilizada durante esta etapa de integración. El intervalo identificado se extendió desde el 18/06/2026 a las 11:00:00 hasta el 23/06/2026 a las 09:40:06, con una duración aproximada de 118,7 h, equivalente a 4 días, 22 h y 40 min.
 
-La configuración del planificador contempló adquisiciones cada 600 s para los módulos AHT10, AIS, MPU6050, Windsonic y XTRA2210; adquisiciones acústicas cada 14400 s para el módulo Behringer; generación de eventos Iridium cada 3600 s; y procesamiento acústico asociado a la disponibilidad de grabaciones, sin agenda periódica independiente para AudioProc. La Tabla~\ref{tab:ensayo_larga_duracion} resume los registros obtenidos y el resultado observado por módulo durante este primer ensayo.
+La configuración del planificador contempló adquisiciones cada 600 s para los módulos AHT10, AIS, MPU6050, WindSonic y XTRA2210; adquisiciones acústicas cada 14400 s para el módulo Behringer; generación de eventos Iridium cada 3600 s; y procesamiento acústico asociado a la disponibilidad de grabaciones, sin agenda periódica independiente para AudioProc. La Tabla~\ref{tab:ensayo_larga_duracion} resume los registros obtenidos y el resultado observado por módulo durante este primer ensayo.
 
 \begin{figure}[htpb]
 \centering
@@ -1882,7 +1882,7 @@ La configuración del planificador contempló adquisiciones cada 600 s para los 
 \midrule
 AIS         & 600 s  & 711 & Operación sostenida durante todo el intervalo principal. \\
 XTRA2210    & 600 s  & 711 & Operación sostenida; tensión y corriente de panel nulas, consistente con el ensayo sin aporte solar. \\
-Windsonic   & 600 s  & 711 & Operación sostenida durante todo el intervalo principal. \\
+WindSonic   & 600 s  & 711 & Operación sostenida durante todo el intervalo principal. \\
 Behringer   & 14400 s & 30 & Grabaciones acústicas programadas durante el ensayo. \\
 AudioProc   & por evento & 30 & Productos derivados generados a partir de las grabaciones disponibles. \\
 Iridium     & 3600 s & 121 & Solicitudes periódicas de telemetría, incluyendo eventos omitidos por transmisión deshabilitada y eventos posteriores con transmisión habilitada. \\
@@ -1896,11 +1896,11 @@ Los registros del controlador XTRA2210 muestran tensión y corriente fotovoltaic
 
 \subsubsection{Evaluación frente a falla inducida de bus USB--I2C}
 
-Durante el ensayo de integración se produjo una falla inducida por desconexión del adaptador USB--I2C CH341, utilizado por los módulos AHT10 y MPU6050. Esta condición permitió evaluar el comportamiento del sistema frente a la pérdida de un bus compartido por dos periféricos.
+Durante el ensayo de integración se produjo una falla inducida por desconexión del adaptador USB--I2C CH413A, utilizado por los módulos AHT10 y MPU6050. Esta condición permitió evaluar el comportamiento del sistema frente a la pérdida de un bus compartido por dos periféricos.
 
 Hasta el 19/06/2026 a las 19:00:00 ambos módulos generaron registros válidos. Luego de la desconexión, las rutinas de bajo nivel dejaron de obtener datos válidos y las FSM correspondientes pasaron a estado de error. El proceso principal ejecutó intentos de recuperación mediante señales de reinicialización y, al agotarse la cantidad prevista de reintentos, marcó los módulos como fallados de forma no recuperable.
 
-La evidencia registrada muestra que la pérdida de AHT10 y MPU6050 no detuvo el proceso principal ni interrumpió la operación de los demás módulos. Durante el resto del ensayo continuaron registrándose datos de AIS, Windsonic y XTRA2210, así como grabaciones acústicas, productos de AudioProc y solicitudes de telemetría Iridium. La inferencia técnica es que la falla quedó confinada a los módulos asociados al bus desconectado, mientras el planificador y el resto de las FSM continuaron operando.
+La evidencia registrada muestra que la pérdida de AHT10 y MPU6050 no detuvo el proceso principal ni interrumpió la operación de los demás módulos. Durante el resto del ensayo continuaron registrándose datos de AIS, WindSonic y XTRA2210, así como grabaciones acústicas, productos de AudioProc y solicitudes de telemetría Iridium. La inferencia técnica es que la falla quedó confinada a los módulos asociados al bus desconectado, mientras el planificador y el resto de las FSM continuaron operando.
 
 La interpretación debe mantenerse acotada: este ensayo verifica aislamiento funcional frente a una falla parcial inducida en laboratorio, pero no agota el conjunto de fallas posibles de conectores, buses, alimentación o periféricos durante una operación en campo.
 
@@ -1935,7 +1935,7 @@ Durante este intervalo, el controlador XTRA2210 registró tensión fotovoltaica 
 \midrule
 AIS         & 600 s  & 565 & Registros de posicionamiento y referencia temporal durante el intervalo final de integración. \\
 XTRA2210    & 600 s  & 567 & Supervisión energética con panel y batería; se registró variación de tensión fotovoltaica, tensión de batería y estado de carga. \\
-Windsonic   & 600 s  & 551 & Operación meteorológica sostenida durante la mayor parte del intervalo. \\
+WindSonic   & 600 s  & 551 & Operación meteorológica sostenida durante la mayor parte del intervalo. \\
 AHT10       & 600 s  & 206 & Operación recuperada respecto del ensayo anterior, con registros ambientales durante la integración final. \\
 MPU6050     & 600 s  & 436 & Operación recuperada respecto del ensayo anterior, con registros inerciales durante la integración final. \\
 Behringer   & 14400 s & 30 & Grabaciones acústicas programadas durante el ensayo completo. \\
