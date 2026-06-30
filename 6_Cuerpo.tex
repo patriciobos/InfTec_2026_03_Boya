@@ -718,6 +718,42 @@ El sistema se implementa como una aplicación Python ejecutada sobre GNU/Linux e
 
 Esta organización busca que la operación de la boya pueda describirse, verificarse y diagnosticarse de manera sistemática. En una plataforma autónoma, las lecturas de sensores, las adquisiciones acústicas, los registros persistentes, las transmisiones satelitales y las condiciones de falla deben quedar asociadas a eventos, estados y resultados trazables.
 
+\begin{table}[htbp]
+\centering
+\caption{Componentes principales de la arquitectura de software embebido.}
+\label{tab:componentes_arquitectura_software}
+\small
+\begin{tabularx}{\textwidth}{p{0.23\textwidth} X p{0.25\textwidth}}
+\toprule
+\textbf{Componente} & \textbf{Responsabilidad principal} & \textbf{Elemento asociado} \\
+\midrule
+Proceso principal &
+Inicializa módulos, crea colas, coordina ejecución, procesa reportes y administra el cierre ordenado. &
+\texttt{main.py} \\
+\addlinespace
+Máquinas de Estados Finitos &
+Representan el ciclo operativo de cada módulo, sus estados, transiciones, acciones y condiciones de error. &
+\texttt{*\_fsm.py} \\
+\addlinespace
+Capas de bajo nivel &
+Encapsulan acceso a sensores, interfaces, archivos, buses, placa de audio, módem o protocolos específicos. &
+\texttt{*\_LL.py} \\
+\addlinespace
+Enrutador de eventos &
+Distribuye mensajes, conserva valores compactos recientes y desacopla productores y consumidores. &
+\texttt{router} \\
+\addlinespace
+Planificador de tareas &
+Genera activaciones periódicas o programadas a partir de la configuración temporal del sistema. &
+\texttt{scheduler} \\
+\addlinespace
+Persistencia y telemetría &
+Registra datos, eventos y reportes; construye productos compactos para transmisión satelital. &
+\texttt{data/}, \texttt{logs/}, Iridium SBD \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 \subsection{Criterios generales de diseño}
 \label{subsec:criterios_diseno_software}
 
@@ -746,64 +782,11 @@ Estos criterios conducen a una arquitectura que prioriza la trazabilidad y la ma
 \subsection{Modelo de ejecución del sistema}
 \label{subsec:modelo_ejecucion}
 
-El modelo de ejecución se organiza alrededor de un proceso principal, implementado en \texttt{main.py}, que cumple funciones de inicialización, coordinación y cierre ordenado. Este proceso no concentra la lógica específica de cada periférico, sino que instancia los módulos funcionales, crea sus colas de comunicación, registra sus interfaces en el enrutador de eventos e inicia el planificador de tareas central.
+El modelo de ejecución se organiza alrededor de un proceso principal, implementado en \texttt{main.py}, que cumple funciones de inicialización, coordinación y cierre ordenado. Este proceso instancia los módulos funcionales, crea sus colas de comunicación, registra sus interfaces en el enrutador de eventos e inicia el planificador de tareas central.
 
-Cada módulo funcional se ejecuta como un proceso independiente asociado a una Máquina de Estados Finitos. Esta decisión permite desacoplar temporalmente las operaciones de los distintos bloques. Por ejemplo, una adquisición acústica, una consulta a un sensor, una comunicación con el controlador solar o una sesión de telemetría satelital pueden tener duraciones y condiciones de falla diferentes sin bloquear directamente al resto de los módulos.
+Cada módulo funcional se ejecuta como un proceso independiente asociado a una Máquina de Estados Finitos. La comunicación entre el proceso principal y los módulos se realiza mediante colas: una cola de entrada para señales de control o solicitudes de acción, y una cola de estado para informar cambios, resultados, advertencias o errores. El proceso principal no ejecuta directamente adquisiciones, procesamiento o transmisiones, sino que administra las condiciones para que cada módulo las realice dentro de su propio ciclo de estados.
 
-La comunicación entre el proceso principal y los módulos se realiza mediante colas de mensajes. Cada Máquina de Estados Finitos dispone de una cola de entrada, por la cual recibe señales de control o solicitudes de acción, y de una cola de estado, mediante la cual informa cambios de estado, resultados de acciones, advertencias o condiciones de error. El enrutador de eventos actúa como intermediario entre productores y consumidores de mensajes.
-
-El planificador de tareas central genera activaciones periódicas o condicionadas de acuerdo con la configuración vigente. En lugar de que cada módulo administre sus propios temporizadores, el sistema concentra la planificación temporal en un único componente. Esto permite modificar intervalos de adquisición, pruebas o transmisiones desde archivos de configuración y facilita el análisis del ciclo de operación completo.
-
-Durante el arranque, el proceso principal crea las estructuras de comunicación, instancia los módulos habilitados, inicia sus procesos y emite las señales de inicialización correspondientes. Durante la operación, procesa los reportes generados por los módulos, enruta eventos relevantes, ejecuta tareas planificadas y actualiza información de estado del sistema. Durante el cierre, envía señales de desinicialización, solicita la liberación de recursos y registra el estado final de la ejecución.
-
-El modelo de ejecución puede interpretarse como una arquitectura de coordinación basada en procesos y colas. El proceso principal no ejecuta directamente las operaciones de adquisición, procesamiento o transmisión, sino que administra las condiciones para que cada módulo funcional las realice dentro de su propio ciclo de estados. Para ello, crea las estructuras de comunicación, instancia las Máquinas de Estados Finitos, inicia sus procesos asociados y mantiene los mecanismos centrales de planificación, enrutamiento y supervisión.
-
-Cada módulo funcional posee una cola de entrada y una vía de reporte hacia el sistema principal. La cola de entrada se utiliza para recibir señales de control, tales como inicialización, prueba, adquisición, procesamiento o transmisión. La vía de reporte permite devolver cambios de estado, resultados de acciones, errores y detalles diagnósticos. Esta organización evita llamadas directas entre módulos y permite que el sistema principal trate de manera uniforme eventos provenientes de sensores, adquisición acústica, supervisión energética o telemetría.
-
-El planificador de tareas actúa como generador de activaciones temporales. De acuerdo con la configuración vigente, emite señales hacia los módulos correspondientes para ejecutar acciones periódicas o programadas. El enrutador de eventos, por su parte, concentra la distribución de mensajes y resultados, permitiendo desacoplar la generación de eventos respecto de su procesamiento posterior. Así, una lectura de sensor, un resultado acústico, una condición de error o una respuesta del módem satelital pueden registrarse, persistirse o utilizarse para actualizar el estado global del sistema sin introducir dependencias directas entre módulos.
-
-Este modelo permite distinguir tres niveles de operación. En el nivel superior, el proceso principal coordina la ejecución general, administra procesos, planifica tareas y consolida el estado del sistema. En el nivel intermedio, las Máquinas de Estados Finitos controlan la secuencia válida de operación de cada módulo. En el nivel inferior, las capas de bajo nivel interactúan con dispositivos, archivos, buses, puertos o protocolos específicos. La separación entre estos niveles facilita la prueba parcial, el diagnóstico de fallas y la incorporación de nuevos módulos.
-
-La lógica general del modelo de ejecución puede resumirse en el Listado \ref{lst:modelo_ejecucion} presenta un pseudocódigo simplificado del modelo de ejecución. El proceso principal carga la configuración, instancia las Máquinas de Estados Finitos, registra las colas en el enrutador de eventos, inicia el planificador de tareas y procesa los mensajes de estado generados por los módulos funcionales.
-
-\begin{lstlisting}[
-    style=pseudocodigo,language=Python, caption={Pseudocódigo del modelo de ejecución del sistema embebido.}, label={lst:modelo_ejecucion}]
-    
-def main():
-    config = cargar_configuracion()
-
-    colas_entrada = crear_colas_entrada(config.modulos)
-    cola_estado = crear_cola_estado()
-
-    modulos = instanciar_fsm(config.modulos, colas_entrada, cola_estado)
-
-    router = crear_router()
-    router.registrar_modulos(modulos, colas_entrada, cola_estado)
-
-    scheduler = crear_scheduler(config.tareas, router)
-
-    iniciar_procesos(modulos)
-    scheduler.iniciar()
-
-    emitir_senal_global(SIG_INIT, modulos)
-
-    while sistema_activo():
-        mensajes = leer_mensajes_estado(cola_estado)
-
-        for mensaje in mensajes:
-            router.procesar(mensaje)
-            actualizar_estado_global(mensaje)
-            persistir_evento(mensaje)
-
-        scheduler.ejecutar_tareas_pendientes()
-
-    emitir_senal_global(SIG_DEINIT, modulos)
-    scheduler.detener()
-    esperar_cierre_procesos(modulos)
-    registrar_cierre_ordenado()
-\end{lstlisting}
-
-Este modelo separa tres niveles de responsabilidad. El proceso principal coordina la ejecución global; las Máquinas de Estados Finitos controlan el ciclo operativo de cada módulo; y las capas de bajo nivel interactúan con dispositivos, archivos, transportes o protocolos específicos. La separación entre estos niveles permite localizar fallas, ejecutar pruebas parciales y extender el sistema sin modificar la estructura completa de la aplicación.
+Durante el arranque, el proceso principal crea las estructuras de comunicación, instancia los módulos habilitados, inicia sus procesos y emite señales de inicialización. Durante la operación, procesa reportes, enruta eventos, ejecuta tareas planificadas y actualiza el estado global. Durante el cierre, envía señales de desinicialización, solicita la liberación de recursos y registra el estado final de la ejecución. El Listado~\ref{lst:modelo_ejecucion}, incluido en el Apéndice~\ref{ap:pseudocodigo_software}, resume este flujo de operación.
 
 \subsection{Arquitectura por capas}
 \label{subsec:arquitectura_capas_software}
@@ -852,65 +835,7 @@ La capa de bajo nivel mantiene además un conjunto mínimo de variables de estad
 
 Los métodos públicos deben capturar excepciones internas y devolver resultados controlados, evitando propagar fallas no tratadas hacia la capa de control. Para ello, la plantilla distingue errores de módulo, errores de disponibilidad, errores de transporte y errores de protocolo. Esta organización permite diferenciar, por ejemplo, la ausencia de una dependencia de software, la imposibilidad de abrir un puerto, una respuesta inválida del dispositivo o una falla inesperada durante una prueba diagnóstica.
 
-La lógica general de ciclo de vida de un módulo de bajo nivel se resume en el Listado~\ref{lst:ciclo_vida_ll}.
-
-
-\begin{lstlisting}[style=pseudocodigo, caption={Pseudocódigo del ciclo de vida de un módulo de bajo nivel.}, label={lst:ciclo_vida_ll}]
-init(configuracion):
-    validar dependencias de software
-    cerrar recursos previos si existen
-    cargar parametros de configuracion
-    resolver candidatos de transporte
-    marcar modulo como inicializado
-    retornar resultado
-
-open():
-    verificar que el modulo este inicializado
-
-    si el recurso ya esta abierto:
-        retornar OK
-
-    intentar abrir el transporte configurado
-
-    si no hay transporte forzado:
-        probar candidatos disponibles
-
-    si se abre correctamente:
-        marcar recurso como abierto
-        retornar OK
-
-    registrar error
-    retornar ERROR
-
-full_test():
-    construir reporte diagnostico
-    recordar estado original del recurso
-
-    si el recurso no esta abierto:
-        abrir recurso temporalmente
-
-    verificar presencia o comunicacion con el dispositivo
-    recolectar informacion diagnostica disponible
-
-    restaurar estado original del recurso
-
-    retornar resultado y reporte
-
-close():
-    si el recurso esta abierto:
-        cerrar transporte o recurso operativo
-
-    marcar recurso como cerrado
-    retornar resultado
-
-deinit():
-    cerrar recurso operativo
-    limpiar transporte, candidatos y configuracion temporal
-    marcar modulo como no inicializado
-    retornar resultado
-\end{lstlisting}
-
-
+La lógica general de ciclo de vida de un módulo de bajo nivel se resume en el Listado~\ref{lst:ciclo_vida_ll}, incluido en el Apéndice~\ref{ap:pseudocodigo_software}.
 
 Los métodos internos, identificados por convención con guion bajo inicial, concentran el conocimiento específico del periférico o recurso. Entre ellos se incluyen rutinas para validar dependencias, resolver candidatos de transporte, abrir y cerrar el transporte físico, verificar presencia del dispositivo y recolectar información diagnóstica. Estas funciones son las que cada módulo concreto debe especializar de acuerdo con el hardware o servicio que controla.
 
@@ -961,83 +886,11 @@ El método \texttt{handle\_message} concentra la lógica de recepción de mensaj
 
 La lógica de ejecución propia de cada estado se concentra en el método \texttt{update}. Este método evalúa el estado actual y ejecuta la acción correspondiente al ingresar en dicho estado. Para evitar ejecuciones repetidas no deseadas, la plantilla utiliza una marca de entrada al estado, de modo que las acciones principales de \texttt{INIT}, \texttt{TEST}, \texttt{ACQUIRE}, \texttt{DISABLE} o \texttt{ERROR} se ejecuten una sola vez por transición.
 
-La lógica general del ciclo de operación de una Máquina de Estados Finitos se resume en el Listado~\ref{lst:ciclo_fsm}. Allí se muestra cómo la FSM procesa mensajes de control, ejecuta acciones al ingresar en cada estado y emite resultados estructurados hacia el sistema principal.
-
-\vspace{40px}
-\begin{lstlisting}[style=pseudocodigo, caption={Pseudocódigo del ciclo de operación de una Máquina de Estados Finitos.}, label={lst:ciclo_fsm}]
-handle_message(mensaje):
-    si estado == DISABLE:
-        si mensaje == SIG_INIT:
-            cambiar_estado(INIT)
-        retornar
-
-    si mensaje == SIG_DEINIT:
-        cambiar_estado(DISABLE)
-        retornar
-
-    si mensaje == SIG_TEST:
-        cambiar_estado(TEST)
-        retornar
-
-    si mensaje == SIG_ACQUIRE o mensaje == SIG_TIMEOUT:
-        guardar_parametros_pendientes(mensaje)
-        cambiar_estado(ACQUIRE)
-        retornar
-
-
-update():
-    si no se ingreso a un nuevo estado:
-        retornar
-
-    marcar_entrada_procesada()
-
-    si estado == INIT:
-        resultado = ll.init()
-
-        emitir_resultado_estado(resultado)
-
-        si resultado == OK:
-            cambiar_estado(TEST)
-        si no:
-            cambiar_estado(ERROR)
-
-    si estado == TEST:
-        resultado, detalles = ll.full_test()
-
-        emitir_resultado_accion("test", resultado, detalles)
-
-        si resultado == OK:
-            cambiar_estado(IDLE)
-        si no:
-            cambiar_estado(ERROR)
-
-    si estado == IDLE:
-        esperar_eventos()
-
-    si estado == ACQUIRE:
-        resultado, datos = ejecutar_accion_principal(parametros_pendientes)
-
-        emitir_resultado_accion("acquire", resultado, datos)
-
-        si resultado == OK:
-            cambiar_estado(IDLE)
-        si no:
-            cambiar_estado(ERROR)
-
-    si estado == DISABLE:
-        ll.deinit()
-
-    si estado == ERROR:
-        registrar_condicion_de_error()
-        ll.deinit()
-\end{lstlisting}
-
-
+La lógica general del ciclo de operación de una Máquina de Estados Finitos se resume en el Listado~\ref{lst:ciclo_fsm}, incluido en el Apéndice~\ref{ap:pseudocodigo_software}. Allí se muestra cómo la FSM procesa mensajes de control, ejecuta acciones al ingresar en cada estado y emite resultados estructurados hacia el sistema principal.
 El patrón de diseño resultante permite que todos los módulos compartan una estructura de control común, aun cuando sus acciones específicas sean diferentes. Un sensor ambiental, una unidad inercial, un anemómetro, un controlador de energía, un módulo acústico o un módem satelital pueden implementar operaciones distintas en la capa de bajo nivel, pero exponer un comportamiento operativo homogéneo hacia el sistema principal.
 
 La separación entre la Máquina de Estados Finitos y la capa de bajo nivel mejora la robustez del sistema. Las excepciones, fallas de transporte o respuestas inválidas se tratan en la capa de bajo nivel y se informan como resultados controlados. La Máquina de Estados Finitos interpreta esos resultados y decide la transición correspondiente, por ejemplo volver a \texttt{IDLE}, repetir una prueba, pasar a \texttt{ERROR} o desinicializar el módulo. Esta organización evita que una falla local se propague sin control al proceso principal y permite mantener una secuencia de operación trazable.
 
-\clearpage
 \subsubsection{Mensajes, eventos y resultados}
 \label{subsubsec:mensajes_eventos_resultados}
 
@@ -1079,44 +932,7 @@ La coordinación central del sistema se implementa en el proceso principal de la
 
 Esta capa de coordinación cumple un rol distinto al de las Máquinas de Estados Finitos. Mientras cada FSM controla el ciclo operativo de un módulo particular, la coordinación central organiza la interacción entre módulos, el disparo temporal de acciones, la recepción de resultados, la actualización de reportes y el cierre ordenado de la aplicación. Esta separación evita que los módulos tengan dependencias directas entre sí y permite mantener un único punto de control para la ejecución general de la boya.
 
-La lógica general de coordinación se resume en el pseudocódigo que se presenta en el Listado~\ref{lst:coordinacion_central}. El proceso principal carga la configuración, crea las estructuras de comunicación, inicia los procesos asociados a los módulos, ejecuta el planificador de tareas, procesa los mensajes de estado y finalmente realiza el cierre ordenado del sistema.
-
-\vspace{20px}
-\begin{lstlisting}[style=pseudocodigo, caption={Pseudocódigo de la coordinación central del sistema.}, label={lst:coordinacion_central}]
-main():
-    configuracion = cargar_configuracion()
-
-    modulos = instanciar_modulos(configuracion)
-    colas_entrada = crear_colas_de_entrada(modulos)
-    cola_estado = crear_cola_de_estado()
-
-    router = crear_enrutador_de_eventos()
-    router.registrar_modulos(modulos, colas_entrada, cola_estado)
-
-    scheduler = crear_planificador(configuracion.tareas, router)
-
-    iniciar_procesos(modulos)
-    scheduler.iniciar()
-
-    enviar_senal_global(SIG_INIT, modulos)
-
-    mientras sistema_activo():
-        mensajes = leer_mensajes(cola_estado)
-
-        para cada mensaje en mensajes:
-            router.procesar(mensaje)
-            actualizar_estado_global(mensaje)
-            persistir_evento(mensaje)
-
-        scheduler.ejecutar_tareas_pendientes()
-
-    enviar_senal_global(SIG_DEINIT, modulos)
-
-    scheduler.detener()
-    esperar_cierre_de_procesos(modulos)
-    registrar_cierre_ordenado()
-\end{lstlisting}
-
+La lógica general de coordinación se resume en el Listado~\ref{lst:coordinacion_central}, incluido en el Apéndice~\ref{ap:pseudocodigo_software}. El proceso principal carga la configuración, crea las estructuras de comunicación, inicia los procesos asociados a los módulos, ejecuta el planificador de tareas, procesa los mensajes de estado y finalmente realiza el cierre ordenado del sistema.
 
 \subsubsection{Enrutador de eventos}
 \label{subsubsec:enrutador_eventos}
@@ -1125,36 +941,7 @@ El enrutador de eventos actúa como intermediario entre los módulos funcionales
 
 La función principal del enrutador es desacoplar productores y consumidores de información. Un módulo no necesita conocer directamente la instancia, cola o implementación interna de otro módulo; sólo emite un mensaje con un identificador y un conjunto de datos asociados. A partir de esa información, el proceso principal puede registrar el evento, actualizar el estado del sistema, reenviar una señal a otro módulo o conservar el resultado para procesamiento posterior.
 
-En la implementación actual, el enrutador cumple además funciones de compactación y retención de información reciente. Las lecturas de sensores se almacenan como últimos valores disponibles, de modo que puedan ser utilizadas por reportes o telemetría. Los resultados del procesamiento acústico se conservan como resumen compacto cuando contienen una salida válida. El Listado~\ref{lst:router_eventos} resume esta lógica.
-
-\begin{lstlisting}[style=pseudocodigo, caption={Pseudocódigo simplificado del enrutador de eventos.}, label={lst:router_eventos}]
-route(origen, mensaje):
-    si origen pertenece a modulos_de_sensores
-       y mensaje == ACTION_RESULT:
-        guardar_ultima_lectura_compacta(origen, mensaje)
-        retornar SIN_RUTEO
-
-    si origen == AudioProc
-       y mensaje == ACTION_RESULT:
-
-        si resultado(mensaje) != OK:
-            conservar_transmision_iridium_planificada()
-            retornar SIN_RUTEO
-
-        si mensaje contiene salida_acustica:
-            guardar_ultimo_resumen_acustico(mensaje)
-            retornar SIN_RUTEO
-
-    para cada regla en reglas_de_ruteo:
-        si regla coincide con origen y tipo_de_mensaje:
-            si condicion_de_regla(mensaje) es verdadera:
-                mensaje_ruteado = construir_mensaje_destino(mensaje)
-                enviar_a_cola(regla.destino, mensaje_ruteado)
-                retornar RUTEADO
-
-    registrar_que_no_hubo_regla_aplicable()
-    retornar SIN_RUTEO
-\end{lstlisting}
+En la implementación actual, el enrutador cumple además funciones de compactación y retención de información reciente. Las lecturas de sensores se almacenan como últimos valores disponibles, de modo que puedan ser utilizadas por reportes o telemetría. Los resultados del procesamiento acústico se conservan como resumen compacto cuando contienen una salida válida. El Listado~\ref{lst:router_eventos}, incluido en el Apéndice~\ref{ap:pseudocodigo_software}, resume esta lógica.
 
 Esta organización resulta especialmente útil en un sistema con módulos de naturaleza heterogénea. Una lectura de sensor, una adquisición acústica, un resultado de procesamiento o una respuesta de telemetría pueden generar eventos con tiempos, tamaños y frecuencias diferentes. El enrutador permite manejar estos eventos mediante una interfaz común, sin imponer una relación directa entre el módulo que produce la información y el componente que la consume.
 
@@ -1169,7 +956,7 @@ La configuración temporal se define en el archivo \texttt{scheduler.json}. El L
 
 El planificador no calcula las ejecuciones periódicas simplemente a partir del instante de arranque del programa, sino que sincroniza las tareas con una grilla temporal regular referida al inicio del día. Para cada tarea, la próxima ejecución se determina como el siguiente múltiplo entero de su intervalo respecto de las 00:00 de la hora local. De este modo, una tarea configurada cada 600~s se ejecuta en minutos regulares, por ejemplo 00:00, 00:10, 00:20 y así sucesivamente; una tarea horaria se ejecuta al comienzo de cada hora; y una tarea configurada cada 14400~s queda alineada con horarios de 4~h, como 00:00, 04:00, 08:00, 12:00, 16:00 y 20:00. Esta lógica evita que el ciclo de adquisición quede desplazado por la hora de inicio del software, reduce la deriva temporal acumulada y facilita la correlación posterior entre registros de distintos módulos.
 
-
+\vspace{10px}
 \begin{lstlisting}[style=pseudocodigo, caption={Ejemplo de configuración temporal en \texttt{scheduler.json}.}, label={lst:scheduler_json}]
 {
   "schedules": {
@@ -1190,6 +977,8 @@ El planificador utiliza esta configuración para generar señales hacia los mód
 La centralización de la planificación permite modificar intervalos de operación sin alterar la implementación de los módulos. Por ejemplo, pueden ajustarse las frecuencias de lectura de sensores, la periodicidad de generación de reportes, los intervalos de adquisición acústica o las ventanas de transmisión mediante archivos de configuración. Esta capacidad resulta importante durante ensayos de laboratorio, integración progresiva y operación en campo, donde los ciclos de trabajo pueden requerir valores diferentes.
 
 El planificador también permite separar conceptualmente el tiempo del sistema respecto de la lógica funcional de cada periférico. Los módulos permanecen en estado \texttt{IDLE} hasta recibir una señal; cuando la reciben, ejecutan la acción correspondiente y reportan el resultado. Esta lógica evita que cada módulo implemente bucles temporales propios y reduce el riesgo de comportamientos difíciles de coordinar o diagnosticar.
+
+\vspace{10px}
 
 \subsubsection{Reporte de estado del sistema}
 \label{subsubsec:reporte_estado_sistema}
@@ -1630,29 +1419,7 @@ Valores absolutos de 16 bits para cada canal y cada banda. Permite representar v
 \end{table}
 
 
-La lógica de selección de empaquetado puede resumirse mediante el Listado~\ref{lst:seleccion_empaquetado_audio}. El criterio prioriza el empaquetado diferencial cuando resulta válido, y utiliza el modo absoluto como alternativa segura.
-
-\begin{lstlisting}[style=pseudocodigo, caption={Selección de empaquetado para productos acústicos.}, label={lst:seleccion_empaquetado_audio}]
-seleccionar_empaquetado_audio(relative_band_power_db):
-separar valores por canal
-cuantizar cada valor en decimas_de_dB
-
-si todos los canales pueden codificarse como delta:
-    packing = DELTA_PREVIOUS_INT8
-    message_type = tipo_delta_segun_cantidad_de_canales
-    audio_payload = primer_valor_int16_y_deltas_int8_por_canal
-
-si no:
-    packing = ABS_INT16
-    message_type = tipo_absoluto_segun_cantidad_de_canales
-    audio_payload = valores_int16_por_canal
-
-body = cabecera(message_type, timestamp) + audio_payload
-crc = crc16_ccitt_false(body)
-
-retornar body + crc
-
-\end{lstlisting}
+La lógica de selección de empaquetado se resume en el Listado~\ref{lst:seleccion_empaquetado_audio}, incluido en el Apéndice~\ref{ap:pseudocodigo_software}. El criterio prioriza el empaquetado diferencial cuando resulta válido, y utiliza el modo absoluto como alternativa segura.
 
 La cantidad de canales admitida por el protocolo acústico es uno o dos. Para productos monocanales, cada banda contiene un único valor. Para productos estéreo, cada banda contiene un par de valores y el protocolo verifica que la cantidad de canales sea consistente a lo largo de todas las bandas. Si la estructura del producto no respeta esta condición, el mensaje se considera inválido y no se genera el payload.
 
@@ -1776,7 +1543,7 @@ En conjunto, la estructura del repositorio y los modos de ejecución complementa
 
 
 \clearpage
-\section{Pruebas y ensayos}
+\section{PRUEBAS Y ENSAYOS}
 \label{sec:pruebas_ensayos}
 
 \subsection{Estrategia general de verificación}
@@ -1989,7 +1756,7 @@ En tercer lugar, la evidencia de telemetría incorpora tanto solicitudes locales
 
 
 \clearpage
-\section{Conclusiones y trabajo futuro}
+\section{CONCLUSIONES Y TRABAJO FUTURO}
 \label{sec:conclusiones_trabajo_futuro}
 
 \subsection{Conclusiones}
