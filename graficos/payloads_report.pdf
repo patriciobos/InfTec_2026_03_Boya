@@ -1,0 +1,150 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 5 0 R /F2 6 0 R /F3 7 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 3738 >>
+stream
+0.080 0.130 0.200 rg
+0.00 755.89 595.28 86.00 re f
+1.000 1.000 1.000 rg
+BT /F2 19.0 Tf 34.00 803.89 Td (Resumen tecnico de decodificacion Iridium) Tj ET
+0.820 0.880 0.950 rg
+BT /F1 9.5 Tf 34.00 781.89 Td (Corrida UTC 2026-06-30T18:13:42+00:00) Tj ET
+0.960 0.970 0.980 rg
+34.00 705.89 96.00 48.00 re f
+0.780 0.820 0.860 RG
+34.00 705.89 96.00 48.00 re S
+0.100 0.420 0.720 rg
+34.00 749.89 96.00 4.00 re f
+0.340 0.390 0.460 rg
+BT /F2 7.2 Tf 44.00 735.89 Td (ARCHIVOS) Tj ET
+0.100 0.120 0.160 rg
+BT /F2 12.0 Tf 44.00 714.89 Td (85) Tj ET
+0.960 0.970 0.980 rg
+140.00 705.89 96.00 48.00 re f
+0.780 0.820 0.860 RG
+140.00 705.89 96.00 48.00 re S
+0.100 0.520 0.320 rg
+140.00 749.89 96.00 4.00 re f
+0.340 0.390 0.460 rg
+BT /F2 7.2 Tf 150.00 735.89 Td (OK) Tj ET
+0.100 0.120 0.160 rg
+BT /F2 12.0 Tf 150.00 714.89 Td (85) Tj ET
+0.960 0.970 0.980 rg
+246.00 705.89 96.00 48.00 re f
+0.780 0.820 0.860 RG
+246.00 705.89 96.00 48.00 re S
+0.100 0.520 0.320 rg
+246.00 749.89 96.00 4.00 re f
+0.340 0.390 0.460 rg
+BT /F2 7.2 Tf 256.00 735.89 Td (ERRORES) Tj ET
+0.100 0.120 0.160 rg
+BT /F2 12.0 Tf 256.00 714.89 Td (0) Tj ET
+0.960 0.970 0.980 rg
+352.00 705.89 96.00 48.00 re f
+0.780 0.820 0.860 RG
+352.00 705.89 96.00 48.00 re S
+0.100 0.420 0.720 rg
+352.00 749.89 96.00 4.00 re f
+0.340 0.390 0.460 rg
+BT /F2 7.2 Tf 362.00 735.89 Td (MOMSN) Tj ET
+0.100 0.120 0.160 rg
+BT /F2 12.0 Tf 362.00 714.89 Td (11 - 126) Tj ET
+0.960 0.970 0.980 rg
+458.00 705.89 96.00 48.00 re f
+0.780 0.820 0.860 RG
+458.00 705.89 96.00 48.00 re S
+0.100 0.420 0.720 rg
+458.00 749.89 96.00 4.00 re f
+0.340 0.390 0.460 rg
+BT /F2 7.2 Tf 468.00 735.89 Td (AUDIO) Tj ET
+0.100 0.120 0.160 rg
+BT /F2 12.0 Tf 468.00 714.89 Td (24 payloads) Tj ET
+0.100 0.120 0.160 rg
+BT /F2 12.0 Tf 34.00 679.89 Td (Hallazgos principales) Tj ET
+0.820 0.850 0.880 RG
+34.00 526.89 527.28 141.00 re S
+0.350 0.390 0.460 rg
+BT /F2 7.8 Tf 42.00 655.89 Td (Decodificacion) Tj ET
+0.100 0.120 0.160 rg
+BT /F1 8.2 Tf 150.00 655.89 Td (85/85 payloads decodificados correctamente) Tj ET
+0.350 0.390 0.460 rg
+BT /F2 7.8 Tf 42.00 636.89 Td (Tipos funcionales) Tj ET
+0.100 0.120 0.160 rg
+BT /F1 8.2 Tf 150.00 636.89 Td (Estado del sistema: 61, AudioProc: 24) Tj ET
+0.350 0.390 0.460 rg
+BT /F2 7.8 Tf 42.00 617.89 Td (Message types) Tj ET
+0.100 0.120 0.160 rg
+BT /F1 8.2 Tf 150.00 617.89 Td (MSG_SYSTEM_STATUS \(0x01\): 61, MSG_AUDIO \(0x06\): 13,...) Tj ET
+0.350 0.390 0.460 rg
+BT /F2 7.8 Tf 42.00 598.89 Td (Bateria) Tj ET
+0.100 0.120 0.160 rg
+BT /F1 8.2 Tf 150.00 598.89 Td (min 11.28 V) Tj ET
+0.350 0.390 0.460 rg
+BT /F2 7.8 Tf 42.00 579.89 Td (Almacenamiento) Tj ET
+0.100 0.120 0.160 rg
+BT /F1 8.2 Tf 150.00 579.89 Td (min 867.0 GiB libres) Tj ET
+0.350 0.390 0.460 rg
+BT /F2 7.8 Tf 42.00 560.89 Td (Flags de estado) Tj ET
+0.100 0.120 0.160 rg
+BT /F1 8.2 Tf 150.00 560.89 Td (battery_warning \(47\), last_acquisition_incomplete \(45...) Tj ET
+0.350 0.390 0.460 rg
+BT /F2 7.8 Tf 42.00 541.89 Td (AudioProc) Tj ET
+0.100 0.120 0.160 rg
+BT /F1 8.2 Tf 150.00 541.89 Td (rango 6.3 a 120.2 dB; prom 34.5 dB) Tj ET
+0.100 0.120 0.160 rg
+BT /F2 12.0 Tf 34.00 520.89 Td (Distribucion por tipo) Tj ET
+0.100 0.120 0.160 rg
+BT /F2 8.3 Tf 34.00 498.89 Td (Estado del sistema) Tj ET
+0.880 0.900 0.930 rg
+139.00 494.89 409.28 8.00 re f
+0.100 0.420 0.720 rg
+139.00 494.89 293.72 8.00 re f
+0.100 0.120 0.160 rg
+BT /F1 7.8 Tf 556.28 494.89 Td (61) Tj ET
+0.100 0.120 0.160 rg
+BT /F2 8.3 Tf 34.00 476.89 Td (AudioProc) Tj ET
+0.880 0.900 0.930 rg
+139.00 472.89 409.28 8.00 re f
+0.100 0.420 0.720 rg
+139.00 472.89 115.56 8.00 re f
+0.100 0.120 0.160 rg
+BT /F1 7.8 Tf 556.28 472.89 Td (24) Tj ET
+0.550 0.580 0.620 RG
+34.00 52.00 m 561.28 52.00 l S
+0.380 0.430 0.490 rg
+BT /F1 7.2 Tf 34.00 35.00 Td (Generado por scripts/decode_iridium_message.py) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000273 00000 n 
+0000004062 00000 n 
+0000004132 00000 n 
+0000004207 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+4275
+%%EOF

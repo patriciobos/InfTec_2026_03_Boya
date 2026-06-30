@@ -50,3 +50,4 @@
 {"timestamp":"2026-06-28T20:01:17-03:00","data":{"input_file":"/storage/boya/recordings/recording_20260628_200000.wav","output_file":"data/audio_proc/audioProc_20260628_200000.json"}}
 {"timestamp":"2026-06-29T00:01:17-03:00","data":{"input_file":"/storage/boya/recordings/recording_20260629_000000.wav","output_file":"data/audio_proc/audioProc_20260629_000000.json"}}
 {"timestamp":"2026-06-29T12:01:19-03:00","data":{"input_file":"/storage/boya/recordings/recording_20260629_120001.wav","output_file":"data/audio_proc/audioProc_20260629_120001.json"}}
+{"timestamp":"2026-06-30T12:01:19-03:00","data":{"input_file":"/storage/boya/recordings/recording_20260630_120001.wav","output_file":"data/audio_proc/audioProc_20260630_120001.json"}}

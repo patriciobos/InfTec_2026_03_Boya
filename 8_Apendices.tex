@@ -269,3 +269,34 @@ retornar body + crc
 
 \end{lstlisting}
 
+\clearpage
+
+\section{Evidencia documental de telemetría satelital}
+\label{ap:evidencia_telemetria_satelital}
+
+En este apéndice se incorporan tres reportes PDF asociados a los ensayos de telemetría satelital. Los documentos corresponden a payloads Iridium SBD recibidos por la unidad con IMEI~300534063350070 y a la corrida consolidada de decodificación utilizada para verificar la compatibilidad de los mensajes con el protocolo vigente.
+
+\subsection{Reporte de payload Iridium MOMSN 120}
+\label{ap:reporte_sbd_momsn_120}
+
+El reporte incluido a continuación documenta la decodificación del payload MOMSN~120 como mensaje \texttt{MSG\_SYSTEM\_STATUS}, con campos de batería, almacenamiento, tiempo de operación, banderas de estado y mapas de estado de módulos.
+
+\includepdf[pages=-,scale=0.95,pagecommand={\thispagestyle{plain}}]{graficos/120_19f1188ee6aecc85_300534063350070_000120.pdf}
+
+\clearpage
+
+\subsection{Reporte de payload Iridium MOMSN 123}
+\label{ap:reporte_sbd_momsn_123}
+
+El reporte incluido a continuación documenta la decodificación del payload MOMSN~123 como mensaje \texttt{MSG\_AUDIO}, incluyendo cantidad de canales, cantidad de bandas, tipo de empaquetado, verificación CRC y valores de potencia relativa por banda.
+
+\includepdf[pages=-,scale=0.95,pagecommand={\thispagestyle{plain}}]{graficos/123_19f122dd926347f2_300534063350070_000123.pdf}
+
+\clearpage
+
+\subsection{Reporte consolidado de decodificación de payloads}
+\label{ap:reporte_payloads_iridium}
+
+El reporte incluido a continuación resume la corrida de decodificación aplicada al conjunto de payloads compatibles con el protocolo vigente. Este documento registra la cantidad total de archivos procesados, la ausencia de errores de decodificación, la distribución por tipo de mensaje y los rangos principales observados para los productos de AudioProc.
+
+\includepdf[pages=-,scale=0.95,pagecommand={\thispagestyle{plain}}]{graficos/payloads_report.pdf}

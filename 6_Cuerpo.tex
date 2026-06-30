@@ -4,19 +4,19 @@
 \subsection{Antecedentes}
 \label{subsec:antecedentes}
 
-El presente informe técnico documenta el desarrollo del sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría satelital de la boya instrumental EAMMRA. El sistema se orienta a la operación autónoma de una plataforma marítima capaz de adquirir variables ambientales, meteorológicas, de posición, energéticas y acústicas, almacenar datos localmente y transmitir información seleccionada mediante un enlace satelital.  
+El presente informe técnico documenta el desarrollo del sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría satelital de la boya instrumental para monitoreo acústico. El sistema se orienta a la operación autónoma de una plataforma marítima capaz de adquirir variables ambientales, meteorológicas, de posición, energéticas y acústicas, almacenar datos localmente y transmitir información seleccionada mediante un enlace satelital.  
 
-La línea de trabajo EAMMRA se origina en la necesidad de disponer de una estación autónoma para medir, registrar y analizar el Nivel de Ruido submarino, \(NL\), junto con variables asociadas al ambiente marítimo. En acústica submarina, \(NL\) constituye un parámetro SONAR fundamental: interviene en las Ecuaciones SONAR, condiciona la capacidad de detección en escucha pasiva y representa el nivel de fondo respecto del cual debe distinguirse una señal acústica recibida \citep{URICK,UrickNL}. Desde el punto de vista ambiental, la medición de \(NL\) permite caracterizar el ruido ambiente y diferenciarlo de componentes asociadas al ruido propio del sistema y al ruido radiado por fuentes identificables, incluidas fuentes antrópicas tales como tráfico marítimo, plataformas e instalaciones de explotación o generación \citep{Urban2002}. Esta información resulta necesaria para establecer líneas de base, analizar la variabilidad del ruido subacuático y evaluar cambios asociados a actividades humanas en zonas de interés marítimo.
+La línea de trabajo de la boya instrumental para monitoreo acústico se origina en la necesidad de disponer de una estación autónoma para medir, registrar y analizar el Nivel de Ruido submarino, \(NL\), junto con variables asociadas al ambiente marítimo. En acústica submarina, \(NL\) constituye un parámetro SONAR fundamental: interviene en las Ecuaciones SONAR, condiciona la capacidad de detección en escucha pasiva y representa el nivel de fondo respecto del cual debe distinguirse una señal acústica recibida \citep{URICK,UrickNL}. Desde el punto de vista ambiental, la medición de \(NL\) permite caracterizar el ruido ambiente y diferenciarlo de componentes asociadas al ruido propio del sistema y al ruido radiado por fuentes identificables, incluidas fuentes antrópicas tales como tráfico marítimo, plataformas e instalaciones de explotación o generación \citep{Urban2002}. Esta información resulta necesaria para establecer líneas de base, analizar la variabilidad del ruido subacuático y evaluar cambios asociados a actividades humanas en zonas de interés marítimo.
 
 Una primera etapa estuvo vinculada con la caracterización ambiental de la Zona de Adiestramiento en Inmersión de Sumergibles (ZAIS), donde se reunió información acústica, oceanográfica y de tráfico marítimo con el propósito de evaluar la factibilidad de instalar una Estación Autónoma Marítima para el Monitoreo de Ruido Ambiente \citep{AS0215_ZAIS}.
 
-Sobre esa base, la ingeniería conceptual de EAMMRA estableció los objetivos generales del sistema, los requerimientos de alto nivel y el escenario de operación \citep{AS0316_EAMMRAConceptual}. En ese marco se adoptó la distinción entre ruido ambiente propiamente dicho, \(NL_\mathrm{a}\), ruido propio del sistema de medición, \(NL_\mathrm{p}\), y ruido radiado por fuentes identificables. Esta separación resulta central para el diseño de la estación, ya que la calidad de una medición hidroacústica no depende únicamente del hidrófono y de la cadena de adquisición, sino también de la plataforma, del montaje, del fondeo, del acondicionamiento electrónico, del procesamiento y de la información contextual asociada a cada registro.
+Sobre esa base, la ingeniería conceptual de la boya instrumental para monitoreo acústico estableció los objetivos generales del sistema, los requerimientos de alto nivel y el escenario de operación \citep{AS0316_BoyaConceptual}. En ese marco se adoptó la distinción entre ruido ambiente propiamente dicho, \(NL_\mathrm{a}\), ruido propio del sistema de medición, \(NL_\mathrm{p}\), y ruido radiado por fuentes identificables. Esta separación resulta central para el diseño de la estación, ya que la calidad de una medición hidroacústica no depende únicamente del hidrófono y de la cadena de adquisición, sino también de la plataforma, del montaje, del fondeo, del acondicionamiento electrónico, del procesamiento y de la información contextual asociada a cada registro.
 
 En paralelo, se realizaron ensayos experimentales destinados a verificar componentes críticos de la cadena acústica. Las mediciones efectuadas en la dársena de la Base Naval Mar del Plata permitieron contrastar hidrófonos de banda ancha, evaluar el funcionamiento de amplificadores de carga, registrar ruido ambiente subacuático y analizar la respuesta frente a señales acústicas controladas \citep{AS0415_HidrofonosMDP}. Estos antecedentes aportaron criterios prácticos para la selección de sensores, el acondicionamiento de señal, la estimación espectral y la definición de procedimientos de adquisición.
 
-La plataforma física de EAMMRA fue abordada posteriormente mediante el diseño de una boya prototipo de superficie para medición de Nivel de Ruido submarino en zona costera \citep{AS0119_DisenioBoya}. Dicho diseño consideró aspectos de construcción local, transporte, fondeo, recuperación, alojamiento de instrumentos, alimentación y compatibilidad con el arreglo de hidrófonos. Por lo tanto, la boya debe entenderse como una plataforma instrumental completa, y no solamente como un soporte mecánico para un sensor acústico.
+La plataforma física de la boya instrumental para monitoreo acústico fue abordada posteriormente mediante el diseño de una boya prototipo de superficie para medición de Nivel de Ruido submarino en zona costera \citep{AS0119_DisenioBoya}. Dicho diseño consideró aspectos de construcción local, transporte, fondeo, recuperación, alojamiento de instrumentos, alimentación y compatibilidad con el arreglo de hidrófonos. Por lo tanto, la boya debe entenderse como una plataforma instrumental completa, y no solamente como un soporte mecánico para un sensor acústico.
 
-Una etapa posterior estuvo orientada a la integración de subsistemas para el prototipo de EAMMRA \citep{AS0219_Subsistemas}. En ese trabajo se documentó la articulación entre alimentación, control, procesamiento, adquisición y sensores, junto con las interfaces físicas y lógicas entre bloques y una descripción funcional del ciclo de trabajo de la estación. Esa integración permitió pasar de definiciones conceptuales y ensayos parciales a una arquitectura compuesta por subsistemas interdependientes.
+Una etapa posterior estuvo orientada a la integración de subsistemas para el prototipo de la boya instrumental para monitoreo acústico \citep{AS0219_Subsistemas}. En ese trabajo se documentó la articulación entre alimentación, control, procesamiento, adquisición y sensores, junto con las interfaces físicas y lógicas entre bloques y una descripción funcional del ciclo de trabajo de la estación. Esa integración permitió pasar de definiciones conceptuales y ensayos parciales a una arquitectura compuesta por subsistemas interdependientes.
 
 También se incorporaron antecedentes de operación en campo y medición hidroacústica fuera del laboratorio. Las campañas realizadas en Dársena Norte, Río de la Plata y Golfo San Jorge permitieron evaluar equipamiento portátil, procedimientos de despliegue y arriado de hidrófonos, configuraciones de montaje y procesamiento de señales para estimar niveles de ruido asociados a fuentes identificables \citep{AS0622_DarsenaRDP_GSJ,Bos2019_GSJ}. Estos trabajos reforzaron la necesidad de controlar el ruido propio del montaje, registrar metadatos de operación y disponer de procedimientos reproducibles para adquisición, almacenamiento y análisis.
 
@@ -25,9 +25,9 @@ El presente informe corresponde a una nueva etapa de maduración tecnológica. A
 \subsection{Contexto}
 \label{subsec:contexto}
 
-Las plataformas autónomas de observación marítima permiten adquirir información en sitios donde la presencia continua de operadores resulta impracticable, costosa o técnicamente inconveniente. En el caso de EAMMRA, la plataforma debe operar en un ambiente con humedad, salinidad, variaciones térmicas, vibraciones, oleaje, viento, restricciones energéticas y ventanas de mantenimiento limitadas. Estas condiciones imponen exigencias simultáneas sobre el diseño mecánico, la electrónica, el software de control, la alimentación y la confiabilidad general del sistema.
+Las plataformas autónomas de observación marítima permiten adquirir información en sitios donde la presencia continua de operadores resulta impracticable, costosa o técnicamente inconveniente. En el caso de la boya instrumental para monitoreo acústico, la plataforma debe operar en un ambiente con humedad, salinidad, variaciones térmicas, vibraciones, oleaje, viento, restricciones energéticas y ventanas de mantenimiento limitadas. Estas condiciones imponen exigencias simultáneas sobre el diseño mecánico, la electrónica, el software de control, la alimentación y la confiabilidad general del sistema.
 
-La Figura~\ref{fig:boya_eammra} muestra la configuración general de la plataforma física de la boya EAMMRA, mediante un esquema dimensional y una fotografía del prototipo construido.
+La Figura~\ref{fig:boya_acustica} muestra la configuración general de la plataforma física de la boya instrumental para monitoreo acústico, mediante un esquema dimensional y una fotografía del prototipo construido.
 
 \begin{figure}[htbp]
 	\centering
@@ -35,17 +35,17 @@ La Figura~\ref{fig:boya_eammra} muestra la configuración general de la platafor
 		\centering
 		\includegraphics[height=8.5cm]{graficos/boya_esquema_1.png}
 		\vspace{0.2cm}
-		\small{\\Diagrama esquemático de la boya EAMMRA.}
+		\small{\\Diagrama esquemático de la boya instrumental para monitoreo acústico.}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[b]{0.48\textwidth}
 		\centering
 		\includegraphics[height=8.5cm]{graficos/boya.png}
 		\vspace{0.2cm}
-		\small{\\Boya EAMMRA sobre su base de apoyo.}
+		\small{\\Boya instrumental para monitoreo acústico sobre su base de apoyo.}
 	\end{minipage}
-	 \caption{Boya instrumental EAMMRA. A la izquierda se muestra un diagrama esquemático de la plataforma con sus dimensiones principales; a la derecha, una fotografía de la boya montada sobre su base de apoyo.}
-	\label{fig:boya_eammra}
+	 \caption{Boya instrumental para monitoreo acústico. A la izquierda se muestra un diagrama esquemático de la plataforma con sus dimensiones principales; a la derecha, una fotografía de la boya montada sobre su base de apoyo.}
+	\label{fig:boya_acustica}
 \end{figure}
 
 
@@ -78,7 +78,7 @@ La propuesta de valor del sistema desarrollado consiste en integrar, sobre una p
 
 Desde el punto de vista operativo, el sistema permite reducir la dependencia de intervenciones presenciales para conocer el estado de la boya, preservar datos localmente para su recuperación posterior y transmitir información seleccionada durante el despliegue. Desde el punto de vista técnico, la arquitectura modular permite aislar responsabilidades, incorporar nuevos periféricos, ensayar componentes por separado y documentar el comportamiento de cada módulo frente a condiciones nominales y de falla.
 
-El objetivo general del trabajo es desarrollar y documentar el sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría satelital de la boya instrumental EAMMRA, estableciendo una base técnica para su operación autónoma, verificación, mantenimiento y evolución futura.
+El objetivo general del trabajo es desarrollar y documentar el sistema embebido de control, adquisición, supervisión, almacenamiento y telemetría satelital de la boya instrumental para monitoreo acústico, estableciendo una base técnica para su operación autónoma, verificación, mantenimiento y evolución futura.
 
 Los objetivos específicos son:
 
@@ -94,7 +94,7 @@ Los objetivos específicos son:
     \item Definir una base técnica para la verificación, el mantenimiento y la evolución futura del sistema.
 \end{itemize}
 
-El alcance de esta sección es presentar el marco general del desarrollo y su continuidad con los antecedentes técnicos de EAMMRA. El detalle de hardware integrado, arquitectura de software, módulos funcionales, formatos de datos, telemetría y pruebas se desarrolla en las secciones siguientes.
+El alcance de esta sección es presentar el marco general del desarrollo y su continuidad con los antecedentes técnicos de la boya instrumental para monitoreo acústico. El detalle de hardware integrado, arquitectura de software, módulos funcionales, formatos de datos, telemetría y pruebas se desarrolla en las secciones siguientes.
 
 
 
@@ -108,7 +108,7 @@ Esta sección delimita el sistema técnico documentado en el informe y presenta 
 \subsection{Sistema documentado}
 \label{subsec:sistema_documentado}
 
-El presente informe documenta el sistema embebido desarrollado para la boya instrumental EAMMRA durante la etapa actual del proyecto. El alcance comprende la integración de la computadora principal embarcada con los periféricos de medición, supervisión, almacenamiento y comunicación, así como el software encargado de coordinar su operación autónoma.
+El presente informe documenta el sistema embebido desarrollado para la boya instrumental para monitoreo acústico durante la etapa actual del proyecto. El alcance comprende la integración de la computadora principal embarcada con los periféricos de medición, supervisión, almacenamiento y comunicación, así como el software encargado de coordinar su operación autónoma.
 
 El foco del documento está puesto en la arquitectura embebida del sistema: interfaces entre módulos, organización del software, mecanismos de adquisición y registro, telemetría, diagnóstico, configuración y criterios de prueba. La boya se aborda en tanto plataforma física que condiciona dicha integración, pero no se desarrolla aquí su diseño mecánico, estructural o naval en detalle.
 
@@ -150,7 +150,7 @@ En conjunto, estas herramientas aportan una capa de control técnico sobre el pr
 \subsection{Requerimientos funcionales y no funcionales}
 \label{subsec:requerimientos}
 
-Los requerimientos del sistema derivan de la necesidad de operar una boya instrumental autónoma con múltiples subsistemas integrados. En términos generales, el sistema debe adquirir datos, validarlos, almacenarlos, procesarlos parcialmente y transmitir información seleccionada en forma remota. Estos requerimientos actualizan y particularizan, para la etapa de desarrollo documentada en este informe, lineamientos definidos en antecedentes de ingeniería conceptual e integración de subsistemas de EAMMRA \citep{AS0316_EAMMRAConceptual,AS0219_Subsistemas}.
+Los requerimientos del sistema derivan de la necesidad de operar una boya instrumental autónoma con múltiples subsistemas integrados. En términos generales, el sistema debe adquirir datos, validarlos, almacenarlos, procesarlos parcialmente y transmitir información seleccionada en forma remota. Estos requerimientos actualizan y particularizan, para la etapa de desarrollo documentada en este informe, lineamientos definidos en antecedentes de ingeniería conceptual e integración de subsistemas de la boya instrumental para monitoreo acústico \citep{AS0316_BoyaConceptual,AS0219_Subsistemas}.
 
 \noindent\textbf{Requerimientos funcionales.}
 
@@ -205,16 +205,16 @@ Estos requerimientos establecen el marco técnico utilizado en las secciones sig
 \section{PLATAFORMA DE HARDWARE Y PERIFÉRICOS INTEGRADOS}
 \label{sec:hardware}
 
-La plataforma de hardware de la boya EAMMRA se organiza alrededor de una computadora principal embarcada, encargada de coordinar la adquisición de datos, la supervisión de estado, el almacenamiento local y la comunicación con los periféricos. A partir de esta unidad central se integran subsistemas con funciones diferenciadas: sensado ambiental y meteorológico, posicionamiento, adquisición acústica, supervisión energética y telemetría satelital.
+La plataforma de hardware de la boya instrumental para monitoreo acústico se organiza alrededor de una computadora principal embarcada, encargada de coordinar la adquisición de datos, la supervisión de estado, el almacenamiento local y la comunicación con los periféricos. A partir de esta unidad central se integran subsistemas con funciones diferenciadas: sensado ambiental y meteorológico, posicionamiento, adquisición acústica, supervisión energética y telemetría satelital.
 
 La Figura~\ref{fig:diagrama_bloques_hardware} presenta el diagrama de bloques del sistema integrado. En el centro se ubica el sistema principal, implementado sobre la computadora Kaise KBOX-S J6412. A esta unidad se conectan los periféricos mediante interfaces serie RS232 y RS485, y USB. El esquema permite distinguir los subsistemas principales de la boya y las interfaces físicas utilizadas para su integración.
 
-El subsistema de sensores agrupa los dispositivos orientados a la adquisición de variables ambientales, inerciales, meteorológicas y de posicionamiento. Incluye el AIS/GPS AMEC Mando-301 y el anemómetro GILL WindSonic, comunicados mediante RS232, junto con el sensor ambiental AHT10 y la unidad inercial MPU6050, integrados a través de un puente USB/I2C CH413A. El subsistema de audio está compuesto por la interfaz Behringer UMC202HD, los preamplificadores DAS-1 y DAS-2 y los hidrófonos B\&K 8105, conectados mediante interfaces analógicas BNC y BNC/XLR. El subsistema de energía comprende el panel solar, el regulador EPEVER XTRA2210 y la batería TRV de 12~V y 110~Ah, con supervisión mediante RS485. Finalmente, el subsistema de telemetría incorpora el módem Iridium Edge para transmisión remota de mensajes mediante enlace satelital con interfaz RS232.
+El subsistema de sensores agrupa los dispositivos orientados a la adquisición de variables ambientales, inerciales, meteorológicas y de posicionamiento. Incluye el AIS/GPS AMEC Mando-301 y el anemómetro GILL WindSonic, comunicados mediante RS232, junto con el sensor ambiental AHT10 y la unidad inercial MPU6050, integrados a través de un puente USB/I2C CH341A. El subsistema de audio está compuesto por la interfaz Behringer UMC202HD, los preamplificadores DAS-1 y DAS-2 y los hidrófonos B\&K 8105, conectados mediante interfaces analógicas BNC y BNC/XLR. El subsistema de energía comprende el panel solar, el regulador EPEVER XTRA2210 y la batería TRV de 12~V y 110~Ah, con supervisión mediante RS485. Finalmente, el subsistema de telemetría incorpora el módem Iridium Edge para transmisión remota de mensajes mediante enlace satelital con interfaz RS232.
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=.7\textwidth]{graficos/diagBloques.pdf}
-    \caption{Diagrama de bloques del hardware integrado en la boya EAMMRA. Se muestra la computadora principal como núcleo del sistema y su vinculación con los subsistemas de sensores, audio, energía y telemetría, junto con las interfaces físicas utilizadas para la integración.}
+    \caption{Diagrama de bloques del hardware integrado en la boya instrumental para monitoreo acústico. Se muestra la computadora principal como núcleo del sistema y su vinculación con los subsistemas de sensores, audio, energía y telemetría, junto con las interfaces físicas utilizadas para la integración.}
     \label{fig:diagrama_bloques_hardware}
 \end{figure}
 
@@ -222,7 +222,7 @@ El detalle de cada periférico se desarrolla en las subsecciones siguientes. En 
 
 %\clearpage
 %
-%La boya EAMMRA integra una computadora principal embarcada y un conjunto de periféricos de sensado, adquisición, supervisión energética, almacenamiento y telemetría. La función del sistema embebido es coordinar estos dispositivos bajo un ciclo de operación autónomo, con registro persistente de datos, diagnóstico local y transmisión remota de información crítica. En esta sección se presenta la plataforma de hardware utilizada, con énfasis en los dispositivos que se vinculan directamente con el software de control, sus interfaces de comunicación, sus variables de operación y su función dentro de la arquitectura general del sistema.
+%La boya instrumental para monitoreo acústico integra una computadora principal embarcada y un conjunto de periféricos de sensado, adquisición, supervisión energética, almacenamiento y telemetría. La función del sistema embebido es coordinar estos dispositivos bajo un ciclo de operación autónomo, con registro persistente de datos, diagnóstico local y transmisión remota de información crítica. En esta sección se presenta la plataforma de hardware utilizada, con énfasis en los dispositivos que se vinculan directamente con el software de control, sus interfaces de comunicación, sus variables de operación y su función dentro de la arquitectura general del sistema.
 %
 %Los manuales técnicos de los principales dispositivos se encuentran incorporados en la carpeta \texttt{docs/} del repositorio del proyecto. Esta documentación se utiliza como referencia para la configuración de interfaces, protocolos, comandos, parámetros eléctricos, restricciones operativas y procedimientos de ensayo de los periféricos integrados \citep{BoyaRepoDocs}. En particular, se describen los siguientes componentes y subsistemas:
 %
@@ -278,7 +278,7 @@ El núcleo de procesamiento está constituido por una PC industrial Kaise KBOX-S
             \vspace{10px}
         \end{itemize}
     \end{minipage}
-    \caption{Computadora principal embarcada para el control del sistema instrumental de la boya EAMMRA.}
+    \caption{Computadora principal embarcada para el control del sistema instrumental de la boya instrumental para monitoreo acústico.}
     \label{fig:kaise}
 \end{figure}
 
@@ -291,7 +291,7 @@ La disponibilidad de múltiples interfaces serie resulta especialmente relevante
 \vspace{10px}
 \subsection{Sensor ambiental AHT10.}
 
-El AHT10 es un sensor digital de temperatura y humedad relativa utilizado para supervisar las condiciones ambientales internas o de entorno inmediato de la electrónica de la boya. En EAMMRA se emplea como módulo comercial montado sobre una placa de circuito impreso auxiliar, lo que facilita su conexión eléctrica, su fijación mecánica y su integración al bus I2C de la computadora principal, como se observa en la Figura~\ref{fig:aht10}. La medición de temperatura y humedad no se incorpora como una variable oceanográfica principal, sino como una magnitud de diagnóstico para evaluar las condiciones de operación del volumen donde se alojan los componentes electrónicos.
+El AHT10 es un sensor digital de temperatura y humedad relativa utilizado para supervisar las condiciones ambientales internas o de entorno inmediato de la electrónica de la boya. En la boya instrumental para monitoreo acústico se emplea como módulo comercial montado sobre una placa de circuito impreso auxiliar, lo que facilita su conexión eléctrica, su fijación mecánica y su integración al bus I2C de la computadora principal, como se observa en la Figura~\ref{fig:aht10}. La medición de temperatura y humedad no se incorpora como una variable oceanográfica principal, sino como una magnitud de diagnóstico para evaluar las condiciones de operación del volumen donde se alojan los componentes electrónicos.
 
 El sensor integra un elemento capacitivo MEMS sensible a la humedad relativa, un sensor de temperatura en chip y un circuito integrado de acondicionamiento y conversión \citep{AHT10Datasheet}. Esta arquitectura permite entregar una salida digital calibrada mediante una interfaz I2C estándar, sin requerir etapas analógicas externas de acondicionamiento. La disponibilidad de una medición digital resulta conveniente en un sistema embebido compacto, ya que reduce la cantidad de conexiones, evita la transmisión de señales analógicas de bajo nivel y simplifica la integración con otros periféricos de supervisión.
 
@@ -321,11 +321,11 @@ Desde el punto de vista eléctrico, el AHT10 requiere las líneas de alimentaci�
 
 La ubicación física del sensor debe permitir el intercambio de aire con el volumen que se desea supervisar. Por este motivo, su protección mecánica debe equilibrar dos requisitos contrapuestos: por un lado, limitar la exposición directa a humedad condensada, salinidad, partículas o contacto accidental; por otro, no aislar completamente el elemento sensible respecto del aire interno. En una plataforma marítima autónoma, esta medición permite detectar condiciones que podrían asociarse con ingreso de humedad, condensación, degradación del sellado o variaciones térmicas relevantes para la confiabilidad de la electrónica.
 
-Debe considerarse que los sensores de humedad relativa de este tipo pueden presentar deriva cuando operan durante períodos prolongados en condiciones de humedad elevada o en presencia de vapores químicos. Por esta razón, en el sistema EAMMRA el AHT10 se utiliza principalmente como indicador de estado ambiental interno y no como instrumento meteorológico externo de referencia. Su valor reside en aportar una variable simple, de bajo consumo y bajo volumen físico, adecuada para el seguimiento de las condiciones de operación del conjunto electrónico embarcado.
+Debe considerarse que los sensores de humedad relativa de este tipo pueden presentar deriva cuando operan durante períodos prolongados en condiciones de humedad elevada o en presencia de vapores químicos. Por esta razón, en el sistema de la boya instrumental para monitoreo acústico el AHT10 se utiliza principalmente como indicador de estado ambiental interno y no como instrumento meteorológico externo de referencia. Su valor reside en aportar una variable simple, de bajo consumo y bajo volumen físico, adecuada para el seguimiento de las condiciones de operación del conjunto electrónico embarcado.
 
 \subsection{Unidad inercial MPU6050.}
 
-El MPU6050 es una unidad inercial MEMS de seis grados de libertad que integra, en un mismo encapsulado, un acelerómetro triaxial y un giróscopo triaxial. En EAMMRA se emplea como módulo comercial montado sobre una placa de circuito impreso auxiliar, que incorpora el sensor, los componentes pasivos necesarios para su operación y los pines de conexión para alimentación y comunicación mediante bus I2C, como se observa en la Figura~\ref{fig:mpu6050}. 
+El MPU6050 es una unidad inercial MEMS de seis grados de libertad que integra, en un mismo encapsulado, un acelerómetro triaxial y un giróscopo triaxial. En la boya instrumental para monitoreo acústico se emplea como módulo comercial montado sobre una placa de circuito impreso auxiliar, que incorpora el sensor, los componentes pasivos necesarios para su operación y los pines de conexión para alimentación y comunicación mediante bus I2C, como se observa en la Figura~\ref{fig:mpu6050}. 
 
 Su función dentro de la plataforma de hardware es registrar variables asociadas al movimiento local de la boya, con utilidad para diagnóstico mecánico, identificación de condiciones dinámicas y contextualización de otros registros adquiridos por el sistema.
 
@@ -361,7 +361,7 @@ El MPU6050 no constituye, por sí solo, un sistema de navegación ni una referen
 
 \subsection{Integración física de sensores I2C mediante adaptador USB.}
 
-Los sensores AHT10 y MPU6050 se integran a la computadora principal Kaise mediante un adaptador USB--I2C basado en CH413A. En la Figura~\ref{fig:ch431a} se muestra el adaptador utilizado como interfaz física entre el puerto USB de la computadora embarcada y el bus I2C compartido por ambos sensores. 
+Los sensores AHT10 y MPU6050 se integran a la computadora principal Kaise mediante un adaptador USB--I2C basado en CH413A. En la Figura~\ref{fig:ch341a} se muestra el adaptador utilizado como interfaz física entre el puerto USB de la computadora embarcada y el bus I2C compartido por ambos sensores. 
 
 A partir de las hojas de datos del AHT10 y del MPU6050 se verifican las condiciones eléctricas de alimentación, niveles lógicos e interfaz digital requeridas para integrar ambos dispositivos en un mismo subconjunto de adquisición \citep{AHT10Datasheet,MPU6050Datasheet}.
 
@@ -373,9 +373,9 @@ El conjunto de sensores se alojó en un encapsulado \textit{ad-hoc} fabricado me
 \centering
 \begin{minipage}[b]{0.47\textwidth}
     \centering
-    \includegraphics[width=0.70\linewidth]{graficos/ch431a.jpg}
-    \captionof{figure}{Adaptador USB--I2C basado en CH413A utilizado para conectar los sensores AHT10 y MPU6050 a la computadora principal.}
-    \label{fig:ch431a}
+    \includegraphics[width=0.70\linewidth]{graficos/ch341a.jpg}
+    \captionof{figure}{Adaptador USB--I2C basado en CH341A utilizado para conectar los sensores AHT10 y MPU6050 a la computadora principal.}
+    \label{fig:ch341a}
 \end{minipage}
 \hfill
 \begin{minipage}[b]{0.47\textwidth}
@@ -390,9 +390,9 @@ Desde el punto de vista constructivo, esta integración transforma módulos elec
 
 \subsection{Equipo AIS/GPS AMEC MANDO 301.}
 
-El AMEC MANDO 301 se integra a la boya EAMMRA como equipo AIS AtoN, del inglés \emph{Automatic Identification System Aid to Navigation}, asociado al balizamiento electrónico de la plataforma. Su función principal es transmitir la identificación y la posición de la boya mediante mensajes AIS, de modo que pueda ser detectada por embarcaciones cercanas y estaciones costeras compatibles. En la configuración empleada, el equipo también aporta información GPS al sistema, lo que permite disponer de una referencia de posición y tiempo asociada a la operación de la boya.
+El AMEC MANDO 301 se integra a la boya instrumental para monitoreo acústico como equipo AIS AtoN, del inglés \emph{Automatic Identification System Aid to Navigation}, asociado al balizamiento electrónico de la plataforma. Su función principal es transmitir la identificación y la posición de la boya mediante mensajes AIS, de modo que pueda ser detectada por embarcaciones cercanas y estaciones costeras compatibles. En la configuración empleada, el equipo también aporta información GPS al sistema, lo que permite disponer de una referencia de posición y tiempo asociada a la operación de la boya.
 
-El MANDO 301 corresponde a un AIS AtoN tipo~1. Esta clase de equipo se caracteriza por operar como transmisor AIS, sin recepción de mensajes AIS de otras estaciones, y por utilizar acceso FATDMA, con ranuras temporales preasignadas para la emisión. En el caso de EAMMRA, el equipo no se utiliza para relevar tráfico marítimo circundante, sino para señalizar electrónicamente la presencia de la boya y proporcionar una referencia espacio-temporal para los registros adquiridos \citep{AMECMando301Brochure}.
+El MANDO 301 corresponde a un AIS AtoN tipo~1. Esta clase de equipo se caracteriza por operar como transmisor AIS, sin recepción de mensajes AIS de otras estaciones, y por utilizar acceso FATDMA, con ranuras temporales preasignadas para la emisión. En el caso de la boya instrumental para monitoreo acústico, el equipo no se utiliza para relevar tráfico marítimo circundante, sino para señalizar electrónicamente la presencia de la boya y proporcionar una referencia espacio-temporal para los registros adquiridos \citep{AMECMando301Brochure}.
 
 En la Figura~\ref{fig:amec-mando-301} se muestra el equipo AMEC MANDO 301 junto con sus características principales de integración. El dispositivo combina una interfaz de radiofrecuencia VHF para la transmisión AIS, una antena GPS externa para posicionamiento, alimentación en corriente continua y puertos serie RS232 para configuración y comunicación. Esta combinación permite integrar el equipo tanto al subsistema de balizamiento como al sistema embebido de adquisición y supervisión.
 
@@ -415,7 +415,7 @@ En la Figura~\ref{fig:amec-mando-301} se muestra el equipo AMEC MANDO 301 junto 
 \item \textbf{Interfaz de datos:} RS232 a 115200~bit/s, 8N1.
 \item \textbf{Interfaz RF:} antena VHF externa para transmisión AIS.
 \item \textbf{Potencia de transmisión:} 2, 5 o 12,5~W, programable.
-\item \textbf{Rol en EAMMRA:} identificación, posicionamiento y balizamiento electrónico.
+\item \textbf{Rol en la boya instrumental para monitoreo acústico:} identificación, posicionamiento y balizamiento electrónico.
 \end{itemize}
 \end{minipage}
 \end{figure}
@@ -425,12 +425,12 @@ Desde el punto de vista de la integración física, el equipo requiere una anten
 
 La alimentación del MANDO 301 se realiza desde el sistema de energía de la boya, con tensión nominal de 12~VDC. Esta característica facilita su integración con el banco de baterías y el subsistema fotovoltaico. Además de la conexión de potencia, el equipo dispone de conectores dedicados para configuración, comunicación, antena VHF y antena GPS. 
 
-En términos operativos, el aporte del MANDO 301 al sistema EAMMRA es doble. Por un lado, incrementa la seguridad de la plataforma al hacer visible la boya dentro del ecosistema AIS utilizado por embarcaciones y estaciones costeras. Por otro lado, proporciona datos de posición y tiempo que permiten asociar las mediciones ambientales, meteorológicas, energéticas y acústicas con una referencia espacial y temporal. 
+En términos operativos, el aporte del MANDO 301 al sistema de la boya instrumental para monitoreo acústico es doble. Por un lado, incrementa la seguridad de la plataforma al hacer visible la boya dentro del ecosistema AIS utilizado por embarcaciones y estaciones costeras. Por otro lado, proporciona datos de posición y tiempo que permiten asociar las mediciones ambientales, meteorológicas, energéticas y acústicas con una referencia espacial y temporal. 
 
 \vspace{10px}
 \subsection{Anemómetro ultrasónico WindSonic.}
 
-El equipo WindSonic de Gill Instruments es un anemómetro ultrasónico de dos ejes utilizado para medir velocidad y dirección del viento. En la boya EAMMRA, este instrumento aporta información meteorológica de superficie que resulta relevante para la caracterización ambiental del sitio de medición y para el análisis posterior de las condiciones asociadas al ruido ambiente submarino. 
+El equipo WindSonic de Gill Instruments es un anemómetro ultrasónico de dos ejes utilizado para medir velocidad y dirección del viento. En la boya instrumental para monitoreo acústico, este instrumento aporta información meteorológica de superficie que resulta relevante para la caracterización ambiental del sitio de medición y para el análisis posterior de las condiciones asociadas al ruido ambiente submarino. 
 
 En la figura~\ref{fig:windsonic} se observa el anemómetro con sus dos pares de transductores perpendiculares que se utilizan para medir velocidad de viento a partir del tiempo de vuelo de pulsos ultrasónicos y luego se compone la dirección como una suma vectorial de cada eje.
 
@@ -443,7 +443,7 @@ En la figura~\ref{fig:windsonic} se observa el anemómetro con sus dos pares de 
 		\item \textbf{Rango de dirección:} 0 a 360 grados. 
 		\item \textbf{Protocolos:} RS232 a 9600~bit/s, 8N1. 
 		\item \textbf{Modo de adquisición:} \textit{polled}, a requerimiento.
-		\item \textbf{Uso en EAMMRA:} caracterización meteorológica y correlación con ruido ambiente submarino. 
+		\item \textbf{Uso en la boya instrumental para monitoreo acústico:} caracterización meteorológica y correlación con ruido ambiente submarino. 
 		\end{itemize} 
 	\end{minipage} 
 	\hfill 
@@ -454,7 +454,7 @@ En la figura~\ref{fig:windsonic} se observa el anemómetro con sus dos pares de 
 	\end{minipage} 
 \end{figure}
 
-La integración del WindSonic en EAMMRA y el desarrollo de las rutinas de configuración, adquisición y registro fueron documentados previamente en el Informe Técnico AS~1/24 \citep{RemottiBos2024_Anemometro}.
+La integración del WindSonic en la boya instrumental para monitoreo acústico y el desarrollo de las rutinas de configuración, adquisición y registro fueron documentados previamente en el Informe Técnico AS~1/24 \citep{RemottiBos2024_Anemometro}.
 
 El sistema embebido se comunica con el instrumento mediante una conexión serie configurada a 9600~bit/s, 8N1. El modo de operación empleado es de tipo solicitado, o \textit{polled}, por lo que se debe requerir explícitamente cada medición. El mensaje de respuesta incluye la dirección del viento, la velocidad, las unidades de medida, un código de estado del instrumento y un campo de verificación de integridad. Esta modalidad permite integrar la adquisición meteorológica dentro del ciclo general de operación de la boya, sin depender de una transmisión continua no sincronizada con el resto de las tareas del sistema.
 
@@ -470,7 +470,7 @@ La conexión eléctrica se realiza mediante el conector circular de 9 vías prov
 
 \subsection{Controlador solar MPPT XTRA2210.}
 
-El XTRA2210N es un controlador de carga solar de tipo MPPT, utilizado para administrar la transferencia de energía entre los paneles solares y el banco de baterías de la boya. Su función principal es regular el proceso de carga, proteger la batería y entregar al sistema embebido variables eléctricas de supervisión. En EAMMRA, este periférico constituye el punto principal de observación del subsistema energético, ya que permite relevar parámetros asociados al arreglo fotovoltaico, la batería, la carga y el estado operativo del controlador.
+El XTRA2210N es un controlador de carga solar de tipo MPPT, utilizado para administrar la transferencia de energía entre los paneles solares y el banco de baterías de la boya. Su función principal es regular el proceso de carga, proteger la batería y entregar al sistema embebido variables eléctricas de supervisión. En la boya instrumental para monitoreo acústico, este periférico constituye el punto principal de observación del subsistema energético, ya que permite relevar parámetros asociados al arreglo fotovoltaico, la batería, la carga y el estado operativo del controlador.
 
 La sigla MPPT corresponde a \emph{Maximum Power Point Tracking}, o seguimiento del punto de máxima potencia. Un panel fotovoltaico no entrega su máxima potencia para cualquier combinación de tensión y corriente, sino en un punto particular de su curva característica \(I\)-\(V\). Ese punto depende de la irradiancia, la temperatura del panel, el estado de carga de la batería y las condiciones instantáneas de operación. El controlador MPPT modifica dinámicamente el punto de trabajo eléctrico del panel para operar cerca de la potencia máxima disponible y luego adapta esa energía a las condiciones requeridas por la batería mediante una etapa de conversión DC/DC.
 
@@ -481,7 +481,7 @@ El controlador solar MPPT XTRA2210N se muestra en la Figura~\ref{fig:xtra2210}. 
     \begin{minipage}[b]{0.34\textwidth}
         \centering
         \includegraphics[width=0.90\linewidth]{graficos/xtra2210.png}
-        \captionof{figure}{Controlador solar MPPT XTRA2210N utilizado para la gestión y supervisión energética de la boya EAMMRA.}
+        \captionof{figure}{Controlador solar MPPT XTRA2210N utilizado para la gestión y supervisión energética de la boya instrumental para monitoreo acústico.}
         \label{fig:xtra2210}
     \end{minipage}
     \hfill
@@ -494,7 +494,7 @@ El controlador solar MPPT XTRA2210N se muestra en la Figura~\ref{fig:xtra2210}. 
             \item \textbf{Interfaz de comunicación:} RS485.
             \item \textbf{Protocolo:} Modbus.
             \item \textbf{Función principal:} gestión de carga entre paneles solares y banco de baterías.
-            \item \textbf{Uso en EAMMRA:} supervisión energética y diagnóstico del sistema fotovoltaico.
+            \item \textbf{Uso en la boya instrumental para monitoreo acústico:} supervisión energética y diagnóstico del sistema fotovoltaico.
         \end{itemize}
     \end{minipage}
 \end{figure}
@@ -504,7 +504,7 @@ Este controlador se diferencia de los controladores PWM. En un regulador PWM, el
 Para una boya instrumental autónoma, esta diferencia es relevante. La energía disponible condiciona la frecuencia de adquisición, la disponibilidad de telemetría, el tiempo de operación continua y la capacidad de recuperación después de períodos de baja irradiancia. El uso de un controlador MPPT permite mejorar el aprovechamiento del arreglo fotovoltaico, ampliar el margen energético del sistema y disponer de variables de diagnóstico para evaluar el estado de la alimentación durante la operación.
 
 
-La diferencia funcional entre controladores PWM y MPPT se sintetiza en la Tabla~\ref{tab:pwm-mppt}. En el contexto de EAMMRA, la alternativa MPPT resulta más adecuada porque mejora el aprovechamiento energético disponible y permite obtener variables de supervisión útiles para la operación autónoma.
+La diferencia funcional entre controladores PWM y MPPT se sintetiza en la Tabla~\ref{tab:pwm-mppt}. En el contexto de la boya instrumental para monitoreo acústico, la alternativa MPPT resulta más adecuada porque mejora el aprovechamiento energético disponible y permite obtener variables de supervisión útiles para la operación autónoma.
 
 \begin{table}[htbp]
     \centering
@@ -519,18 +519,18 @@ La diferencia funcional entre controladores PWM y MPPT se sintetiza en la Tabla~
         Aprovechamiento energético & Menor en condiciones no ideales & Mayor aprovechamiento del panel \\
         Complejidad electrónica & Baja & Mayor \\
         Costo relativo & Menor & Mayor \\
-        Adecuación a EAMMRA & Limitada & Más adecuada para autonomía \\
+        Adecuación a la boya instrumental para monitoreo acústico & Limitada & Más adecuada para autonomía \\
         \hline
     \end{tabular}
 \end{table}
 
 Además de su función de carga, el XTRA2210N aporta información útil para el software de control mediante comunicación serie RS485 con protocolo Modbus. Entre las variables de interés se incluyen tensión y corriente del panel, tensión y corriente de batería, potencia de carga, temperatura de batería, temperatura interna del dispositivo, estado de carga estimado y estados de protección o falla. Estas mediciones permiten registrar la evolución energética de la boya, detectar condiciones anómalas y correlacionar el estado de energía con la ejecución de tareas de adquisición, procesamiento y transmisión satelital.
 
-En términos funcionales, el controlador cumple cuatro roles dentro de EAMMRA: maximiza la energía extraída de los paneles solares, regula la carga del banco de baterías, protege el sistema frente a condiciones eléctricas no deseadas y provee telemetría energética al sistema embebido. Por este motivo, no se lo considera sólo un componente de potencia, sino también un periférico de supervisión esencial para la operación autónoma de la boya.
+En términos funcionales, el controlador cumple cuatro roles dentro de la boya instrumental para monitoreo acústico: maximiza la energía extraída de los paneles solares, regula la carga del banco de baterías, protege el sistema frente a condiciones eléctricas no deseadas y provee telemetría energética al sistema embebido. Por este motivo, no se lo considera sólo un componente de potencia, sino también un periférico de supervisión esencial para la operación autónoma de la boya.
 
 \subsection{Subsistema acústico.}
 
-El subsistema acústico constituye la cadena principal de adquisición científica de la boya EAMMRA. Su función es convertir el campo de presión acústica submarina en señales eléctricas, acondicionarlas mediante una etapa analógica de bajo ruido y digitalizarlas mediante una placa de adquisición de audio conectada a la computadora principal. Desde el punto de vista de hardware, la cadena está compuesta por dos hidrófonos analógicos calibrados Br{"u}el \& Kj{\ae}r 8105, dos preamplificadores para hidrófonos desarrollados por la División Acústica Submarina y una placa de audio USB Behringer UMC202HD.
+El subsistema acústico constituye la cadena principal de adquisición científica de la boya instrumental para monitoreo acústico. Su función es convertir el campo de presión acústica submarina en señales eléctricas, acondicionarlas mediante una etapa analógica de bajo ruido y digitalizarlas mediante una placa de adquisición de audio conectada a la computadora principal. Desde el punto de vista de hardware, la cadena está compuesta por dos hidrófonos analógicos calibrados Br{"u}el \& Kj{\ae}r 8105, dos preamplificadores para hidrófonos desarrollados por la División Acústica Submarina y una placa de audio USB Behringer UMC202HD.
 
 La arquitectura de adquisición responde a una separación funcional entre transducción, acondicionamiento y digitalización. Los hidrófonos convierten las variaciones de presión acústica en tensión eléctrica; los preamplificadores adaptan la impedancia, elevan el nivel de señal y limitan componentes de baja frecuencia capaces de saturar la etapa posterior; finalmente, la placa de audio digitaliza dos canales en forma simultánea y entrega los datos a la computadora principal mediante USB. Esta organización permite utilizar sensores acústicos calibrados y preservar una cadena instrumental verificable, con etapas diferenciadas para medición, acondicionamiento y conversión analógico-digital.
 
@@ -538,7 +538,7 @@ La arquitectura de adquisición responde a una separación funcional entre trans
 
 \noindent \textbf{Hidrófonos Br{"u}el \& Kj{\ae}r 8105.}
 
-Los sensores utilizados para captar las señales acústicas son dos hidrófonos analógicos calibrados Br{"u}el \& Kj{\ae}r, modelo 8105. Se trata de transductores piezoeléctricos cerámicos, sin preamplificación interna, adecuados para mediciones de banda ancha en ambiente submarino. Su selección se justifica por su ancho de banda, sensibilidad, comportamiento omnidireccional y aptitud mecánica para operación sumergida \citep{byk}. En la Figura~\ref{fig:8105} se presentan las dimensiones mecánicas principales del hidrófono junto con las características técnicas más relevantes para su integración en EAMMRA.
+Los sensores utilizados para captar las señales acústicas son dos hidrófonos analógicos calibrados Br{"u}el \& Kj{\ae}r, modelo 8105. Se trata de transductores piezoeléctricos cerámicos, sin preamplificación interna, adecuados para mediciones de banda ancha en ambiente submarino. Su selección se justifica por su ancho de banda, sensibilidad, comportamiento omnidireccional y aptitud mecánica para operación sumergida \citep{byk}. En la Figura~\ref{fig:8105} se presentan las dimensiones mecánicas principales del hidrófono junto con las características técnicas más relevantes para su integración en la boya instrumental para monitoreo acústico.
 
 \vspace{20px}
 \begin{figure}[htbp]
@@ -574,7 +574,7 @@ El cable integrado al hidrófono es sumergible, de tipo \textit{waterblocked}, g
 
 Debido a que los hidrófonos B\&K 8105 no poseen preamplificación interna, las señales eléctricas generadas pueden presentar amplitudes muy bajas frente al ruido propio de la etapa de adquisición. Además, vistos desde sus terminales de salida, los hidrófonos se comportan como fuentes de alta impedancia con una componente capacitiva significativa. Esta condición exige una etapa de acondicionamiento analógico con muy alta impedancia de entrada, bajo ruido propio y ancho de banda compatible con el rango de medición previsto.
 
-Como parte de los desarrollos previos de EAMMRA, se diseñó y fabricó un preamplificador específico para hidrófonos B\&K 8105, orientado a trabajar con cargas capacitivas y con un ancho de banda aproximado de 100~kHz \citep{AS0518_Preamp}. El diseño se basó en amplificadores operacionales de bajo ruido LT1792, en configuración no inversora, con alimentación dual generada a partir de una fuente principal de tipo \textit{single supply}. En la configuración actual de la boya se utilizan dos unidades de preamplificación, denominadas DAS-1 y DAS-2. En la Figura~\ref{fig:preamp-das} se muestra una de las unidades utilizadas junto con sus características principales de integración.
+Como parte de los desarrollos previos de boya instrumental para monitoreo acústico, se diseñó y fabricó un preamplificador específico para hidrófonos B\&K 8105, orientado a trabajar con cargas capacitivas y con un ancho de banda aproximado de 100~kHz \citep{AS0518_Preamp}. El diseño se basó en amplificadores operacionales de bajo ruido LT1792, en configuración no inversora, con alimentación dual generada a partir de una fuente principal de tipo \textit{single supply}. En la configuración actual de la boya se utilizan dos unidades de preamplificación, denominadas DAS-1 y DAS-2. En la Figura~\ref{fig:preamp-das} se muestra una de las unidades utilizadas junto con sus características principales de integración.
 
 \vspace{20px}
 \begin{figure}[htbp]
@@ -596,7 +596,7 @@ Como parte de los desarrollos previos de EAMMRA, se diseñó y fabricó un pream
 \begin{minipage}[b]{0.38\textwidth}
 \centering
 \includegraphics[width=\linewidth]{graficos/preamp.jpg}
-\captionof{figure}{Preamplificador para hidrófonos DAS utilizado en la cadena acústica de EAMMRA.}
+\captionof{figure}{Preamplificador para hidrófonos DAS utilizado en la cadena acústica de boya instrumental para monitoreo acústico.}
 \label{fig:preamp-das}
 
 \end{minipage}
@@ -629,20 +629,20 @@ La digitalización de la señal acondicionada se realiza mediante una placa de a
 \item \textbf{Canales:} 2 entradas de adquisición simultánea.
 \item \textbf{Frecuencia de muestreo máxima:} 192~kHz por canal.
 \item \textbf{Resolución nominal:} 24~bits.
-\item \textbf{Uso en EAMMRA:} digitalización de señales acústicas provenientes de los preamplificadores DAS-1/DAS-2.
+\item \textbf{Uso en la boya instrumental para monitoreo acústico:} digitalización de señales acústicas provenientes de los preamplificadores DAS-1/DAS-2.
 \end{itemize}
 \end{minipage}
 \end{figure}
 
-La caracterización del conjunto placa-preamplificador se documenta en la Nota Técnica AS~02/26 \citep{Cinquini2026_AS0226}. En dicho trabajo se relevaron la respuesta en frecuencia de la placa de audio, la respuesta de los preamplificadores DAS-1 y DAS-2, la figura de ruido propio y el crosstalk entre canales. Los resultados obtenidos permitieron verificar que la cadena de adquisición acústica es compatible con el uso previsto en EAMMRA y que el hardware de adquisición no constituye un limitante para la medición de niveles de ruido ambiente submarino dentro del rango operativo considerado.
+La caracterización del conjunto placa-preamplificador se documenta en la Nota Técnica AS~02/26 \citep{Cinquini2026_AS0226}. En dicho trabajo se relevaron la respuesta en frecuencia de la placa de audio, la respuesta de los preamplificadores DAS-1 y DAS-2, la figura de ruido propio y el crosstalk entre canales. Los resultados obtenidos permitieron verificar que la cadena de adquisición acústica es compatible con el uso previsto en la boya instrumental para monitoreo acústico y que el hardware de adquisición no constituye un limitante para la medición de niveles de ruido ambiente submarino dentro del rango operativo considerado.
 
 En conjunto, el subsistema acústico queda definido como una cadena instrumental calibrable y modular. Los hidrófonos establecen la sensibilidad primaria frente al campo acústico submarino, los preamplificadores adecuan la señal a los niveles requeridos por la etapa de digitalización y la placa de audio convierte ambos canales en datos digitales disponibles para la computadora principal. Esta separación por etapas facilita la verificación individual de componentes, la trazabilidad de la cadena de medición y el mantenimiento del sistema durante la operación de la boya.
 
 \subsection{Módem satelital Iridium SBD.}
 
-El subsistema Iridium proporciona el enlace de telemetría satelital de la boya EAMMRA mediante el servicio \textit{Short Burst Data} (SBD). Este servicio está orientado a la transmisión bidireccional de mensajes cortos entre equipos remotos y sistemas centrales, por lo que resulta adecuado para plataformas autónomas con bajo volumen de datos transmitidos y operación fuera de cobertura celular o infraestructura costera \citep{IridiumSBDService}. En la boya, el enlace satelital se utiliza para transmitir información compacta de estado, diagnóstico y resultados seleccionados, sin reemplazar al almacenamiento local de datos completos.
+El subsistema Iridium proporciona el enlace de telemetría satelital de la boya instrumental para monitoreo acústico mediante el servicio \textit{Short Burst Data} (SBD). Este servicio está orientado a la transmisión bidireccional de mensajes cortos entre equipos remotos y sistemas centrales, por lo que resulta adecuado para plataformas autónomas con bajo volumen de datos transmitidos y operación fuera de cobertura celular o infraestructura costera \citep{IridiumSBDService}. En la boya, el enlace satelital se utiliza para transmitir información compacta de estado, diagnóstico y resultados seleccionados, sin reemplazar al almacenamiento local de datos completos.
 
-El módem satelital Iridium se incorpora como periférico de telemetría remota para transmitir mensajes breves de estado y resultados seleccionados del sistema. En EAMMRA no se lo utiliza como enlace de transferencia continua ni para recuperar archivos completos de adquisición, sino como un canal de baja tasa orientado a información resumida, compatible con el servicio \textit{Short Burst Data} (SBD) \citep{Iridium9603NDevGuide}. Esta restricción condiciona el diseño de la telemetría: los mensajes deben ser compactos, priorizados y generados a partir de datos previamente seleccionados o procesados por la computadora principal. La Figura~\ref{fig:iridium} muestra el módem satelital utilizado en el sistema.
+El módem satelital Iridium se incorpora como periférico de telemetría remota para transmitir mensajes breves de estado y resultados seleccionados del sistema. En la boya instrumental para monitoreo acústico no se lo utiliza como enlace de transferencia continua ni para recuperar archivos completos de adquisición, sino como un canal de baja tasa orientado a información resumida, compatible con el servicio \textit{Short Burst Data} (SBD) \citep{Iridium9603NDevGuide}. Esta restricción condiciona el diseño de la telemetría: los mensajes deben ser compactos, priorizados y generados a partir de datos previamente seleccionados o procesados por la computadora principal. La Figura~\ref{fig:iridium} muestra el módem satelital utilizado en el sistema.
 
 \begin{figure}[htbp]
 \centering
@@ -661,7 +661,7 @@ El módem satelital Iridium se incorpora como periférico de telemetría remota 
 \item \textbf{Interfaz de control:} puerto serie con comandos AT.
 \item \textbf{Interfaz RF:} antena externa para banda Iridium.
 \item \textbf{Impedancia nominal de antena:} 50~($\Omega$).
-\item \textbf{Función en EAMMRA:} transmisión remota de estado, diagnóstico y resultados compactos.
+\item \textbf{Función en la boya instrumental para monitoreo acústico:} transmisión remota de estado, diagnóstico y resultados compactos.
 \end{itemize}
 \end{minipage}
 \end{figure}
@@ -674,12 +674,12 @@ La antena satelital constituye un elemento crítico del enlace. Debe estar ubica
 
 El uso de SBD impone una restricción deliberada sobre el volumen de información transmitida. Por esta razón, el enlace satelital se reserva para datos resumidos y de alto valor operativo, tales como estado general del sistema, continuidad de operación, condiciones energéticas, disponibilidad de almacenamiento, posición, diagnóstico de periféricos y resultados compactos derivados de mediciones acústicas. Los archivos completos, en particular los registros WAV y los datos de mayor volumen, permanecen almacenados localmente en la boya.
 
-En conjunto, el módem Iridium SBD se incorpora como periférico de comunicación remota de baja tasa de datos y alta cobertura geográfica. Su valor dentro de EAMMRA no reside en transportar grandes volúmenes de información, sino en permitir seguimiento remoto, verificación de continuidad operativa y recuperación parcial de información crítica durante campañas prolongadas. Esta función complementa el almacenamiento local y proporciona una vía de supervisión externa cuando la boya opera fuera del alcance de redes terrestres.
+En conjunto, el módem Iridium SBD se incorpora como periférico de comunicación remota de baja tasa de datos y alta cobertura geográfica. Su valor dentro de la boya instrumental para monitoreo acústico no reside en transportar grandes volúmenes de información, sino en permitir seguimiento remoto, verificación de continuidad operativa y recuperación parcial de información crítica durante campañas prolongadas. Esta función complementa el almacenamiento local y proporciona una vía de supervisión externa cuando la boya opera fuera del alcance de redes terrestres.
 
 \subsection{Almacenamiento local}
 \label{subsec:almacenamiento_local}
 
-La boya EAMMRA incorpora almacenamiento local mediante una unidad de estado sólido de 1~TB. Este dispositivo constituye el soporte primario para conservar los datos científicos y operativos adquiridos durante una campaña. La telemetría satelital Iridium SBD permite transmitir información compacta de estado, diagnóstico y resultados seleccionados, pero no está destinada al envío de archivos de gran volumen. Por este motivo, los registros completos, en particular los archivos acústicos, permanecen almacenados en la boya hasta su recuperación durante tareas de mantenimiento o al finalizar la operación.
+La boya instrumental para monitoreo acústico incorpora almacenamiento local mediante una unidad de estado sólido de 1~TB. Este dispositivo constituye el soporte primario para conservar los datos científicos y operativos adquiridos durante una campaña. La telemetría satelital Iridium SBD permite transmitir información compacta de estado, diagnóstico y resultados seleccionados, pero no está destinada al envío de archivos de gran volumen. Por este motivo, los registros completos, en particular los archivos acústicos, permanecen almacenados en la boya hasta su recuperación durante tareas de mantenimiento o al finalizar la operación.
 
 La organización de archivos distingue tres ubicaciones principales según el tipo de información generada por el sistema:
 
@@ -712,12 +712,13 @@ En conjunto, el SSD de 1~TB actúa como memoria persistente principal para los d
 \section{DISEÑO E IMPLEMENTACIÓN DEL SOFTWARE EMBEBIDO}
 \label{sec:disenio_implementacion}
 
-En esta sección se describe el software embebido desarrollado para la boya instrumental EAMMRA. La descripción se concentra en la arquitectura de control, el modelo de ejecución, la organización modular, la comunicación interna, la persistencia de datos, la telemetría satelital y los modos de operación utilizados durante desarrollo, integración y prueba.
+En esta sección se describe el software embebido desarrollado para la boya instrumental para monitoreo acústico. La descripción se concentra en la arquitectura de control, el modelo de ejecución, la organización modular, la comunicación interna, la persistencia de datos, la telemetría satelital y los modos de operación utilizados durante desarrollo, integración y prueba.
 
 El sistema se implementa como una aplicación Python ejecutada sobre GNU/Linux en la computadora principal embarcada. Cada periférico o función relevante se representa mediante un módulo funcional independiente, compuesto por una capa de bajo nivel y una Máquina de Estados Finitos. La aplicación principal coordina estos módulos mediante procesos separados, colas de mensajes, un enrutador de eventos y un planificador de tareas central.
 
 Esta organización busca que la operación de la boya pueda describirse, verificarse y diagnosticarse de manera sistemática. En una plataforma autónoma, las lecturas de sensores, las adquisiciones acústicas, los registros persistentes, las transmisiones satelitales y las condiciones de falla deben quedar asociadas a eventos, estados y resultados trazables.
 
+\vspace{15px}
 \begin{table}[htbp]
 \centering
 \caption{Componentes principales de la arquitectura de software embebido.}
@@ -731,7 +732,7 @@ Proceso principal &
 Inicializa módulos, crea colas, coordina ejecución, procesa reportes y administra el cierre ordenado. &
 \texttt{main.py} \\
 \addlinespace
-Máquinas de Estados Finitos &
+Máquinas de Estados \newline Finitos &
 Representan el ciclo operativo de cada módulo, sus estados, transiciones, acciones y condiciones de error. &
 \texttt{*\_fsm.py} \\
 \addlinespace
@@ -747,13 +748,14 @@ Planificador de tareas &
 Genera activaciones periódicas o programadas a partir de la configuración temporal del sistema. &
 \texttt{scheduler} \\
 \addlinespace
-Persistencia y telemetría &
+Persistencia y \newline telemetría &
 Registra datos, eventos y reportes; construye productos compactos para transmisión satelital. &
 \texttt{data/}, \texttt{logs/}, Iridium SBD \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
+\vspace{15px}
 \subsection{Criterios generales de diseño}
 \label{subsec:criterios_diseno_software}
 
@@ -950,7 +952,7 @@ Desde el punto de vista operativo, el enrutador también contribuye a la trazabi
 \subsubsection{Planificador de tareas}
 \label{subsubsec:planificador_tareas}
 
-El planificador de tareas central define cuándo deben ejecutarse las acciones periódicas o programadas del sistema. A diferencia de una arquitectura en la que cada módulo administra sus propios temporizadores, en EAMMRA la planificación temporal se concentra en un único componente. Esta decisión simplifica la configuración del ciclo operativo y permite analizar con mayor claridad la secuencia temporal de adquisiciones, verificaciones, procesamiento y transmisiones.
+El planificador de tareas central define cuándo deben ejecutarse las acciones periódicas o programadas del sistema. A diferencia de una arquitectura en la que cada módulo administra sus propios temporizadores, en la boya instrumental para monitoreo acústico la planificación temporal se concentra en un único componente. Esta decisión simplifica la configuración del ciclo operativo y permite analizar con mayor claridad la secuencia temporal de adquisiciones, verificaciones, procesamiento y transmisiones.
 
 La configuración temporal se define en el archivo \texttt{scheduler.json}. El Listado~\ref{lst:scheduler_json} muestra un ejemplo de configuración utilizado durante la operación del sistema. Los sensores ambientales, inerciales, de posicionamiento, viento y energía se ejecutan cada 600~s; el módulo Behringer se ejecuta cada 14400~s, equivalente a 4~h; Iridium se activa cada 3600~s; y \texttt{AudioProc} no posee intervalo propio porque se activa a partir de eventos generados por adquisiciones acústicas.
 
@@ -1449,7 +1451,7 @@ La Tabla~\ref{tab:organizacion-repo-software} resume las rutas principales del r
 \footnotesize
 \begingroup
 \renewcommand{\arraystretch}{1.15}
-\begin{tabularx}{\textwidth}{@{}p{0.28\textwidth}X@{}}
+\begin{tabularx}{\textwidth}{@{}p{0.2\textwidth}X@{}}
 \toprule
 \textbf{Ruta o archivo} & \textbf{Función principal} \tabularnewline
 \midrule
@@ -1552,7 +1554,7 @@ La verificación del sistema embebido se organizó en una secuencia progresiva. 
 
 Esta estrategia permite separar tres planos de análisis. La evidencia registrada corresponde a salidas de \texttt{pytest}, reportes de cobertura, archivos JSONL, logs de operación, solicitudes de telemetría y payloads SBD recibidos. Las inferencias técnicas se limitan a relaciones directas entre esos registros, por ejemplo la continuidad de módulos no afectados luego de una desconexión inducida. Las interpretaciones se formulan de manera acotada: los ensayos permiten sostener que la integración funcional operó en laboratorio bajo las condiciones registradas, pero no constituyen por sí solos una validación completa de autonomía energética en campo.
 
-En esta versión del informe se incluyen únicamente resultados vigentes y consistentes: la \textit{suite} automatizada sin hardware aprobada, su cobertura, los registros locales de integración, el ensayo continuo sin subsistema energético autónomo, la falla inducida USB--I2C, el ensayo con panel solar--batería, las solicitudes Iridium, los eventos omitidos por transmisión deshabilitada y los payloads Iridium SBD recibidos y decodificados.
+En esta versión del informe se incluyen únicamente resultados vigentes y consistentes: la \textit{suite} automatizada sin hardware aprobada, su cobertura, los diagnósticos de bajo nivel con hardware disponible, los registros locales de integración, el ensayo continuo sin subsistema energético autónomo, la falla inducida USB--I2C, el ensayo con panel solar--batería, las solicitudes Iridium, los eventos omitidos por transmisión deshabilitada y los payloads Iridium SBD recibidos, decodificados y documentados mediante reportes técnicos.
 
 
 \subsection{Ensayos unitarios y funcionales automatizados}
@@ -1618,6 +1620,30 @@ Módulos de menor cobertura & 63--68~\% & Principalmente FSM con rutas dependien
 \end{tabularx}
 \endgroup
 \end{table}
+
+Además del perfil reproducible sin hardware, se ejecutó una corrida diagnóstica sobre pruebas marcadas para hardware real. Esta corrida no se utiliza como métrica principal de regresión del software, porque su resultado depende de la disponibilidad física de periféricos, puertos, alimentación y condiciones de conexión al momento del ensayo. Su valor reside en documentar qué capas de bajo nivel pudieron comunicarse con dispositivos reales y qué subsistemas requerían revisión o conexión adicional.
+
+La evidencia registrada el 30/06/2026 indica que, sobre 15 pruebas seleccionadas del perfil de hardware, 13 finalizaron aprobadas, 1 fue omitida por no detectarse dispositivo AIS/GPS con \textit{fix} en el puerto evaluado y 1 falló por el resultado agregado de los scripts de bajo nivel. En la corrida consolidada de scripts LL, 6 de 8 módulos finalizaron en condición \texttt{OK}: AHT10, AIS, AudioProc, Behringer, MPU6050 y XTRA2210. Los módulos Iridium y WindSonic quedaron en condición \texttt{ERROR} por \texttt{device\_present=false}. La Tabla~\ref{tab:diagnostico_ll_hardware} resume esta evidencia.
+
+\begin{table}[htpb]
+\centering
+\small
+\caption{Diagnóstico de bajo nivel con hardware disponible.}
+\label{tab:diagnostico_ll_hardware}
+\begin{tabularx}{\textwidth}{p{0.24\textwidth} p{0.18\textwidth} X}
+\toprule
+\textbf{Elemento evaluado} & \textbf{Resultado} & \textbf{Interpretación} \\
+\midrule
+Perfil \texttt{hardware} de \texttt{pytest} & 13 aprobadas, 1 omitida, 1 fallida & La falla corresponde al ensayo agregado de scripts LL, sensible a disponibilidad física de periféricos. \\
+Scripts LL consolidados & 6/8 \texttt{OK} & AHT10, AIS, AudioProc, Behringer, MPU6050 y XTRA2210 respondieron en la corrida vigente. \\
+Iridium LL & \texttt{ERROR} & No se detectó módem válido en el puerto evaluado durante esta corrida diagnóstica. \\
+WindSonic LL & \texttt{ERROR} & No se detectó instrumento disponible en el puerto evaluado durante esta corrida diagnóstica. \\
+Almacenamiento para audio & \texttt{OK} & La prueba Behringer informó directorio de grabaciones escribible y espacio libre disponible. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Estos resultados deben leerse como diagnóstico de integración de bajo nivel y no como contradicción de los ensayos de operación continua. En particular, la ausencia de un periférico en una corrida puntual de hardware puede deberse a desconexión, puerto no asignado, alimentación, configuración o disponibilidad del instrumento, mientras que los registros de integración documentan el comportamiento del sistema durante los intervalos de operación ensayados.
 
 \clearpage
 \subsection{Ensayos de integración}
@@ -1717,7 +1743,7 @@ La evidencia registrada permite afirmar que el sistema operó en laboratorio con
 
 Durante los ensayos de integración se evaluó la generación de solicitudes de telemetría y la recepción de mensajes Iridium SBD. En el primer ensayo se registraron 121 solicitudes de transmisión durante el intervalo del 18/06/2026 al 23/06/2026. De ellas, 61 quedaron registradas como omitidas por la condición \texttt{iridium\_transmit\_disabled}, mientras que 60 correspondieron a solicitudes posteriores sin esa marca de omisión. Estos eventos documentan un modo de ensayo seguro, en el cual se genera el evento, se construye el mensaje y se registran sus metadatos sin activar necesariamente el enlace satelital. La cantidad de solicitudes no omitidas no debe interpretarse como equivalente directa a la cantidad de mensajes recibidos: durante el primer ensayo el registro local de transmisión se incorporó con la operación ya iniciada, por lo que sólo una parte de los SBD efectivamente recibidos en ese intervalo quedó asociada a ese registro local.
 
-La evidencia de recepción satelital comprende 90 mensajes SBD asociados al IMEI 300534063350070, con MOMSN entre 5 y 126. De esos mensajes, 81 fueron informados por el servicio Iridium con estado \texttt{00 - Transfer OK} y 9 con estado \texttt{02 - Transfer OK Bad Location}. En todos los casos el estado indica transferencia de mensaje, con diferencia en la calidad de localización reportada por la red. Los tamaños recibidos incluyen mensajes compactos de estado de 11 bytes y mensajes de audio procesado de 57, 107 y 203 bytes, además de cinco mensajes iniciales no decodificados correspondientes a formatos previos o de transición. La Tabla~\ref{tab:resumen_iridium_larga_duracion} resume las solicitudes locales, la recepción SBD y la clasificación de los payloads decodificados.
+La evidencia de recepción satelital comprende 90 mensajes SBD asociados al IMEI 300534063350070, con MOMSN entre 5 y 126. De esos mensajes, 81 fueron informados por el servicio Iridium con estado \texttt{00 - Transfer OK} y 9 con estado \texttt{02 - Transfer OK Bad Location}. En todos los casos el estado indica transferencia de mensaje, con diferencia en la calidad de localización reportada por la red. Los tamaños recibidos incluyen mensajes compactos de estado de 11 bytes y mensajes de audio procesado de 57, 107 y 203 bytes, además de cinco mensajes iniciales no decodificados correspondientes a formatos previos o de transición. Sobre el conjunto consolidado de 85 payloads compatibles con el protocolo vigente, el reporte técnico de decodificación finalizó sin errores: 61 mensajes correspondieron a estado del sistema y 24 a productos de AudioProc. La Tabla~\ref{tab:resumen_iridium_larga_duracion} resume las solicitudes locales, la recepción SBD y la clasificación de los payloads decodificados.
 
 \begin{table}[htpb]
 \centering
@@ -1744,15 +1770,19 @@ Mensajes no decodificados & 5 & Payloads de transición o formato previo, conser
 
 Además de los eventos periódicos del planificador, se realizaron transmisiones manuales de prueba el 19/06/2026. En esa instancia se generaron cuatro mensajes en modo \textit{dry-run}, sin envío efectivo, y dos mensajes con envío habilitado: un mensaje de estado del sistema de 11 bytes y un mensaje de audio procesado de 107 bytes. En ambos casos el registro local indicó escritura satisfactoria del payload en el módem y finalización correcta de la operación de envío.
 
+La decodificación posterior permitió inspeccionar el contenido técnico de mensajes individuales. Como ejemplo, el payload MOMSN~120, de 11 bytes, fue decodificado como \texttt{MSG\_SYSTEM\_STATUS} e informó una batería de 11,28~V, estado de carga de 2~\%, 867,1~GiB libres y flags activos de advertencia y condición crítica de batería. El payload MOMSN~123, de 203 bytes, fue decodificado como \texttt{MSG\_AUDIO}; incluyó 2 canales, 49 bandas, empaquetado \texttt{ABS\_INT16}, CRC válido y potencias relativas entre 6,4~dB y 98,4~dB. En el conjunto de payloads AudioProc del reporte, el rango global informado fue de 6,3~dB a 120,2~dB, con promedio de 34,5~dB. Estos reportes no sustituyen al almacenamiento local de archivos acústicos completos, pero verifican que los productos compactos transmitidos conservan estructura, identificación, CRC y contenido físico interpretable.
+
+Como evidencia documental complementaria de la cadena de recepción y decodificación, se incorporan en el Apéndice~\ref{ap:evidencia_telemetria_satelital} tres reportes generados a partir de los payloads Iridium SBD recibidos. El Apéndice~\ref{ap:reporte_sbd_momsn_120} documenta la decodificación del mensaje MOMSN~120 como \texttt{MSG\_SYSTEM\_STATUS}; el Apéndice~\ref{ap:reporte_sbd_momsn_123} documenta la decodificación del mensaje MOMSN~123 como \texttt{MSG\_AUDIO}; y el Apéndice~\ref{ap:reporte_payloads_iridium} presenta el resumen consolidado de 85 payloads compatibles con el protocolo vigente, sin errores de decodificación. Estos documentos se incluyen como evidencia trazable de los adjuntos recibidos, del IMEI asociado y de la interpretación técnica utilizada para respaldar los resultados resumidos en la Tabla~\ref{tab:resumen_iridium_larga_duracion}.
+
 En conjunto, los registros locales y los mensajes recibidos permiten verificar la cadena de telemetría desde la generación del evento y armado del payload hasta la recepción remota y decodificación posterior. Esta evidencia complementa los ensayos de integración porque demuestra que información compacta producida por el sistema puede atravesar el enlace satelital y ser recuperada desde el extremo remoto.
 
 \subsection{Síntesis de resultados}
 
-Los resultados obtenidos permiten sostener tres conclusiones técnicas principales. En primer lugar, la base de software cuenta con una verificación automatizada reproducible para el perfil sin hardware: la corrida final válida aprobó 115 pruebas, deseleccionó 15 pruebas dependientes de otro perfil de ejecución, no registró fallas y alcanzó una cobertura global de líneas del 75~\%. Esta evidencia respalda los contratos internos de software, el enrutamiento de mensajes, la persistencia estructurada, la lógica de FSM y los formatos de telemetría.
+Los resultados obtenidos permiten sostener tres conclusiones técnicas principales. En primer lugar, la base de software cuenta con una verificación automatizada reproducible para el perfil sin hardware: la corrida final válida aprobó 115 pruebas, deseleccionó 15 pruebas dependientes de otro perfil de ejecución, no registró fallas y alcanzó una cobertura global de líneas del 75~\%. La evidencia de hardware complementa esa base con una corrida diagnóstica en la que 13 de 15 pruebas seleccionadas aprobaron y 6 de 8 scripts LL respondieron correctamente bajo las conexiones disponibles. En conjunto, estos resultados respaldan los contratos internos de software, el enrutamiento de mensajes, la persistencia estructurada, la lógica de FSM, los formatos de telemetría y la disponibilidad parcial verificada de capas de bajo nivel.
 
 En segundo lugar, los ensayos de integración muestran continuidad funcional en laboratorio durante dos períodos diferenciados. El primero, sin subsistema energético autónomo completo, permitió evaluar operación sostenida durante 118,7~h, generación de registros, procesamiento acústico, solicitudes de telemetría y aislamiento frente a una falla inducida del bus USB--I2C. El segundo, con panel solar--batería, permitió verificar durante 101,8~h la integración funcional del subsistema energético con los módulos principales y registrar variaciones de tensión fotovoltaica, tensión de batería, corriente y estado de carga.
 
-En tercer lugar, la evidencia de telemetría incorpora tanto solicitudes locales como recepción remota de payloads Iridium SBD. Los registros locales y los mensajes recibidos permiten verificar la cadena funcional desde la generación del evento y armado del payload hasta la recepción remota y decodificación posterior. En conjunto, estos resultados validan la integración funcional del sistema en laboratorio, con trazabilidad de datos locales y comunicación satelital compacta. No constituyen todavía una validación formal de autonomía energética en campo, que queda como etapa posterior.
+En tercer lugar, la evidencia de telemetría incorpora tanto solicitudes locales como recepción remota de payloads Iridium SBD. Los registros locales, los 90 mensajes recibidos y el reporte de 85 payloads decodificados sin errores permiten verificar la cadena funcional desde la generación del evento y armado del payload hasta la recepción remota, clasificación y lectura técnica posterior. En conjunto, estos resultados validan la integración funcional del sistema en laboratorio, con trazabilidad de datos locales, comunicación satelital compacta y productos acústicos resumidos. No constituyen todavía una validación formal de autonomía energética en campo, que queda como etapa posterior.
 
 
 \clearpage
@@ -1761,11 +1791,11 @@ En tercer lugar, la evidencia de telemetría incorpora tanto solicitudes locales
 
 \subsection{Conclusiones}
 
-El sistema desarrollado constituye una base funcional para la operación embebida de la boya instrumental EAMMRA. La arquitectura implementada permitió integrar adquisición multisensor, supervisión energética, adquisición y procesamiento acústico, almacenamiento local y telemetría satelital mediante una organización modular basada en capas de bajo nivel, Máquinas de Estados Finitos, un enrutador de eventos y un planificador de tareas central.
+El sistema desarrollado constituye una base funcional para la operación embebida de la boya instrumental para monitoreo acústico. La arquitectura implementada permitió integrar adquisición multisensor, supervisión energética, adquisición y procesamiento acústico, almacenamiento local y telemetría satelital mediante una organización modular basada en capas de bajo nivel, Máquinas de Estados Finitos, un enrutador de eventos y un planificador de tareas central.
 
-La verificación automatizada y los ensayos de integración respaldan esa arquitectura con evidencia reproducible y registros de operación. La corrida final del perfil sin hardware aprobó 115 pruebas y alcanzó una cobertura global de líneas del 75~\%, mientras que los ensayos de laboratorio mostraron operación sostenida del sistema, persistencia de datos, generación de productos acústicos, solicitudes de telemetría y continuidad de módulos no afectados frente a una falla inducida del bus USB--I2C.
+La verificación automatizada, los diagnósticos de bajo nivel y los ensayos de integración respaldan esa arquitectura con evidencia reproducible y registros de operación. La corrida final del perfil sin hardware aprobó 115 pruebas y alcanzó una cobertura global de líneas del 75~\%; la corrida diagnóstica con hardware confirmó operación de seis capas LL bajo las conexiones disponibles; y los ensayos de laboratorio mostraron operación sostenida del sistema, persistencia de datos, generación de productos acústicos, solicitudes de telemetría y continuidad de módulos no afectados frente a una falla inducida del bus USB--I2C.
 
-El ensayo con panel solar--batería permitió verificar la interacción inicial entre el subsistema energético y el software de supervisión, incluyendo el registro de variables de panel, batería, carga y consumo durante la operación integrada. La cadena de telemetría Iridium SBD también fue verificada mediante registros locales y recepción remota de mensajes compactos de estado y productos de AudioProc. Por lo tanto, el resultado alcanzado corresponde a una validación funcional de integración en laboratorio, con trazabilidad local y comunicación satelital compacta.
+El ensayo con panel solar--batería permitió verificar la interacción inicial entre el subsistema energético y el software de supervisión, incluyendo el registro de variables de panel, batería, carga y consumo durante la operación integrada. La cadena de telemetría Iridium SBD también fue verificada mediante registros locales, recepción remota de mensajes compactos y decodificación técnica de payloads de estado y de AudioProc. Por lo tanto, el resultado alcanzado corresponde a una validación funcional de integración en laboratorio, con trazabilidad local, comunicación satelital compacta y evidencia de interpretación posterior de los mensajes recibidos.
 
 Estos resultados no equivalen aún a una validación completa de autonomía energética en despliegue marítimo. Queda pendiente una evaluación específica en condiciones representativas de campo, con duración suficiente para caracterizar autonomía, margen de carga, perfiles de consumo, recuperación energética y comportamiento frente a condiciones ambientales variables.
 
@@ -1777,23 +1807,31 @@ Se implementó una arquitectura de software capaz de coordinar módulos heterog�
 
 Se consolidó un esquema de persistencia basado en archivos estructurados, registros de eventos y productos derivados. Los archivos JSONL, los logs de ejecución, los reportes de estado y los registros de telemetría permiten reconstruir la operación del sistema, analizar intervalos de funcionamiento continuo, identificar condiciones de error y correlacionar eventos locales con mensajes recibidos externamente.
 
-También se obtuvo una base de verificación automatizada para el software. La corrida vigente del perfil sin hardware finalizó con 115 pruebas aprobadas, 15 pruebas no seleccionadas y 0 fallas dentro del perfil ejecutado, con una cobertura global de líneas del 75~%. Esta base permite repetir pruebas de regresión sobre componentes de software sin depender de la disponibilidad inmediata de periféricos físicos.
+También se obtuvo una base de verificación automatizada para el software. La corrida vigente del perfil sin hardware finalizó con 115 pruebas aprobadas, 15 pruebas no seleccionadas y 0 fallas dentro del perfil ejecutado, con una cobertura global de líneas del 75~%. Esta base permite repetir pruebas de regresión sobre componentes de software sin depender de la disponibilidad inmediata de periféricos físicos. Complementariamente, la corrida diagnóstica con hardware permitió identificar qué módulos de bajo nivel respondían en la configuración disponible y cuáles requerían revisión de conexión o disponibilidad física antes de una campaña.
 
-Otro logro relevante fue la verificación de la cadena de telemetría Iridium SBD mediante registros locales y adjuntos recibidos. Los mensajes de estado del sistema y los productos derivados de AudioProc demostraron la capacidad de generar, codificar, transmitir y decodificar información compacta compatible con las restricciones del enlace satelital.
+Otro logro relevante fue la verificación de la cadena de telemetría Iridium SBD mediante registros locales, adjuntos recibidos y reportes de decodificación. Los mensajes de estado del sistema y los productos derivados de AudioProc demostraron la capacidad de generar, codificar, transmitir, recibir y decodificar información compacta compatible con las restricciones del enlace satelital.
 
 Finalmente, se verificó la integración funcional del subsistema panel solar--batería con el sistema embebido durante un ensayo de laboratorio. Si bien este resultado no equivale a una validación completa de autonomía, permitió observar la relación entre aporte solar, estado de batería, consumo de carga y continuidad de operación del software.
 
 \subsection{Dificultades encontradas y lecciones aprendidas}
 
-La integración de periféricos con interfaces físicas y protocolos diversos constituyó una de las principales dificultades técnicas. El sistema combina enlaces RS232, RS485/Modbus, USB--I2C, audio USB y telemetría satelital, cada uno con tiempos de respuesta, mecanismos de inicialización y modos de falla propios. Esta diversidad confirmó la conveniencia de mantener una separación estricta entre capas de bajo nivel y lógica de estados.
+\subsubsection*{Diagnóstico y resolución del adaptador USB--I2C CH341}
 
-Los ensayos también mostraron la importancia de registrar suficiente información diagnóstica para interpretar el comportamiento posterior del sistema. En una plataforma autónoma, la observación directa durante la falla no siempre es posible; por lo tanto, los logs, las marcas temporales, los registros JSONL y los estados de cada FSM son elementos centrales para reconstruir la secuencia de eventos.
+La dificultad técnica más relevante durante la integración estuvo asociada al adaptador USB--I2C basado en CH341, utilizado para conectar los sensores AHT10 y MPU6050. Durante una etapa de prueba, el dispositivo era reconocido correctamente por el sistema operativo a nivel USB, con identificadores \texttt{idVendor=1a86} e \texttt{idProduct=5512}, y los módulos del kernel \texttt{ch341\_core} e \texttt{i2c\_ch341} se encontraban cargados. Sin embargo, el adaptador no quedaba publicado de manera estable como bus I2C disponible para la aplicación, impidiendo que los sensores AHT10 y MPU6050 pudieran ser accedidos en forma confiable.
 
-La falla inducida del enlace USB--I2C permitió comprobar la utilidad del aislamiento por módulo. La afectación de AHT10 y MPU6050 no impidió la continuidad de otros bloques funcionales, lo cual respalda el criterio de organizar el sistema mediante FSM independientes supervisadas por el proceso principal. Esta experiencia refuerza la necesidad de ensayar fallas parciales adicionales antes de un despliegue prolongado.
+El comportamiento observado fue particularmente problemático porque la ausencia del bus I2C no generaba errores determinísticos: en algunos momentos el adaptador aparecía listado en \texttt{i2cdetect}, en otros desaparecía sin mensaje de error explícito en la aplicación. Esta inestabilidad sugería un problema de enumeración o disponibilidad de recursos, no una falla de conectividad física. Las primeras hipótesis apuntaban a conflictos de driver, carga tardía de módulos o configuración insuficiente del kernel, pero revisar y recompilar el kernel hubiera sido una solución invasiva y de alto costo.
 
-Desde el punto de vista energético, los ensayos permitieron observar la operación del conjunto panel solar--batería, pero también evidenciaron la necesidad de definir políticas más activas de administración de consumo. En particular, la operación autónoma de mayor duración requerirá perfiles de funcionamiento diferenciados, capaces de adaptar el ciclo de actividad y las adquisiciones acústicas al estado de batería, al espacio disponible y al objetivo operativo de cada etapa.
+El análisis sistemático de los mensajes del kernel (\texttt{dmesg}) reveló que la causa no correspondía a ausencia de hardware ni a carga incompleta del controlador. La investigación identificó que la interferencia provenía del servicio \texttt{fwupd}, un daemon del sistema operativo destinado a gestionar actualizaciones de firmware de periféricos. Este servicio intentaba continuamente tomar y liberar la interfaz USB asociada al CH341, lo que provocaba la remoción y re-enumeración de los subdispositivos registrados por el controlador MFD (multifunción), impidiendo la estabilización del bus I2C. Cada intento de \texttt{fwupd} de interrogar el dispositivo desencadenaba un ciclo de desaparición y reaparición del adaptador, haciendo que accesos consecutivos a los sensores fallaran de manera no determinística.
 
-Por último, la integración física del sistema mostró que la mantenibilidad no depende sólo del software. El montaje, desmontaje, reemplazo de periféricos, organización del cableado y acceso a conectores deben considerarse parte del diseño operativo de la boya. La experiencia de laboratorio deja pendiente una integración mecánica más definitiva entre el sistema embebido y la plataforma física.
+La solución aplicada consistió en deshabilitar tanto el servicio \texttt{fwupd} como su temporizador asociado en la plataforma de adquisición. Dado que \texttt{fwupd} no resulta esencial para la operación normal de una boya instrumentada autónoma y su interferencia era crítica para el acceso I2C, la deshabilitación constituía la medida más apropiada sin comprometer la función del sistema. Tras reiniciar el sistema, el adaptador quedó registrado de forma estable como \texttt{CH341 I2C USB bus} en \texttt{i2c-1}, y la verificación posterior confirmó la detección confiable del AHT10 en la dirección \texttt{0x38} y del MPU6050 en la dirección \texttt{0x68}. Esta resolución estabilizó completamente la capa física de acceso I2C y dejó documentada una condición crítica para futuras instalaciones o réplicas del sistema.
+
+\subsubsection*{Lecciones derivadas y mejoras identificadas}
+
+Este episodio de diagnóstico reforzó dos principios fundamentales para sistemas autónomos embebidos. En primer lugar, la necesidad de conservar evidencia diagnóstica suficiente y accesible: no alcanza con registrar que una adquisición falló, sino que es esencial distinguir si el problema se originó en el sensor, el bus, el controlador del sistema operativo, un servicio externo o la lógica de aplicación. Los logs de bajo nivel, los reportes de estado del kernel, las marcas temporales precisas, los comandos de diagnóstico (como \texttt{i2cdetect} y \texttt{dmesg}) y las pruebas sistemáticas resultaron esenciales para reconstruir la secuencia de eventos y separar la causa raíz de los síntomas secundarios. En una plataforma que opera autónoma en el campo, esta trazabilidad es crítica para intervención remota o posterior análisis sin acceso inmediato al dispositivo.
+
+En segundo lugar, la validación posterior del aislamiento por módulo confirmó su utilidad práctica. Cuando el enlace USB--I2C fue deshabilitado durante los ensayos de robustez, la afectación de AHT10 y MPU6050 no interrumpió la operación de otros bloques funcionales ni provocó fallos en cascada. Esto respalda la decisión arquitectónica de separar las capas de bajo nivel, máquinas de estados finitas independientes y supervisión central, permitiendo que fallos parciales sean contenidos y registrados sin afectar la continuidad del sistema.
+
+Como criterios adicionales para futuras etapas del proyecto se identificaron: la necesidad de definir perfiles activos de administración de consumo que permitan ajustar dinámicamente la operación según estado de batería, la importancia de mejorar la mantenibilidad mecánica del conjunto especialmente en organización de cableado, fijaciones y acceso a conectores para facilitar diagnóstico e intervención, y la conveniencia de incorporar una etapa de verificación de estabilidad del hardware antes de despliegues prolongados, considerando que ciertos servicios del sistema operativo pueden no ser evidentes en pruebas cortas pero causar inestabilidad en operación continua.
 
 \subsection{Trabajo futuro}
 

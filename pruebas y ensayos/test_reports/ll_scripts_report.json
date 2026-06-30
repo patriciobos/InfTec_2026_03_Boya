@@ -4,417 +4,75 @@
       "script": "modules/aht10_LL.py",
       "module": "modules.aht10_LL",
       "name": "aht10_LL",
-      "returncode": 1,
-      "success": false,
-      "error": "bus 1: open failed: Could not open any I2C bus for AHT10 (tried [1]) - last error: [Errno 2] No such file or directory: '/dev/i2c-1'; bus 0: read_byte failed: [Errno 121] Remote I/O error; bus 0: read_status failed: Could not read AHT10 status using any supported method",
-      "stdout": "{\n  \"initialized\": true,\n  \"opened\": false,\n  \"device_present\": false,\n  \"errors\": [\n    \"bus 1: open failed: Could not open any I2C bus for AHT10 (tried [1]) - last error: [Errno 2] No such file or directory: '/dev/i2c-1'\",\n    \"bus 0: read_byte failed: [Errno 121] Remote I/O error\",\n    \"bus 0: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 0: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 121] Remote I/O error\",\n    \"bus 10: read_byte failed: [Errno 6] No such device or address\",\n    \"bus 10: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 10: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\",\n    \"bus 11: read_byte failed: [Errno 6] No such device or address\",\n    \"bus 11: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 11: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\",\n    \"bus 12: read_byte failed: [Errno 110] Connection timed out\",\n    \"bus 12: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 12: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 110] Connection timed out\",\n    \"bus 2: read_byte failed: [Errno 6] No such device or address\",\n    \"bus 2: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 2: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 95] Operation not supported\",\n    \"bus 3: read_byte failed: [Errno 6] No such device or address\",\n    \"bus 3: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 3: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\",\n    \"bus 4: read_byte failed: [Errno 6] No such device or address\",\n    \"bus 4: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 4: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\",\n    \"bus 5: read_byte failed: [Errno 6] No such device or address\",\n    \"bus 5: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 5: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\",\n    \"bus 6: read_byte failed: [Errno 6] No such device or address\",\n    \"bus 6: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 6: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\",\n    \"bus 7: read_byte failed: [Errno 6] No such device or address\",\n    \"bus 7: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 7: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\",\n    \"bus 8: read_byte failed: [Errno 6] No such device or address\",\n    \"bus 8: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 8: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\",\n    \"bus 9: read_byte failed: [Errno 6] No such device or address\",\n    \"bus 9: read_status failed: Could not read AHT10 status using any supported method\",\n    \"bus 9: trigger_read_parse failed: I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\",\n    \"Basic probe failed after scanning all candidate I2C buses\"\n  ],\n  \"details\": {\n    \"scan\": {\n      \"address\": \"0x38\",\n      \"scanned_buses\": [\n        {\n          \"bus\": 1,\n          \"open_ok\": false,\n          \"error\": \"Could not open any I2C bus for AHT10 (tried [1]) - last error: [Errno 2] No such file or directory: '/dev/i2c-1'\"\n        },\n        {\n          \"bus\": 0,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 0,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 121] Remote I/O error\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 121] Remote I/O error\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 10,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 10,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 6] No such device or address\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 11,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 11,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 6] No such device or address\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 12,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 12,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 110] Connection timed out\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 110] Connection timed out\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 2,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 2,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 6] No such device or address\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 95] Operation not supported\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 3,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 3,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 6] No such device or address\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 4,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 4,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 6] No such device or address\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 5,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 5,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 6] No such device or address\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 6,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 6,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 6] No such device or address\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 7,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 7,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 6] No such device or address\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 8,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 8,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 6] No such device or address\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\"\n              }\n            ]\n          }\n        },\n        {\n          \"bus\": 9,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 9,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": false,\n                \"error\": \"[Errno 6] No such device or address\"\n              },\n              {\n                \"name\": \"initialize_sensor\",\n                \"ok\": false\n              },\n              {\n                \"name\": \"read_status\",\n                \"ok\": false,\n                \"error\": \"Could not read AHT10 status using any supported method\"\n              },\n              {\n                \"name\": \"trigger_read_parse\",\n                \"ok\": false,\n                \"error\": \"I2C error during write(b'\\\\xac3\\\\x00'): [Errno 6] No such device or address\"\n              }\n            ]\n          }\n        }\n      ],\n      \"selected_bus\": null\n    }\n  },\n  \"success\": false\n}",
+      "returncode": 0,
+      "success": true,
+      "error": "",
+      "stdout": "{\n  \"initialized\": true,\n  \"opened\": true,\n  \"device_present\": true,\n  \"errors\": [],\n  \"details\": {\n    \"scan\": {\n      \"address\": \"0x38\",\n      \"scanned_buses\": [\n        {\n          \"bus\": 1,\n          \"open_ok\": true,\n          \"probe\": {\n            \"bus\": 1,\n            \"address\": \"0x38\",\n            \"checks\": [\n              {\n                \"name\": \"read_byte\",\n                \"ok\": true,\n                \"value\": 25\n              }\n            ]\n          }\n        }\n      ],\n      \"selected_bus\": 1\n    },\n    \"status\": {\n      \"value\": 25,\n      \"busy\": false,\n      \"calibrated\": true\n    },\n    \"measurement\": {\n      \"attempt\": 1,\n      \"raw\": [\n        25,\n        99,\n        24,\n        85,\n        248,\n        143\n      ],\n      \"temperature_c\": 24.63665008544922,\n      \"humidity_rh\": 38.7089729309082,\n      \"plausible\": true\n    },\n    \"measurement_attempts\": [\n      {\n        \"attempt\": 1,\n        \"raw\": [\n          25,\n          99,\n          24,\n          85,\n          248,\n          143\n        ],\n        \"temperature_c\": 24.63665008544922,\n        \"humidity_rh\": 38.7089729309082,\n        \"plausible\": true\n      }\n    ]\n  },\n  \"success\": true\n}",
       "stderr": "",
       "parsed": {
         "initialized": true,
-        "opened": false,
-        "device_present": false,
-        "errors": [
-          "bus 1: open failed: Could not open any I2C bus for AHT10 (tried [1]) - last error: [Errno 2] No such file or directory: '/dev/i2c-1'",
-          "bus 0: read_byte failed: [Errno 121] Remote I/O error",
-          "bus 0: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 0: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 121] Remote I/O error",
-          "bus 10: read_byte failed: [Errno 6] No such device or address",
-          "bus 10: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 10: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address",
-          "bus 11: read_byte failed: [Errno 6] No such device or address",
-          "bus 11: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 11: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address",
-          "bus 12: read_byte failed: [Errno 110] Connection timed out",
-          "bus 12: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 12: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 110] Connection timed out",
-          "bus 2: read_byte failed: [Errno 6] No such device or address",
-          "bus 2: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 2: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 95] Operation not supported",
-          "bus 3: read_byte failed: [Errno 6] No such device or address",
-          "bus 3: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 3: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address",
-          "bus 4: read_byte failed: [Errno 6] No such device or address",
-          "bus 4: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 4: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address",
-          "bus 5: read_byte failed: [Errno 6] No such device or address",
-          "bus 5: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 5: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address",
-          "bus 6: read_byte failed: [Errno 6] No such device or address",
-          "bus 6: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 6: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address",
-          "bus 7: read_byte failed: [Errno 6] No such device or address",
-          "bus 7: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 7: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address",
-          "bus 8: read_byte failed: [Errno 6] No such device or address",
-          "bus 8: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 8: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address",
-          "bus 9: read_byte failed: [Errno 6] No such device or address",
-          "bus 9: read_status failed: Could not read AHT10 status using any supported method",
-          "bus 9: trigger_read_parse failed: I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address",
-          "Basic probe failed after scanning all candidate I2C buses"
-        ],
+        "opened": true,
+        "device_present": true,
+        "errors": [],
         "details": {
           "scan": {
             "address": "0x38",
             "scanned_buses": [
               {
                 "bus": 1,
-                "open_ok": false,
-                "error": "Could not open any I2C bus for AHT10 (tried [1]) - last error: [Errno 2] No such file or directory: '/dev/i2c-1'"
-              },
-              {
-                "bus": 0,
                 "open_ok": true,
                 "probe": {
-                  "bus": 0,
+                  "bus": 1,
                   "address": "0x38",
                   "checks": [
                     {
                       "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 121] Remote I/O error"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 121] Remote I/O error"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 10,
-                "open_ok": true,
-                "probe": {
-                  "bus": 10,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 6] No such device or address"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 11,
-                "open_ok": true,
-                "probe": {
-                  "bus": 11,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 6] No such device or address"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 12,
-                "open_ok": true,
-                "probe": {
-                  "bus": 12,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 110] Connection timed out"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 110] Connection timed out"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 2,
-                "open_ok": true,
-                "probe": {
-                  "bus": 2,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 6] No such device or address"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 95] Operation not supported"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 3,
-                "open_ok": true,
-                "probe": {
-                  "bus": 3,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 6] No such device or address"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 4,
-                "open_ok": true,
-                "probe": {
-                  "bus": 4,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 6] No such device or address"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 5,
-                "open_ok": true,
-                "probe": {
-                  "bus": 5,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 6] No such device or address"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 6,
-                "open_ok": true,
-                "probe": {
-                  "bus": 6,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 6] No such device or address"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 7,
-                "open_ok": true,
-                "probe": {
-                  "bus": 7,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 6] No such device or address"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 8,
-                "open_ok": true,
-                "probe": {
-                  "bus": 8,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 6] No such device or address"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address"
-                    }
-                  ]
-                }
-              },
-              {
-                "bus": 9,
-                "open_ok": true,
-                "probe": {
-                  "bus": 9,
-                  "address": "0x38",
-                  "checks": [
-                    {
-                      "name": "read_byte",
-                      "ok": false,
-                      "error": "[Errno 6] No such device or address"
-                    },
-                    {
-                      "name": "initialize_sensor",
-                      "ok": false
-                    },
-                    {
-                      "name": "read_status",
-                      "ok": false,
-                      "error": "Could not read AHT10 status using any supported method"
-                    },
-                    {
-                      "name": "trigger_read_parse",
-                      "ok": false,
-                      "error": "I2C error during write(b'\\xac3\\x00'): [Errno 6] No such device or address"
+                      "ok": true,
+                      "value": 25
                     }
                   ]
                 }
               }
             ],
-            "selected_bus": null
-          }
+            "selected_bus": 1
+          },
+          "status": {
+            "value": 25,
+            "busy": false,
+            "calibrated": true
+          },
+          "measurement": {
+            "attempt": 1,
+            "raw": [
+              25,
+              99,
+              24,
+              85,
+              248,
+              143
+            ],
+            "temperature_c": 24.63665008544922,
+            "humidity_rh": 38.7089729309082,
+            "plausible": true
+          },
+          "measurement_attempts": [
+            {
+              "attempt": 1,
+              "raw": [
+                25,
+                99,
+                24,
+                85,
+                248,
+                143
+              ],
+              "temperature_c": 24.63665008544922,
+              "humidity_rh": 38.7089729309082,
+              "plausible": true
+            }
+          ]
         },
-        "success": false
+        "success": true
       }
     },
     {
@@ -424,7 +82,7 @@
       "returncode": 0,
       "success": true,
       "error": "",
-      "stdout": "{\n  \"initialized\": true,\n  \"opened\": true,\n  \"device_present\": true,\n  \"errors\": [],\n  \"details\": {\n    \"transport\": {\n      \"port\": \"/dev/ttyS0\",\n      \"baudrate\": 115200\n    },\n    \"traffic\": {\n      \"lines_collected\": 55,\n      \"valid_nmea_lines\": 23,\n      \"valid_ais_lines\": 19,\n      \"sentence_types\": [\n        \"AIVDO\",\n        \"ANALR\",\n        \"GPGGA\",\n        \"GPGLL\",\n        \"GPGSA\",\n        \"GPGSV\",\n        \"GPRMC\",\n        \"PAMC\"\n      ]\n    },\n    \"navigation\": {\n      \"has_fix\": false,\n      \"lat\": null,\n      \"lon\": null,\n      \"timestamp\": null,\n      \"fix_quality\": 0,\n      \"num_sats\": 0,\n      \"hdop\": 99.99\n    }\n  },\n  \"success\": true\n}",
+      "stdout": "{\n  \"initialized\": true,\n  \"opened\": true,\n  \"device_present\": true,\n  \"errors\": [],\n  \"details\": {\n    \"transport\": {\n      \"port\": \"/dev/ttyS0\",\n      \"baudrate\": 115200\n    },\n    \"traffic\": {\n      \"lines_collected\": 55,\n      \"valid_nmea_lines\": 23,\n      \"valid_ais_lines\": 20,\n      \"sentence_types\": [\n        \"AIVDO\",\n        \"ANALR\",\n        \"GPGGA\",\n        \"GPGLL\",\n        \"GPGSA\",\n        \"GPGSV\",\n        \"GPRMC\",\n        \"PAMC\"\n      ]\n    },\n    \"navigation\": {\n      \"has_fix\": false,\n      \"lat\": null,\n      \"lon\": null,\n      \"timestamp\": \"2026-06-30 15:34:04\",\n      \"fix_quality\": 0,\n      \"num_sats\": 0,\n      \"hdop\": 99.99\n    }\n  },\n  \"success\": true\n}",
       "stderr": "",
       "parsed": {
         "initialized": true,
@@ -439,7 +97,7 @@
           "traffic": {
             "lines_collected": 55,
             "valid_nmea_lines": 23,
-            "valid_ais_lines": 19,
+            "valid_ais_lines": 20,
             "sentence_types": [
               "AIVDO",
               "ANALR",
@@ -455,7 +113,7 @@
             "has_fix": false,
             "lat": null,
             "lon": null,
-            "timestamp": null,
+            "timestamp": "2026-06-30 15:34:04",
             "fix_quality": 0,
             "num_sats": 0,
             "hdop": 99.99
@@ -482,8 +140,8 @@
       "returncode": 0,
       "success": true,
       "error": "",
-      "stdout": "{\n  \"initialized\": true,\n  \"opened\": true,\n  \"device_present\": true,\n  \"errors\": [],\n  \"details\": {\n    \"device\": {\n      \"index\": 5,\n      \"name\": \"UMC202HD 192k: USB Audio (hw:1,0)\",\n      \"max_input_channels\": 2,\n      \"default_sample_rate\": 44100.0\n    },\n    \"audio\": {\n      \"sample_rate\": 192000,\n      \"channels\": 2,\n      \"output_channels\": 2,\n      \"format\": \"paInt24\",\n      \"frames_per_buffer\": 8192,\n      \"stream_open_ok\": true\n    },\n    \"filesystem\": {\n      \"recordings_dir\": \"/storage/boya/recordings\",\n      \"write_ok\": true,\n      \"free_bytes\": 930894827520\n    },\n    \"recording\": {\n      \"is_recording\": false,\n      \"last_record_ok\": false,\n      \"output_path\": null\n    }\n  },\n  \"success\": true\n}",
-      "stderr": "ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.rear\nALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.center_lfe\nALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side\nALSA lib pcm_route.c:878:(find_matching_chmap) Found no matching channel map\nALSA lib pcm_route.c:878:(find_matching_chmap) Found no matching channel map\nALSA lib pcm_route.c:878:(find_matching_chmap) Found no matching channel map\nALSA lib pcm_route.c:878:(find_matching_chmap) Found no matching channel map\nCannot connect to server socket err = No such file or directory\nCannot connect to server request channel\njack server is not running or cannot be started\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nCannot connect to server socket err = No such file or directory\nCannot connect to server request channel\njack server is not running or cannot be started\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp\nALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp\nALSA lib pcm_a52.c:1001:(_snd_pcm_a52_open) a52 is only for playback\nALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card\nALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'\nALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card\nALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'\nCannot connect to server socket err = No such file or directory\nCannot connect to server request channel\njack server is not running or cannot be started\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock",
+      "stdout": "{\n  \"initialized\": true,\n  \"opened\": true,\n  \"device_present\": true,\n  \"errors\": [],\n  \"details\": {\n    \"device\": {\n      \"index\": 0,\n      \"name\": \"UMC202HD 192k: USB Audio (hw:0,0)\",\n      \"max_input_channels\": 2,\n      \"default_sample_rate\": 44100.0\n    },\n    \"audio\": {\n      \"sample_rate\": 192000,\n      \"channels\": 2,\n      \"output_channels\": 2,\n      \"format\": \"paInt24\",\n      \"frames_per_buffer\": 8192,\n      \"stream_open_ok\": true\n    },\n    \"filesystem\": {\n      \"recordings_dir\": \"/storage/boya/recordings\",\n      \"write_ok\": true,\n      \"free_bytes\": 930810204160\n    },\n    \"recording\": {\n      \"is_recording\": false,\n      \"last_record_ok\": false,\n      \"output_path\": null\n    }\n  },\n  \"success\": true\n}",
+      "stderr": "ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.rear\nALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.center_lfe\nALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side\nALSA lib confmisc.c:1377:(snd_func_refer) Unable to find definition 'cards.0.pcm.hdmi.0:CARD=0,AES0=4,AES1=130,AES2=0,AES3=2'\nALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory\nALSA lib conf.c:5727:(snd_config_expand) Evaluate error: No such file or directory\nALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM hdmi\nALSA lib confmisc.c:1377:(snd_func_refer) Unable to find definition 'cards.0.pcm.hdmi.0:CARD=0,AES0=4,AES1=130,AES2=0,AES3=2'\nALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory\nALSA lib conf.c:5727:(snd_config_expand) Evaluate error: No such file or directory\nALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM hdmi\nALSA lib confmisc.c:1377:(snd_func_refer) Unable to find definition 'cards.0.pcm.modem.0:CARD=0'\nALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory\nALSA lib conf.c:5727:(snd_config_expand) Evaluate error: No such file or directory\nALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.phoneline:CARD=0,DEV=0\nALSA lib confmisc.c:1377:(snd_func_refer) Unable to find definition 'cards.0.pcm.modem.0:CARD=0'\nALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory\nALSA lib conf.c:5727:(snd_config_expand) Evaluate error: No such file or directory\nALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.phoneline:CARD=0,DEV=0\nALSA lib confmisc.c:1377:(snd_func_refer) Unable to find definition 'cards.0.pcm.modem.0:CARD=0'\nALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory\nALSA lib conf.c:5727:(snd_config_expand) Evaluate error: No such file or directory\nALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM phoneline\nALSA lib confmisc.c:1377:(snd_func_refer) Unable to find definition 'cards.0.pcm.modem.0:CARD=0'\nALSA lib conf.c:5204:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory\nALSA lib conf.c:5727:(snd_config_expand) Evaluate error: No such file or directory\nALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM phoneline\nCannot connect to server socket err = No such file or directory\nCannot connect to server request channel\njack server is not running or cannot be started\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nCannot connect to server socket err = No such file or directory\nCannot connect to server request channel\njack server is not running or cannot be started\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp\nALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp\nALSA lib pcm_a52.c:1001:(_snd_pcm_a52_open) a52 is only for playback\nALSA lib pcm_a52.c:473:(a52_slave_hw_params_half) Cannot get slave hw_params\nALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card\nALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'\nALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card\nALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'\nALSA lib pcm_direct.c:1337:(snd1_pcm_direct_initialize_slave) unable to install hw params\nALSA lib pcm_dmix.c:1012:(snd_pcm_dmix_open) unable to initialize slave\nCannot connect to server socket err = No such file or directory\nCannot connect to server request channel\njack server is not running or cannot be started\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nJackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock\nExpression 'ret' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 1812\nExpression 'r' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2097\nExpression 'PaAlsaStreamComponent_FinishConfigure( &self->capture, hwParamsCapture, inParams, self->primeBuffers, realSr, inputLatency )' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2730\nExpression 'PaAlsaStream_Configure( stream, inputParameters, outputParameters, sampleRate, framesPerBuffer, &inputLatency, &outputLatency, &hostBufferSizeMode )' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2842",
       "parsed": {
         "initialized": true,
         "opened": true,
@@ -491,8 +149,8 @@
         "errors": [],
         "details": {
           "device": {
-            "index": 5,
-            "name": "UMC202HD 192k: USB Audio (hw:1,0)",
+            "index": 0,
+            "name": "UMC202HD 192k: USB Audio (hw:0,0)",
             "max_input_channels": 2,
             "default_sample_rate": 44100.0
           },
@@ -507,7 +165,7 @@
           "filesystem": {
             "recordings_dir": "/storage/boya/recordings",
             "write_ok": true,
-            "free_bytes": 930894827520
+            "free_bytes": 930810204160
           },
           "recording": {
             "is_recording": false,
@@ -525,7 +183,7 @@
       "returncode": 1,
       "success": false,
       "error": "device_present=false",
-      "stdout": "{\n  \"initialized\": true,\n  \"opened\": true,\n  \"device_present\": false,\n  \"errors\": [],\n  \"details\": {\n    \"probe\": {\n      \"command\": \"AT\",\n      \"response\": {\n        \"echo\": \"\",\n        \"payload\": \"P!c\\ufffd\\ufffd\\u0010JJJJ\\ufffd\\u0010HJJJJJ\\u0002\\\"B\\ufffdPJ4\\ufffd\\u0010HXB\\ufffd\\u0000\\b\\u0018!\\bJ\",\n        \"status\": \"\",\n        \"raw\": \"P!c\\ufffd\\ufffd\\u0010JJJJ\\ufffd\\u0010HJJJJJ\\u0002\\\"B\\ufffdPJ4\\ufffd\\u0010HXB\\ufffd\\u0000\\b\\u0018!\\bJ\",\n        \"elapsed_s\": 1.0001366138458252\n      },\n      \"device_present\": false\n    },\n    \"transport\": {\n      \"port\": \"/dev/ttyS0\",\n      \"baudrate\": 19200,\n      \"timeout\": 1.0,\n      \"bus_forced\": false,\n      \"preferred_port\": \"/dev/ttyS0\",\n      \"candidates\": [\n        \"/dev/ttyS0\",\n        \"/dev/ttyS1\",\n        \"/dev/ttyS2\",\n        \"/dev/ttyS3\",\n        \"/dev/ttyS4\",\n        \"/dev/ttyS5\",\n        \"/dev/ttyS6\"\n      ]\n    },\n    \"filesystem\": {\n      \"write_ok\": true,\n      \"free_bytes\": 454600056832\n    }\n  },\n  \"success\": false\n}",
+      "stdout": "{\n  \"initialized\": true,\n  \"opened\": true,\n  \"device_present\": false,\n  \"errors\": [],\n  \"details\": {\n    \"probe\": {\n      \"command\": \"AT\",\n      \"response\": {\n        \"echo\": \"\",\n        \"payload\": \"P\\u0018J)\\ufffdZ\\ufffd\\u0010\\u0018JJJJJ\\u0010HJJJJJ\\ufffd\\u0010HHJ\\u0018\\ufffdP)XXA\\u0010)cBI\\u0000\\bB!\\bJ\",\n        \"status\": \"\",\n        \"raw\": \"P\\u0018J)\\ufffdZ\\ufffd\\u0010\\u0018JJJJJ\\u0010HJJJJJ\\ufffd\\u0010HHJ\\u0018\\ufffdP)XXA\\u0010)cBI\\u0000\\bB!\\bJ\",\n        \"elapsed_s\": 1.0009541511535645\n      },\n      \"device_present\": false\n    },\n    \"transport\": {\n      \"port\": \"/dev/ttyS0\",\n      \"baudrate\": 19200,\n      \"timeout\": 1.0,\n      \"bus_forced\": false,\n      \"preferred_port\": \"/dev/ttyS0\",\n      \"candidates\": [\n        \"/dev/ttyS0\",\n        \"/dev/ttyS1\",\n        \"/dev/ttyS2\",\n        \"/dev/ttyS3\",\n        \"/dev/ttyS4\",\n        \"/dev/ttyS5\",\n        \"/dev/ttyS6\"\n      ]\n    },\n    \"filesystem\": {\n      \"write_ok\": true,\n      \"free_bytes\": 455223595008\n    }\n  },\n  \"success\": false\n}",
       "stderr": "",
       "parsed": {
         "initialized": true,
@@ -537,10 +195,10 @@
             "command": "AT",
             "response": {
               "echo": "",
-              "payload": "P!c\ufffd\ufffd\u0010JJJJ\ufffd\u0010HJJJJJ\u0002\"B\ufffdPJ4\ufffd\u0010HXB\ufffd\u0000\b\u0018!\bJ",
+              "payload": "P\u0018J)\ufffdZ\ufffd\u0010\u0018JJJJJ\u0010HJJJJJ\ufffd\u0010HHJ\u0018\ufffdP)XXA\u0010)cBI\u0000\bB!\bJ",
               "status": "",
-              "raw": "P!c\ufffd\ufffd\u0010JJJJ\ufffd\u0010HJJJJJ\u0002\"B\ufffdPJ4\ufffd\u0010HXB\ufffd\u0000\b\u0018!\bJ",
-              "elapsed_s": 1.0001366138458252
+              "raw": "P\u0018J)\ufffdZ\ufffd\u0010\u0018JJJJJ\u0010HJJJJJ\ufffd\u0010HHJ\u0018\ufffdP)XXA\u0010)cBI\u0000\bB!\bJ",
+              "elapsed_s": 1.0009541511535645
             },
             "device_present": false
           },
@@ -562,7 +220,7 @@
           },
           "filesystem": {
             "write_ok": true,
-            "free_bytes": 454600056832
+            "free_bytes": 455223595008
           }
         },
         "success": false
@@ -572,663 +230,68 @@
       "script": "modules/mpu6050_LL.py",
       "module": "modules.mpu6050_LL",
       "name": "mpu6050_LL",
-      "returncode": 1,
-      "success": false,
-      "error": "whoami failed: I2C error during read_reg(0x75): [Errno 121] Remote I/O error; read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error; bus 1 addr 0x68: open/probe failed: [Errno 2] No such file or directory: '/dev/i2c-1'",
-      "stdout": "{\n  \"initialized\": true,\n  \"opened\": false,\n  \"device_present\": false,\n  \"errors\": [\n    \"whoami failed: I2C error during read_reg(0x75): [Errno 121] Remote I/O error\",\n    \"read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error\",\n    \"bus 1 addr 0x68: open/probe failed: [Errno 2] No such file or directory: '/dev/i2c-1'\",\n    \"bus 1 addr 0x69: open/probe failed: [Errno 2] No such file or directory: '/dev/i2c-1'\",\n    \"bus 0 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 121] Remote I/O error\",\n    \"bus 0 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error\",\n    \"bus 0 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 121] Remote I/O error\",\n    \"bus 0 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error\",\n    \"bus 10 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 10 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 10 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 10 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 11 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 11 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 11 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 110] Connection timed out\",\n    \"bus 11 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out\",\n    \"bus 12 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 110] Connection timed out\",\n    \"bus 12 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out\",\n    \"bus 12 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 110] Connection timed out\",\n    \"bus 12 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out\",\n    \"bus 2 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 2 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 2 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 2 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 3 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 3 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 3 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 3 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 4 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 4 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 4 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 4 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 5 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 5 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 5 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 5 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 6 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 6 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 6 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 6 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 7 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 7 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 7 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 7 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 8 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 8 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 8 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 8 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 9 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 9 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"bus 9 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address\",\n    \"bus 9 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\",\n    \"Basic probe failed\"\n  ],\n  \"details\": {\n    \"bus_num\": null,\n    \"address\": \"0x68\",\n    \"scan\": {\n      \"current_bus_probe\": {\n        \"bus\": 0,\n        \"address\": \"0x68\",\n        \"checks\": [\n          {\n            \"name\": \"whoami\",\n            \"ok\": false,\n            \"error\": \"I2C error during read_reg(0x75): [Errno 121] Remote I/O error\"\n          },\n          {\n            \"name\": \"read_all_raw\",\n            \"ok\": false,\n            \"error\": \"I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error\"\n          }\n        ]\n      },\n      \"fallback_scan\": {\n        \"requested_address\": \"0x68\",\n        \"bus_forced\": false,\n        \"scanned_buses\": [\n          {\n            \"bus\": 1,\n            \"addresses\": [\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": false,\n                \"error\": \"[Errno 2] No such file or directory: '/dev/i2c-1'\"\n              },\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": false,\n                \"error\": \"[Errno 2] No such file or directory: '/dev/i2c-1'\"\n              }\n            ]\n          },\n          {\n            \"bus\": 0,\n            \"addresses\": [\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 0,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 121] Remote I/O error\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 0,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 121] Remote I/O error\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 10,\n            \"addresses\": [\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 10,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 10,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 11,\n            \"addresses\": [\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 11,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 11,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 110] Connection timed out\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 12,\n            \"addresses\": [\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 12,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 110] Connection timed out\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 12,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 110] Connection timed out\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 2,\n            \"addresses\": [\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 2,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 2,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 3,\n            \"addresses\": [\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 3,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 3,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 4,\n            \"addresses\": [\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 4,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 4,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 5,\n            \"addresses\": [\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 5,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 5,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 6,\n            \"addresses\": [\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 6,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 6,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 7,\n            \"addresses\": [\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 7,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 7,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 8,\n            \"addresses\": [\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 8,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 8,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              }\n            ]\n          },\n          {\n            \"bus\": 9,\n            \"addresses\": [\n              {\n                \"address\": \"0x69\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 9,\n                  \"address\": \"0x69\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              },\n              {\n                \"address\": \"0x68\",\n                \"open_ok\": true,\n                \"probe\": {\n                  \"bus\": 9,\n                  \"address\": \"0x68\",\n                  \"checks\": [\n                    {\n                      \"name\": \"whoami\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_reg(0x75): [Errno 6] No such device or address\"\n                    },\n                    {\n                      \"name\": \"read_all_raw\",\n                      \"ok\": false,\n                      \"error\": \"I2C error during read_block(0x3B, 14): [Errno 6] No such device or address\"\n                    }\n                  ]\n                }\n              }\n            ]\n          }\n        ],\n        \"selected_bus\": null,\n        \"selected_address\": null\n      }\n    },\n    \"who_am_i\": null,\n    \"configured\": false,\n    \"int_status\": null,\n    \"data_ready\": null,\n    \"fifo_overflow\": null,\n    \"raw\": null,\n    \"parsed\": null,\n    \"corrected\": null,\n    \"tilt_deg\": null,\n    \"offsets\": {\n      \"accel_g\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"gyro_dps\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    }\n  },\n  \"success\": false\n}",
+      "returncode": 0,
+      "success": true,
+      "error": "",
+      "stdout": "{\n  \"initialized\": true,\n  \"opened\": true,\n  \"device_present\": true,\n  \"errors\": [],\n  \"details\": {\n    \"bus_num\": 1,\n    \"address\": \"0x68\",\n    \"scan\": {\n      \"current_bus_probe\": {\n        \"bus\": 1,\n        \"address\": \"0x68\",\n        \"checks\": [\n          {\n            \"name\": \"whoami\",\n            \"ok\": true,\n            \"value\": \"0x68\"\n          }\n        ]\n      }\n    },\n    \"who_am_i\": \"0x68\",\n    \"configured\": true,\n    \"int_status\": \"0x05\",\n    \"data_ready\": true,\n    \"fifo_overflow\": false,\n    \"raw\": {\n      \"ax\": 152,\n      \"ay\": -2094,\n      \"az\": 134,\n      \"temp_raw\": -3936,\n      \"gx\": -86,\n      \"gy\": 104,\n      \"gz\": 85\n    },\n    \"parsed\": {\n      \"ax_g\": 0.00927734375,\n      \"ay_g\": -0.1278076171875,\n      \"az_g\": 0.0081787109375,\n      \"temp_c\": 24.953529411764706,\n      \"gx_dps\": -0.6564885496183206,\n      \"gy_dps\": 0.7938931297709924,\n      \"gz_dps\": 0.648854961832061\n    },\n    \"corrected\": {\n      \"ax_g\": 0.00927734375,\n      \"ay_g\": -0.1278076171875,\n      \"az_g\": 0.0081787109375,\n      \"temp_c\": 24.953529411764706,\n      \"gx_dps\": -0.6564885496183206,\n      \"gy_dps\": 0.7938931297709924,\n      \"gz_dps\": 0.648854961832061\n    },\n    \"tilt_deg\": {\n      \"roll\": -86.33850042892055,\n      \"pitch\": -4.143279135679422\n    },\n    \"offsets\": {\n      \"accel_g\": [\n        0.0,\n        0.0,\n        0.0\n      ],\n      \"gyro_dps\": [\n        0.0,\n        0.0,\n        0.0\n      ]\n    },\n    \"plausible\": true\n  },\n  \"success\": true\n}",
       "stderr": "",
       "parsed": {
         "initialized": true,
-        "opened": false,
-        "device_present": false,
-        "errors": [
-          "whoami failed: I2C error during read_reg(0x75): [Errno 121] Remote I/O error",
-          "read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error",
-          "bus 1 addr 0x68: open/probe failed: [Errno 2] No such file or directory: '/dev/i2c-1'",
-          "bus 1 addr 0x69: open/probe failed: [Errno 2] No such file or directory: '/dev/i2c-1'",
-          "bus 0 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 121] Remote I/O error",
-          "bus 0 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error",
-          "bus 0 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 121] Remote I/O error",
-          "bus 0 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error",
-          "bus 10 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 10 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 10 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 10 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 11 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 11 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 11 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 110] Connection timed out",
-          "bus 11 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out",
-          "bus 12 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 110] Connection timed out",
-          "bus 12 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out",
-          "bus 12 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 110] Connection timed out",
-          "bus 12 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out",
-          "bus 2 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 2 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 2 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 2 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 3 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 3 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 3 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 3 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 4 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 4 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 4 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 4 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 5 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 5 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 5 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 5 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 6 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 6 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 6 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 6 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 7 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 7 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 7 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 7 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 8 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 8 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 8 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 8 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 9 addr 0x69: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 9 addr 0x69: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "bus 9 addr 0x68: whoami failed: I2C error during read_reg(0x75): [Errno 6] No such device or address",
-          "bus 9 addr 0x68: read_all_raw failed: I2C error during read_block(0x3B, 14): [Errno 6] No such device or address",
-          "Basic probe failed"
-        ],
+        "opened": true,
+        "device_present": true,
+        "errors": [],
         "details": {
-          "bus_num": null,
+          "bus_num": 1,
           "address": "0x68",
           "scan": {
             "current_bus_probe": {
-              "bus": 0,
+              "bus": 1,
               "address": "0x68",
               "checks": [
                 {
                   "name": "whoami",
-                  "ok": false,
-                  "error": "I2C error during read_reg(0x75): [Errno 121] Remote I/O error"
-                },
-                {
-                  "name": "read_all_raw",
-                  "ok": false,
-                  "error": "I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error"
+                  "ok": true,
+                  "value": "0x68"
                 }
               ]
-            },
-            "fallback_scan": {
-              "requested_address": "0x68",
-              "bus_forced": false,
-              "scanned_buses": [
-                {
-                  "bus": 1,
-                  "addresses": [
-                    {
-                      "address": "0x68",
-                      "open_ok": false,
-                      "error": "[Errno 2] No such file or directory: '/dev/i2c-1'"
-                    },
-                    {
-                      "address": "0x69",
-                      "open_ok": false,
-                      "error": "[Errno 2] No such file or directory: '/dev/i2c-1'"
-                    }
-                  ]
-                },
-                {
-                  "bus": 0,
-                  "addresses": [
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 0,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 121] Remote I/O error"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 0,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 121] Remote I/O error"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 121] Remote I/O error"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 10,
-                  "addresses": [
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 10,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 10,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 11,
-                  "addresses": [
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 11,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 11,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 110] Connection timed out"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 12,
-                  "addresses": [
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 12,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 110] Connection timed out"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 12,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 110] Connection timed out"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 110] Connection timed out"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 2,
-                  "addresses": [
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 2,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 2,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 3,
-                  "addresses": [
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 3,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 3,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 4,
-                  "addresses": [
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 4,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 4,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 5,
-                  "addresses": [
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 5,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 5,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 6,
-                  "addresses": [
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 6,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 6,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 7,
-                  "addresses": [
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 7,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 7,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 8,
-                  "addresses": [
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 8,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 8,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {
-                  "bus": 9,
-                  "addresses": [
-                    {
-                      "address": "0x69",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 9,
-                        "address": "0x69",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "address": "0x68",
-                      "open_ok": true,
-                      "probe": {
-                        "bus": 9,
-                        "address": "0x68",
-                        "checks": [
-                          {
-                            "name": "whoami",
-                            "ok": false,
-                            "error": "I2C error during read_reg(0x75): [Errno 6] No such device or address"
-                          },
-                          {
-                            "name": "read_all_raw",
-                            "ok": false,
-                            "error": "I2C error during read_block(0x3B, 14): [Errno 6] No such device or address"
-                          }
-                        ]
-                      }
-                    }
-                  ]
-                }
-              ],
-              "selected_bus": null,
-              "selected_address": null
             }
           },
-          "who_am_i": null,
-          "configured": false,
-          "int_status": null,
-          "data_ready": null,
-          "fifo_overflow": null,
-          "raw": null,
-          "parsed": null,
-          "corrected": null,
-          "tilt_deg": null,
+          "who_am_i": "0x68",
+          "configured": true,
+          "int_status": "0x05",
+          "data_ready": true,
+          "fifo_overflow": false,
+          "raw": {
+            "ax": 152,
+            "ay": -2094,
+            "az": 134,
+            "temp_raw": -3936,
+            "gx": -86,
+            "gy": 104,
+            "gz": 85
+          },
+          "parsed": {
+            "ax_g": 0.00927734375,
+            "ay_g": -0.1278076171875,
+            "az_g": 0.0081787109375,
+            "temp_c": 24.953529411764706,
+            "gx_dps": -0.6564885496183206,
+            "gy_dps": 0.7938931297709924,
+            "gz_dps": 0.648854961832061
+          },
+          "corrected": {
+            "ax_g": 0.00927734375,
+            "ay_g": -0.1278076171875,
+            "az_g": 0.0081787109375,
+            "temp_c": 24.953529411764706,
+            "gx_dps": -0.6564885496183206,
+            "gy_dps": 0.7938931297709924,
+            "gz_dps": 0.648854961832061
+          },
+          "tilt_deg": {
+            "roll": -86.33850042892055,
+            "pitch": -4.143279135679422
+          },
           "offsets": {
             "accel_g": [
               0.0,
@@ -1240,9 +303,10 @@
               0.0,
               0.0
             ]
-          }
+          },
+          "plausible": true
         },
-        "success": false
+        "success": true
       }
     },
     {
@@ -1285,7 +349,7 @@
       "returncode": 0,
       "success": true,
       "error": "",
-      "stdout": "{\n  \"initialized\": true,\n  \"opened\": true,\n  \"device_present\": true,\n  \"errors\": [],\n  \"details\": {\n    \"identity\": {\n      \"charging_mode\": \"mppt\",\n      \"rated_battery_current_a\": 20.0,\n      \"rated_load_current_a\": 20.0,\n      \"system_rated_voltage_v\": 12.0,\n      \"identity_confirmed\": true\n    },\n    \"summary\": {\n      \"blocks_responded\": 5,\n      \"plausible_hits\": 5\n    },\n    \"transport\": {\n      \"port\": \"/dev/ttyS4\",\n      \"baudrate\": 115200,\n      \"slave_id\": 1\n    },\n    \"readings\": {\n      \"pv_voltage_v\": 0.0,\n      \"pv_current_a\": 0.0,\n      \"load_voltage_v\": 11.37,\n      \"load_current_a\": 0.16,\n      \"load_power_w\": 1.81,\n      \"battery_voltage_v\": 11.37,\n      \"battery_soc_pct\": 5,\n      \"battery_temp_c\": 17.15,\n      \"device_temp_c\": 19.61\n    }\n  },\n  \"success\": true\n}",
+      "stdout": "{\n  \"initialized\": true,\n  \"opened\": true,\n  \"device_present\": true,\n  \"errors\": [],\n  \"details\": {\n    \"identity\": {\n      \"charging_mode\": \"mppt\",\n      \"rated_battery_current_a\": 20.0,\n      \"rated_load_current_a\": 20.0,\n      \"system_rated_voltage_v\": 12.0,\n      \"identity_confirmed\": true\n    },\n    \"summary\": {\n      \"blocks_responded\": 5,\n      \"plausible_hits\": 5\n    },\n    \"transport\": {\n      \"port\": \"/dev/ttyS4\",\n      \"baudrate\": 115200,\n      \"slave_id\": 1\n    },\n    \"readings\": {\n      \"pv_voltage_v\": 0.0,\n      \"pv_current_a\": 0.0,\n      \"load_voltage_v\": 11.41,\n      \"load_current_a\": 0.95,\n      \"load_power_w\": 10.83,\n      \"battery_voltage_v\": 11.41,\n      \"battery_soc_pct\": 6,\n      \"battery_temp_c\": 18.65,\n      \"device_temp_c\": 21.95\n    }\n  },\n  \"success\": true\n}",
       "stderr": "",
       "parsed": {
         "initialized": true,
@@ -1312,13 +376,13 @@
           "readings": {
             "pv_voltage_v": 0.0,
             "pv_current_a": 0.0,
-            "load_voltage_v": 11.37,
-            "load_current_a": 0.16,
-            "load_power_w": 1.81,
-            "battery_voltage_v": 11.37,
-            "battery_soc_pct": 5,
-            "battery_temp_c": 17.15,
-            "device_temp_c": 19.61
+            "load_voltage_v": 11.41,
+            "load_current_a": 0.95,
+            "load_power_w": 10.83,
+            "battery_voltage_v": 11.41,
+            "battery_soc_pct": 6,
+            "battery_temp_c": 18.65,
+            "device_temp_c": 21.95
           }
         },
         "success": true

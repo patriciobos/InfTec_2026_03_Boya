@@ -1280,3 +1280,16 @@
 {"timestamp":"2026-06-29T15:29:26-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":null,"own_transmit_messages":1}}
 {"timestamp":"2026-06-29T15:33:33-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":null,"own_transmit_messages":1}}
 {"timestamp":"2026-06-29T15:40:20-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":null,"own_transmit_messages":0}}
+{"timestamp":"2026-06-30T10:54:38-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":null,"own_transmit_messages":1}}
+{"timestamp":"2026-06-30T11:00:00-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":null,"own_transmit_messages":1}}
+{"timestamp":"2026-06-30T11:00:02-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":99.99,"own_transmit_messages":1}}
+{"timestamp":"2026-06-30T11:20:01-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":99.99,"own_transmit_messages":559}}
+{"timestamp":"2026-06-30T11:25:06-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":null,"own_transmit_messages":1}}
+{"timestamp":"2026-06-30T11:40:01-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":99.99,"own_transmit_messages":558}}
+{"timestamp":"2026-06-30T11:50:01-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":99.99,"own_transmit_messages":592}}
+{"timestamp":"2026-06-30T12:00:01-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":99.99,"own_transmit_messages":593}}
+{"timestamp":"2026-06-30T12:24:29-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":null,"own_transmit_messages":1}}
+{"timestamp":"2026-06-30T12:27:13-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":null,"own_transmit_messages":1}}
+{"timestamp":"2026-06-30T12:33:22-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":null,"own_transmit_messages":1}}
+{"timestamp":"2026-06-30T12:50:01-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":99.99,"own_transmit_messages":542}}
+{"timestamp":"2026-06-30T13:40:01-03:00","data":{"gps_fix":false,"lat":null,"lon":null,"satellites":0,"hdop":99.99,"own_transmit_messages":559}}
